@@ -52,10 +52,14 @@ h4 {
 
 #constellation-bg {
   position: fixed;
-  background: transparent;
   inset: 0;
-  width: 100dvw;
-  height: 100dvh;
+  width: 100vw;
+  height: 100vh;
   z-index: -1;
   pointer-events: none;
+  
+  background-image: url("Background.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
