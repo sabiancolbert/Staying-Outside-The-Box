@@ -1,97 +1,116 @@
 
   const canvas = document.getElementById('constellation-bg');
-  const ctx = canvas.getContext('2d');
+const ctx = canvas.getContext('2d');
 
-  let width, height, stars;
+let width = window.innerWidth;
+let height = window.innerHeight;
+let stars = [];
 
-  const STAR_COUNT = 70;     // number of stars
-  const MAX_SPEED = 0.25;     // max star speed
-  const LINK_DISTANCE = 50;  // max distance (px) to draw a line
+const STAR_COUNT = 120;
+const MAX_SPEED = 0.25;
+const LINK_DISTANCE = 130;
 
-  function resizeCanvas() {
-    width = canvas.clientWidth;
-    height = canvas.clientHeight;
-    canvas.width = width;
-    canvas.height = height;
+function randomBetween(min, max) {
+  return Math.random() * (max - min) + min;
+}
+
+function createStars() {
+  stars = [];
+  for (let i = 0; i < STAR_COUNT; i++) {
+    stars.push({
+      x: Math.random() * width,
+      y: Math.random() * height,
+      vx: randomBetween(-MAX_SPEED, MAX_SPEED),
+      vy: randomBetween(-MAX_SPEED, MAX_SPEED),
+      r: randomBetween(1, 2.2),
+      opacity: randomBetween(0.4, 1)
+    });
   }
+}
+
+// 🔧 resize canvas WITHOUT recreating stars
+function resizeCanvas() {
+  const oldWidth = width;
+  const oldHeight = height;
+
+  width = window.innerWidth;
+  height = window.innerHeight;
+
+  // scale existing stars to new size so pattern is preserved
+  if (oldWidth && oldHeight) {
+    const scaleX = width / oldWidth;
+    const scaleY = height / oldHeight;
+    for (const s of stars) {
+      s.x *= scaleX;
+      s.y *= scaleY;
+    }
+  }
+
+  canvas.width = width;
+  canvas.height = height;
+}
 
   function randomBetween(min, max) {
     return Math.random() * (max - min) + min;
   }
 
-  function createStars() {
-    stars = [];
-    for (let i = 0; i < STAR_COUNT; i++) {
-      stars.push({
-        x: Math.random() * width,
-        y: Math.random() * height,
-        vx: randomBetween(-MAX_SPEED, MAX_SPEED),
-        vy: randomBetween(-MAX_SPEED, MAX_SPEED),
-        r: randomBetween(1, 2.2),          // star radius
-        opacity: randomBetween(0.4, 1)     // some soft variation
-      });
-    }
-  }
-
   function updateStars() {
-    for (const s of stars) {
-      s.x += s.vx;
-      s.y += s.vy;
+  for (const s of stars) {
+    s.x += s.vx;
+    s.y += s.vy;
 
-      // Wrap around screen edges
-      if (s.x < 0) s.x = width;
-      if (s.x > width) s.x = 0;
-      if (s.y < 0) s.y = height;
-      if (s.y > height) s.y = 0;
-    }
+    if (s.x < 0) s.x = width;
+    if (s.x > width) s.x = 0;
+    if (s.y < 0) s.y = height;
+    if (s.y > height) s.y = 0;
   }
+}
 
-  function drawStars() {
-    ctx.clearRect(0, 0, width, height);
+function drawStars() {
+  ctx.clearRect(0, 0, width, height);
 
-    // Draw lines (constellations) first
-    ctx.lineWidth = 0.6;
-    for (let i = 0; i < stars.length; i++) {
-      for (let j = i + 1; j < stars.length; j++) {
-        const a = stars[i];
-        const b = stars[j];
-        const dx = a.x - b.x;
-        const dy = a.y - b.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
+  // ✨ NO background fill here if you want your image behind
 
-        if (dist < LINK_DISTANCE) {
-          const alpha = 1 - dist / LINK_DISTANCE; // closer = brighter
-          ctx.strokeStyle = `rgba(200, 200, 255, ${alpha * 0.6})`;
-          ctx.beginPath();
-          ctx.moveTo(a.x, a.y);
-          ctx.lineTo(b.x, b.y);
-          ctx.stroke();
-        }
+  // lines
+  ctx.lineWidth = 0.6;
+  for (let i = 0; i < stars.length; i++) {
+    for (let j = i + 1; j < stars.length; j++) {
+      const a = stars[i];
+      const b = stars[j];
+      const dx = a.x - b.x;
+      const dy = a.y - b.y;
+      const dist = Math.hypot(dx, dy);
+
+      if (dist < LINK_DISTANCE) {
+        const alpha = 1 - dist / LINK_DISTANCE;
+        ctx.strokeStyle = `rgba(200, 200, 255, ${alpha * 0.6})`;
+        ctx.beginPath();
+        ctx.moveTo(a.x, a.y);
+        ctx.lineTo(b.x, b.y);
+        ctx.stroke();
       }
     }
-
-    // Draw stars
-    for (const s of stars) {
-      ctx.beginPath();
-      ctx.fillStyle = `rgba(255, 255, 255, ${s.opacity})`;
-      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-      ctx.fill();
-    }
   }
 
-  function animate() {
-    updateStars();
-    drawStars();
-    requestAnimationFrame(animate);
+  // stars
+  for (const s of stars) {
+    ctx.beginPath();
+    ctx.fillStyle = `rgba(255, 255, 255, ${s.opacity})`;
+    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    ctx.fill();
   }
+}
 
-  // Init
-  resizeCanvas();
-  createStars();
-  animate();
+function animate() {
+  updateStars();
+  drawStars();
+  requestAnimationFrame(animate);
+}
 
-  // Handle window resize
-  window.addEventListener('resize', () => {
-    resizeCanvas();
-    createStars(); // re-seed stars to fit new size
-  });
+// 🔥 Init ONCE
+resizeCanvas();
+createStars();
+animate();
+
+// ✅ Resize WITHOUT restarting anything
+window.addEventListener('resize', resizeCanvas);
