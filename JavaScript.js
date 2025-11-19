@@ -65,7 +65,7 @@ function drawStarsWithLines() {
   //draw stars
   for (const star of stars) {
     brush.beginPath();
-    brush.fillStyle = `rgba(star.redValue, 0, 0, ${star.opacity})`;
+    brush.fillStyle = `rgba(255, 0, 0, ${star.opacity})`;
     brush.arc(star.x, star.y, star.size, 0, Math.PI * 2);
     brush.fill();
     if(star.opacity < 0.02){
