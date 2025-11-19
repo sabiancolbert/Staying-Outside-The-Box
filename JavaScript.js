@@ -49,16 +49,6 @@
   function drawStars() {
     ctx.clearRect(0, 0, width, height);
 
-    // Slight radial gradient for subtle glow
-    const gradient = ctx.createRadialGradient(
-      width / 2, height / 2, 0,
-      width / 2, height / 2, Math.max(width, height)
-    );
-    gradient.addColorStop(0, '#050016');
-    gradient.addColorStop(1, '#010008');
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, width, height);
-
     // Draw lines (constellations) first
     ctx.lineWidth = 0.6;
     for (let i = 0; i < stars.length; i++) {
