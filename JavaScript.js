@@ -98,7 +98,7 @@ function resizeCanvas() {
     scaleFactor = 1500;
   }
   maxStarCount = scaleFactor/10;
-  maxLinkDistance = scaleFactor/20;
+  maxLinkDistance = scaleFactor/10;
 
   //resize stars, unless the page has just opened
   if (oldWidth != 0) {
