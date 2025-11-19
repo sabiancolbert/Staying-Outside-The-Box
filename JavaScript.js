@@ -7,9 +7,9 @@ let height = window.innerHeight;
 let stars = [];
 let scaleFactor = width+height;
 
-const STAR_COUNT = scaleFactor/2;
+const STAR_COUNT = 0;
 const MAX_SPEED = 0.25;
-const LINK_DISTANCE = scaleFactor/4;
+const LINK_DISTANCE = 0;
 
 function randomBetween(min, max) {
   return Math.random() * (max - min) + min;
@@ -23,7 +23,7 @@ function createStars() {
       y: Math.random() * height,
       vx: randomBetween(-MAX_SPEED, MAX_SPEED),
       vy: randomBetween(-MAX_SPEED, MAX_SPEED),
-      r: randomBetween(1, scaleFactor/50),
+      r: randomBetween(1, scaleFactor/600),
       ocapity: randomBetween(.4, 1)
     });
   }
@@ -38,8 +38,11 @@ function resizeCanvas() {
   width = window.innerWidth;
   height = window.innerHeight;
   scaleFactor = width+height;
-  STAR_COUNT = scaleFactor/2;
-  LINK_DISTANCE = scaleFactor/4;
+  if{scaleFactor>1500){
+    scaleFactor = 1500;
+    }
+  STAR_COUNT = scaleFactor/10;
+  LINK_DISTANCE = scaleFactor/20;
 
   // scale existing stars to new size so pattern is preserved
   if (oldWidth && oldHeight) {
