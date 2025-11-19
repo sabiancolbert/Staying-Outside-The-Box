@@ -20,7 +20,7 @@ function createStars() {
       vy: randomBetween(-.25, .25),
       size: randomBetween(1, scaleFactor/400),
       opacity: randomBetween(.1001, 1),
-      redValue: randomBetween(0,200)
+      redValue: randomBetween(0, 170)
     });
   }
 }
