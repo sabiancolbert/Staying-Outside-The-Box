@@ -25,7 +25,7 @@ function createStars() {
       y: Math.random() * height,
       vx: randomBetween(-MAX_SPEED, MAX_SPEED),
       vy: randomBetween(-MAX_SPEED, MAX_SPEED),
-      r: randomBetween(1, scaleFactor/600),
+      r: randomBetween(1, scaleFactor/400),
       opacity: randomBetween(.1001, 1)
     });
   }
