@@ -1,13 +1,13 @@
 const canvas = document.getElementById('constellation-bg');
 const brush = canvas.getContext('2d');
-
-let width = window.innerWidth;
-let height = window.innerHeight;
-let scaleFactor = width+height;
-
 let stars = [];
-let maxStarCount = 0; //defined in rescaleCanvas() to remove redundancy
-let maxLinkDistance = 0; //defined in rescaleCanvas() to remove redundancy
+
+ //defined in rescaleCanvas() to remove redundancy
+let width = 0;
+let height = 0;
+let scaleFactor = 0;
+let maxStarCount = 0;
+let maxLinkDistance = 0;
 
 /* Stars */
 
@@ -92,8 +92,8 @@ function resizeCanvas() {
   maxStarCount = scaleFactor/10;
   maxLinkDistance = scaleFactor/20;
 
-//resize stars
-  //if (oldWidth && oldHeight) {
+//resize stars, unless the page has just opened
+    if (oldWidth != 0) {
     const scaleX = width / oldWidth;
     const scaleY = height / oldHeight;
     const scaleSize = scaleFactor / oldScaleFactor;
