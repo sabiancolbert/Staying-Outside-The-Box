@@ -39,7 +39,7 @@ function moveStars() {
 function drawStarsWithLines() {
   brush.clearRect(0, 0, width, height);
    
-  //draw lines
+  //determine the lines
   brush.lineWidth = 1;
   for (let i = 0; i < stars.length; i++) {
     for (let j = i + 1; j < stars.length; j++) {
@@ -49,26 +49,27 @@ function drawStarsWithLines() {
       const yDistance = aStar.y - bStar.y;
       const opacityModifier = (aStar.opacity + bStar.opacity) /2;
       const distance = Math.hypot(xDistance, yDistance);
-
-      if (dist < maxLinkDistance) {
+      
+      //if star a and star b aren't too far apart, draw the line
+      if (distance < maxLinkDistance) {
         const alpha = (1 - distance / maxLinkDistance) * opacityModifier;
         brush.strokeStyle = `rgba(0, 0, 0, ${alpha})`;
         brush.beginPath();
-        brush.moveTo(a.x, a.y);
-        brush.lineTo(b.x, b.y);
+        brush.moveTo(aStar.x, aStar.y);
+        brush.lineTo(bStar.x, bStar.y);
         brush.stroke();
       }
     }
   }
   //draw stars
-  for (const s of stars) {
+  for (const star of stars) {
     brush.beginPath();
-    brush.fillStyle = `rgba(0, 0, 0, ${s.opacity})`;
-    brush.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+    brush.fillStyle = `rgba(0, 0, 0, ${star.opacity})`;
+    brush.arc(star.x, star.y, star.size, 0, Math.PI * 2);
     brush.fill();
-    s.opacity-=.001;
-    if(s.opacity < 0.1){
-      s.opacity = 1;
+    star.opacity-=.001;
+    if(star.opacity < 0.1){
+      star.opacity = 1;
       }
     }
 }
