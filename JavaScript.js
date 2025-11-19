@@ -24,7 +24,7 @@ function createStars() {
       vx: randomBetween(-MAX_SPEED, MAX_SPEED),
       vy: randomBetween(-MAX_SPEED, MAX_SPEED),
       r: randomBetween(1, scaleFactor/600),
-      ocapity: randomBetween(.4, 1)
+      ocapity: randomBetween(.4001, 1)
     });
   }
 }
