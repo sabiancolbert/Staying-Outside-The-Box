@@ -19,7 +19,7 @@ function createStars() {
       vx: randomBetween(-.25, .25),
       vy: randomBetween(-.25, .25),
       size: randomBetween(1, scaleFactor/400),
-      opacity: randomBetween(.005, 1),
+      opacity: randomBetween(.005, 2),
       redValue: randomBetween(0, 150)
     });
   }
