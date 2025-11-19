@@ -94,20 +94,21 @@ function resizeCanvas() {
   scaleFactor = width+height;
   if(scaleFactor>1500){
     scaleFactor = 1500;
-    }
+  }
   maxStarCount = scaleFactor/10;
   maxLinkDistance = scaleFactor/20;
 
-//resize stars, unless the page has just opened
-    if (oldWidth != 0) {
+  //resize stars, unless the page has just opened
+  if (oldWidth != 0) {
     const scaleX = width / oldWidth;
     const scaleY = height / oldHeight;
     const scaleSize = scaleFactor / oldScaleFactor;
-    for (const s of stars) {
-      s.x *= scaleX;
-      s.y *= scaleY;
-      s.size *= scaleSize;
+    for (const star of stars) {
+      star.x *= scaleX;
+      star.y *= scaleY;
+      star.size *= scaleSize;
     }
+  }
 }
 
 function animate() {
