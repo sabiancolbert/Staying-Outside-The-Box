@@ -57,9 +57,4 @@ h4 {
   height: 100%;
   z-index: -1;
   pointer-events: none;
-  
-  background-image: url("Background.jpg");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
 }
