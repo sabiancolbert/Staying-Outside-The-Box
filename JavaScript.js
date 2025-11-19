@@ -26,7 +26,7 @@ function createStars() {
       vx: randomBetween(-MAX_SPEED, MAX_SPEED),
       vy: randomBetween(-MAX_SPEED, MAX_SPEED),
       r: randomBetween(1, scaleFactor/600),
-      ocapity: randomBetween(.4001, 1)
+      opacity: randomBetween(.4001, 1)
     });
   }
 }
@@ -40,7 +40,7 @@ function resizeCanvas() {
   width = window.innerWidth;
   height = window.innerHeight;
   scaleFactor = width+height;
-  if{scaleFactor>1500){
+  if(scaleFactor>1500){
     scaleFactor = 1500;
     }
   STAR_COUNT = scaleFactor/10;
@@ -60,10 +60,6 @@ function resizeCanvas() {
 
   canvas.width = width;
   canvas.height = height;
-}
-
-function randomBetween(min, max) {
-  return Math.random() * (max - min) + min;
 }
 
 function updateStars() {
@@ -128,4 +124,6 @@ createStars();
 animate();
 
 // ✅ Resize WITHOUT restarting anything
-window.addEventListener('resize', resizeCanvas);
+window.addEventListener('resize', () => {
+  resizeCanvas();
+});
