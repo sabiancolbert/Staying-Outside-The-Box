@@ -69,11 +69,12 @@ function drawStarsWithLines() {
     brush.arc(star.x, star.y, star.size, 0, Math.PI * 2);
     brush.fill();
     
+    //slowly fade. if its almost gone, then wait a while before reappearing again
     if(star.opacity < 0.005){
       star.opacity = 1;
     }
     else if(star.opacity < 0.02){
-      star.opacity -= .001;
+      star.opacity -= .0005;
     }
     else{
       star.opacity-=.005;
