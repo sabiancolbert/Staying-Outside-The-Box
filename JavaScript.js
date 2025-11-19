@@ -50,11 +50,11 @@ function resizeCanvas() {
   canvas.height = height;
 }
 
-  function randomBetween(min, max) {
-    return Math.random() * (max - min) + min;
-  }
+function randomBetween(min, max) {
+  return Math.random() * (max - min) + min;
+}
 
-  function updateStars() {
+function updateStars() {
   for (const s of stars) {
     s.x += s.vx;
     s.y += s.vy;
@@ -69,8 +69,6 @@ function resizeCanvas() {
 function drawStars() {
   ctx.clearRect(0, 0, width, height);
 
-  // ✨ NO background fill here if you want your image behind
-
   // lines
   ctx.lineWidth = 0.6;
   for (let i = 0; i < stars.length; i++) {
@@ -83,7 +81,7 @@ function drawStars() {
 
       if (dist < LINK_DISTANCE) {
         const alpha = 1 - dist / LINK_DISTANCE;
-        ctx.strokeStyle = `rgba(200, 200, 255, ${alpha * 0.6})`;
+        ctx.strokeStyle = `rgba(45, 0, 60, ${alpha * 0.6})`;
         ctx.beginPath();
         ctx.moveTo(a.x, a.y);
         ctx.lineTo(b.x, b.y);
@@ -95,7 +93,7 @@ function drawStars() {
   // stars
   for (const s of stars) {
     ctx.beginPath();
-    ctx.fillStyle = `rgba(255, 255, 255, ${s.opacity})`;
+    ctx.fillStyle = `rgba(90, 0, 30, ${s.opacity})`;
     ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
     ctx.fill();
   }
