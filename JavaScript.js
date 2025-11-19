@@ -93,7 +93,7 @@ function drawStars() {
   // stars
   for (const s of stars) {
     ctx.beginPath();
-    ctx.fillStyle = `rgba(randomBetween(0, 130), 0, 50, ${s.opacity})`;
+    ctx.fillStyle = `rgba(randomBetween(0, 200), 0, 50, ${s.opacity})`;
     ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
     ctx.fill();
   }
