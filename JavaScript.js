@@ -69,17 +69,7 @@ function updateStars() {
 function drawStars() {
   ctx.clearRect(0, 0, width, height);
   
-// stars
-  for (const s of stars) {
-    ctx.beginPath();
-    ctx.fillStyle = `rgba(255, 50, 100, ${s.opacity})`;
-    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-    ctx.fill();
-    s.opacityCounter-=.1;
-    if(s.opacity < 0.4){
-      s.opacity = 1;
-      }
-    }
+
     
   // lines
   ctx.lineWidth = 1;
@@ -101,6 +91,17 @@ function drawStars() {
       }
     }
   }
+  // stars
+  for (const s of stars) {
+    ctx.beginPath();
+    ctx.fillStyle = `rgba(255, 50, 100, ${s.opacity})`;
+    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    ctx.fill();
+    s.opacityCounter-=.1;
+    if(s.opacity < 0.4){
+      s.opacity = 1;
+      }
+    }
 }
 
 function animate() {
