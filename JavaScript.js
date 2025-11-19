@@ -4,9 +4,9 @@
 
   let width, height, stars;
 
-  const STAR_COUNT = 120;     // number of stars
+  const STAR_COUNT = 70;     // number of stars
   const MAX_SPEED = 0.25;     // max star speed
-  const LINK_DISTANCE = 130;  // max distance (px) to draw a line
+  const LINK_DISTANCE = 50;  // max distance (px) to draw a line
 
   function resizeCanvas() {
     width = canvas.clientWidth;
