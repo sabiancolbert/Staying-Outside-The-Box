@@ -102,7 +102,6 @@ function resizeCanvas() {
       s.y *= scaleY;
       s.size *= scaleSize;
     }
-  //}
 }
 
 function animate() {
