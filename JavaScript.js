@@ -70,7 +70,7 @@ function drawStars() {
   ctx.clearRect(0, 0, width, height);
 
   // lines
-  ctx.lineWidth = 1;
+  ctx.lineWidth = 3;
   for (let i = 0; i < stars.length; i++) {
     for (let j = i + 1; j < stars.length; j++) {
       const a = stars[i];
@@ -81,7 +81,7 @@ function drawStars() {
 
       if (dist < LINK_DISTANCE) {
         const alpha = 1 - dist / LINK_DISTANCE;
-        ctx.strokeStyle = `rgba(0, 0, 0, ${alpha * 0.6})`;
+        ctx.strokeStyle = `rgba(0, 0, 0, ${alpha * 0.2})`;
         ctx.beginPath();
         ctx.moveTo(a.x, a.y);
         ctx.lineTo(b.x, b.y);
