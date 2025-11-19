@@ -23,8 +23,7 @@ function createStars() {
       vx: randomBetween(-MAX_SPEED, MAX_SPEED),
       vy: randomBetween(-MAX_SPEED, MAX_SPEED),
       r: randomBetween(1, 2.2),
-      opacity: randomBetween(0.4, 1),
-      red: randomBetween(100, 255)
+      ocapity: randomBetween(.4, 1)
     });
   }
 }
@@ -95,10 +94,10 @@ function drawStars() {
   // stars
   for (const s of stars) {
     ctx.beginPath();
-    ctx.fillStyle = `rgba(s.red, 50, 100, ${s.opacity})`;
+    ctx.fillStyle = `rgba(0, 0, 0, ${s.opacity})`;
     ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
     ctx.fill();
-    s.opacityCounter-=.0001;
+    s.opacity-=.0001;
     if(s.opacity < 0.4){
       s.opacity = 1;
       }
