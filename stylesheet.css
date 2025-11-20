@@ -48,6 +48,11 @@ hr{
   background-color: #bdbdbd;
 }
 
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
 img {
   /* units for old browsers and modern browsers */
   width: 20vmin;
