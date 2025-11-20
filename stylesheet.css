@@ -62,8 +62,8 @@ h2 {
       
 h3 {
   /* units for old browsers and modern browsers */
-  font-size: 6vmin;
-  font-size: 6dvmin;
+  font-size: 10vmin;
+  font-size: 10dvmin;
 }
 
 h4 {
