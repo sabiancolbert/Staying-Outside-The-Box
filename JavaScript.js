@@ -41,8 +41,8 @@ function createStars() {
 
 function moveStars() {
   for (const star of stars) {
-    star.x += cleanedUserSpeed * star.vx + star.vx;
-    star.y += cleanedUserSpeed * star.vy + star.vy;
+    star.x += cleanedUserSpeed * 9 + star.vx;
+    star.y += cleanedUserSpeed * 9 + star.vy;
 
     if (star.x < 0) star.x = width;
     if (star.x > width) star.x = 0;
