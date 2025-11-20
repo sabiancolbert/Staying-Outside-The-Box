@@ -69,13 +69,13 @@ function drawStarsWithLines() {
   }
   //draw stars
   for (const star of stars) {
-    let tempRed = Math.round(255 * star.whiteValue + star.redValue);
+    let tempRed = 255 * star.whiteValue + star.redValue;
     if (tempRed > 255){
       tempRed = 255;
     }
-    const tempGreen = Math.round(255 * star.whiteValue);
-    const tempBlue = Math.round(255 * star.whiteValue);
-    const tempSize = star.size + (star.whiteValue * 4);
+    const tempGreen = 255 * star.whiteValue;
+    const tempBlue = 255 * star.whiteValue;
+    const tempSize = star.whiteValue * 2 + star.size;
     brush.beginPath();
     brush.fillStyle = `rgba(${tempRed}, ${tempGreen}, ${tempBlue}, ${star.opacity})`;
     brush.arc(star.x, star.y, tempSize, 0, Math.PI * 2);
@@ -85,13 +85,13 @@ function drawStarsWithLines() {
     {
       //return color from white
       if(star.whiteValue > 0){
-        star.whiteValue -= .01;
+        star.whiteValue -= .02;
       }
       //adjust opacity
       if(star.opacity <= 0.005){
         star.opacity = 1;
         //chance to twinkle white 
-        if (Math.random() < 0.1) {
+        if (Math.random() < 0.05) {
           star.whiteValue = 1;
         }
       }
