@@ -83,7 +83,7 @@ function drawStarsWithLines() {
     
     //thinkle the stars
     {
-      //return color from white
+      //return color from white stars
       if(star.whiteValue > 0){
         star.whiteValue -= .02;
       }
@@ -91,7 +91,7 @@ function drawStarsWithLines() {
       if(star.opacity <= 0.005){
         star.opacity = 1;
         //chance to twinkle white 
-        if (Math.random() < 0.05) {
+        if (Math.random() < 0.07) {
           star.whiteValue = 1;
         }
       }
