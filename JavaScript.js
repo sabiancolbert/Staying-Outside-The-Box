@@ -69,15 +69,16 @@ function drawStarsWithLines() {
   }
   //draw stars
   for (const star of stars) {
-    let tempRed = 255 * star.whiteValue + star.redValue;
+    let tempRed = Math.round(255 * star.whiteValue + star.redValue);
     if (tempRed > 255){
       tempRed = 255;
     }
-    const tempGreen = 255 * star.whiteValue;
-    const tempBlue = 255 * star.whiteValue;
+    const tempGreen = Math.round(255 * star.whiteValue);
+    const tempBlue = Math.round(255 * star.whiteValue);
+    const tempSize = star.size + (star.whiteValue * 2);
     brush.beginPath();
     brush.fillStyle = `rgba(${tempRed}, ${tempGreen}, ${tempBlue}, ${star.opacity})`;
-    brush.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+    brush.arc(star.x, star.y, tempSize, 0, Math.PI * 2);
     brush.fill();
     
     //thinkle the stars
