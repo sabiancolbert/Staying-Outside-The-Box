@@ -13,7 +13,7 @@ body::before {
   width: 100dvw;
   height: 100dvh;
 
-  background-image: url("Background.jpg");
+  background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url("Background.jpg");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
