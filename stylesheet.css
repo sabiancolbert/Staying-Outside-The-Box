@@ -1,6 +1,6 @@
-/*html, body {
-  background-color: #600090;
-}*/
+html {
+  background-color: #300060;
+}
 
 body::before {
   content: "";/* required for ::before to exist */
@@ -13,7 +13,6 @@ body::before {
   width: 100dvw;
   height: 100dvh;
 
-  background-color: #300060;
   background-image: url("Background.jpg");
   background-size: cover;
   background-position: center;
@@ -25,12 +24,10 @@ body::before {
 body {
   margin: 0;
   padding: 0;
-    /* units for old browsers and modern browsers */
+  /* units for old browsers and modern browsers */
   min-height: 100vh;
   min-height: 100dvh;
-  /*background: transparent !important;*/
 
-  /*justify-content: center;*/
   text-align: center;
   font-family: 'New Rocker';
   color: #bdbdbd;
