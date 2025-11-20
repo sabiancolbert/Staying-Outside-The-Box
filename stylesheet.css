@@ -65,10 +65,10 @@ h2 {
 h3 {
   /* units for old browsers and modern browsers */
   font-size: 7.5vmin;
-  margin: -2vmin 0 0 0;
+  margin: -2vmin 0 2vmin 0;
   
   font-size: 7.5dvmin;
-  margin: -2dvmin 0 0 0;
+  margin: -2dvmin 0 2dvmin 0;
 }
 
 h4 {
