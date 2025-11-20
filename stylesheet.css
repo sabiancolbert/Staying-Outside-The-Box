@@ -37,8 +37,16 @@ body {
 }
 
 hr{
+  /* units for old browsers and modern browsers */
+  width:50vw;
+  width:50dvw;
+  margin-bottom:3vmin;
+  margin-bottom:3dvmin;
   
-  }
+  border: none;
+  height: 3px;
+  background-color: #bdbdbd;
+}
 
 img {
   /* units for old browsers and modern browsers */
