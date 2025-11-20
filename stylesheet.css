@@ -62,8 +62,8 @@ h2 {
       
 h3 {
   /* units for old browsers and modern browsers */
-  font-size: 8.5vmin;
-  font-size: 8.5dvmin;
+  font-size: 7.5vmin;
+  font-size: 7.5dvmin;
   
   padding:0;
 }
