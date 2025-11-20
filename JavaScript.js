@@ -1,4 +1,6 @@
+/*---------------------------*/
 /* Cliche Constellation Code */
+/*---------------------------*/
 
 const canvas = document.getElementById('constellation-bg');
 const brush = canvas.getContext('2d');
@@ -22,7 +24,8 @@ function createStars() {
       vy: randomBetween(-.25, .25),
       size: randomBetween(1, scaleFactor/400),
       opacity: randomBetween(.005, 2),
-      redValue: randomBetween(0, 150)
+      redValue: randomBetween(0, 150),
+      white: false
     });
   }
 }
@@ -66,21 +69,40 @@ function drawStarsWithLines() {
   }
   //draw stars
   for (const star of stars) {
+    let tempRed = star.redValue;
+    let tempGreen = 0;
+    let tempBlue = 0;
+    if(star.white){
+      tempRed = 255;
+      tempGreen = 255;
+      tempBlue = 255;
+    }
     brush.beginPath();
-    brush.fillStyle = `rgba(${star.redValue}, 0, 0, ${star.opacity})`;
+    brush.fillStyle = `rgba(${tempRed}, ${tempGreen}, ${tempBlue}, ${star.opacity})`;
     brush.arc(star.x, star.y, star.size, 0, Math.PI * 2);
     brush.fill();
     
     //thinkle the stars
-    if(star.opacity < 0.005){
-      star.opacity = 1;
-    }
-    else if(star.opacity > 0.02){
-      star.opacity-=.005;
-    }
-    //if the star is no longer visible, keep it hidden for a while
-    else{
-      star.opacity -= .0001;
+    {
+      //return color from white
+      if(star.white){
+        star.white = false;
+      }
+      //adjust opacity
+      if(star.opacity < 0.005){
+        star.opacity = 1;
+        //chance to twinkle white 
+        if(randomBetween(0, 10) == 1){
+          star.white = true;
+        }
+      }
+      else if(star.opacity > 0.02){
+        star.opacity-=.005;
+      }
+      //if the star is no longer visible, keep it hidden for a while
+      else{
+        star.opacity -= .0001;
+      }
     }
   }
 }
