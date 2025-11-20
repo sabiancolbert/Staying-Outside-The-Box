@@ -59,3 +59,10 @@ h4 {
   z-index: -1;
   pointer-events: none;
 }
+
+/* for low motion settings */
+@media (prefers-reduced-motion: reduce) {
+  #constellation-bg {
+    display: none;
+  }
+}
