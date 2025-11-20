@@ -3,10 +3,13 @@
 }*/
 
 body::before {
-  content: "";/* REQUIRED for ::before to exist */
+  content: "";/* required for ::before to exist */
   position: fixed;
   top: 0;
   left: 0;
+  /* units for old browsers and modern browsers */
+  width: 100vw;
+  height: 100vh;
   width: 100dvw;
   height: 100dvh;
 
@@ -22,37 +25,54 @@ body::before {
 body {
   margin: 0;
   padding: 0;
+    /* units for old browsers and modern browsers */
+  min-height: 100vh;
   min-height: 100dvh;
   /*background: transparent !important;*/
 
   /*justify-content: center;*/
   text-align: center;
   font-family: 'New Rocker';
-  font-size: 5dvmin;
   color: #bdbdbd;
+  /* units for old browsers and modern browsers */
+  font-size: 5vmin;
+  font-size: 5dvmin;
 }
 
 img {
-  width:20dvmin;
-  height:20dvmin;
+  /* units for old browsers and modern browsers */
+  width: 20vmin;
+  height: 20vmin;
+  padding: 2vmin;
+  font: 1vmin Arial;
+  width: 20dvmin;
+  height: 20dvmin;
+  padding:2dvmin;
+  font: 1dvmin Arial;
+  
   border-radius: 50%;
   border: 3px solid #bdbdbd;
   object-fit: cover;
-  padding:2dvmin;
-  font: 1dvmin Arial;
 }
 
 h2 {
+  /* units for old browsers and modern browsers */
+  font-size: 3vmin;
+  margin-top:-7vmin;
   font-size: 3dvmin;
   margin-top:-7dvmin;
 }
       
 h3 {
+  /* units for old browsers and modern browsers */
+  font-size: 3vmin;
   font-size: 3dvmin;
 }
 
 h4 {
-  font-size:3dvmin;
+  /* units for old browsers and modern browsers */
+  font-size: 3vmin;
+  font-size: 3dvmin;
 }
 
 #constellation-bg {
