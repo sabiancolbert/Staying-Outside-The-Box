@@ -40,15 +40,21 @@ function createStars() {
 }
 
 function moveStars() {
+  // base drift (1x) + up to +9x from user movement
+  const speedFactor = 1 + cleanedUserSpeed * 9;
+
   for (const star of stars) {
-    star.x += cleanedUserSpeed * 9 + star.vx;
-    star.y += cleanedUserSpeed * 9 + star.vy;
+    star.x += star.vx * speedFactor;
+    star.y += star.vy * speedFactor;
 
     if (star.x < 0) star.x = width;
     if (star.x > width) star.x = 0;
     if (star.y < 0) star.y = height;
     if (star.y > height) star.y = 0;
   }
+
+  // after applying speed, let it naturally decay a bit every frame
+  cleanedUserSpeed *= 0.95; // 0.95 = keeps some momentum, but slows down
 }
 
 function drawStarsWithLines() {
