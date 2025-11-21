@@ -178,10 +178,10 @@ function updateSpeed(x, y, time) {
   }
 
   //smoothing
-  smoothSpeed = smoothSpeed * .8 + pointerSpeed * .2;
+  smoothSpeed = smoothSpeed * .8 + pointerSpeed * 10;
 
   //normalize to a 0–1 scale
-  cleanedUserSpeed = Math.min(smoothSpeed * 500, 1);
+  cleanedUserSpeed = Math.min(smoothSpeed, 1);
 
   lastX = x;
   lastY = y;
