@@ -90,7 +90,7 @@ function drawStarsWithLines() {
     {
       //return color from white stars
       if(star.whiteValue > 0){
-        star.whiteValue -= .02;
+        star.whiteValue -= Math.max(0, .02 * star.fadeSpeed);
       }
       //adjust opacity
       if(star.opacity <= 0.005){
