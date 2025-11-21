@@ -192,6 +192,7 @@ function updateSpeed(x, y, time) {
   lastX = x;
   lastY = y;
   lastTime = time;
+  document.title = cleanedUserSpeed.toFixed(2);
 }
 
 /* Desktop */
