@@ -90,7 +90,7 @@ function drawStarsWithLines() {
     {
       //return color from white stars
       if(star.whiteValue > 0){
-        star.whiteValue -= Math.max(0, .02 * star.fadeSpeed);
+        star.whiteValue -= Math.max(0, star.whiteValue * .02);
       }
       //adjust opacity
       if(star.opacity <= 0.005){
@@ -101,7 +101,7 @@ function drawStarsWithLines() {
         }
       }
       else if(star.opacity > 0.02){
-        star.opacity-=.005;
+        star.opacity-=.005 * star.fadeSpeed;
       }
       //if the star is no longer visible, keep it hidden for a while
       else{
