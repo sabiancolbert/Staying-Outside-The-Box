@@ -32,9 +32,10 @@ function createStars() {
 }
 
 function moveStars() {
+  const speedFactor = cleanedUserSpeed + 1;
   for (const star of stars) {
-    star.x += star.vx * (cleanedUserSpeed + 1);
-    star.y += star.vy * (cleanedUserSpeed + 1);
+    star.x += star.vx * speedFactor;
+    star.y += star.vy * speedFactor;
 
     if (star.x < 0) star.x = width;
     if (star.x > width) star.x = 0;
@@ -50,6 +51,7 @@ function drawStarsWithLines() {
    
   //determine the lines
   brush.lineWidth = 1;
+  brush.strokeStyle = 'rgba(0, 0, 0, 1)';
   for (let i = 0; i < stars.length; i++) {
     for (let j = i + 1; j < stars.length; j++) {
       const aStar = stars[i];
@@ -62,7 +64,7 @@ function drawStarsWithLines() {
       //if star a and star b aren't too far apart, draw the line
       if (distance < maxLinkDistance) {
         const alpha = (1 - distance / maxLinkDistance) * opacityModifier;
-        brush.strokeStyle = `rgba(0, 0, 0, ${alpha})`;
+        brush.globalAlpha = alpha;
         brush.beginPath();
         brush.moveTo(aStar.x, aStar.y);
         brush.lineTo(bStar.x, bStar.y);
