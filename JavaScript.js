@@ -177,23 +177,23 @@ function updateSpeed(x, y, time) {
     pointerSpeed = Math.sqrt(dx * dx + dy * dy) / dt; // px per ms
   }
 
-  //smoothing
-  smoothSpeed = smoothSpeed * .8 + pointerSpeed * 50;
+  //smoothing for jitteriness
+  smoothSpeed = smoothSpeed * .8 + pointerSpeed * 10;
 
-  //normalize to a 0–1 scale
-  cleanedUserSpeed = Math.min(smoothSpeed, 1);
+  //normalize to avoid extreme speeds
+  cleanedUserSpeed = Math.min(smoothSpeed, 3);
 
   lastX = x;
   lastY = y;
   lastTime = time;
 }
 
-/* Desktop */
+/* Desktop Cursor Speed Tracking */
 window.addEventListener("mousemove", (e) => {
   updateSpeed(e.clientX, e.clientY, e.timeStamp);
 });
 
-/* Touch (Mobile) */
+/* Touch Speed Tracking (Mobile) */
 window.addEventListener("touchmove", (e) => {
   const t = e.touches[0];
   updateSpeed(t.clientX, t.clientY, e.timeStamp);
