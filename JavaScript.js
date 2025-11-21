@@ -23,8 +23,8 @@ function createStars() {
       y: Math.random() * height,
       vx: randomBetween(-.25, .25),
       vy: randomBetween(-.25, .25),
-      size: randomBetween(1, scaleFactor/400),
-      opacity: randomBetween(.005, 2),
+      size: randomBetween(3, scaleFactor/400),
+      opacity: randomBetween(.005, 1),
       redValue: randomBetween(0, 150),
       whiteValue: 0
     });
@@ -32,10 +32,9 @@ function createStars() {
 }
 
 function moveStars() {
-  const speedFactor = cleanedUserSpeed + 1;
   for (const star of stars) {
-    star.x += star.vx * speedFactor;
-    star.y += star.vy * speedFactor;
+    star.x += star.vx * (cleanedUserSpeed + 1);
+    star.y += star.vy * (cleanedUserSpeed + 1);
 
     if (star.x < 0) star.x = width;
     if (star.x > width) star.x = 0;
@@ -63,7 +62,7 @@ function drawStarsWithLines() {
       //if star a and star b aren't too far apart, draw the line
       if (distance < maxLinkDistance) {
         const alpha = (1 - distance / maxLinkDistance) * opacityModifier;
-        brush.strokeStyle = 'rgba(0, 0, 0, ${alpha})';
+        brush.strokeStyle = `rgba(0, 0, 0, ${alpha})`;
         brush.beginPath();
         brush.moveTo(aStar.x, aStar.y);
         brush.lineTo(bStar.x, bStar.y);
