@@ -24,7 +24,7 @@ function createStars() {
       vx: randomBetween(-.25, .25),
       vy: randomBetween(-.25, .25),
       size: randomBetween(3, scaleFactor/400),
-      opacity: randomBetween(.005, 2),
+      opacity: randomBetween(.005, 1),
       redValue: randomBetween(0, 150),
       whiteValue: 0
     });
