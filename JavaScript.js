@@ -62,7 +62,7 @@ function drawStarsWithLines() {
       //if star a and star b aren't too far apart, draw the line
       if (distance < maxLinkDistance) {
         const alpha = (1 - distance / maxLinkDistance) * opacityModifier;
-        brush.strokeStyle = 'rgba(0, 0, 0, ${alpha})';
+        brush.strokeStyle = `rgba(0, 0, 0, ${alpha})`;
         brush.beginPath();
         brush.moveTo(aStar.x, aStar.y);
         brush.lineTo(bStar.x, bStar.y);
