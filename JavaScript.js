@@ -23,7 +23,7 @@ function createStars() {
       y: Math.random() * height,
       vx: randomBetween(-.25, .25),
       vy: randomBetween(-.25, .25),
-      size: randomBetween(1, scaleFactor/400),
+      size: randomBetween(3, scaleFactor/400),
       opacity: randomBetween(.005, 2),
       redValue: randomBetween(0, 150),
       whiteValue: 0
@@ -32,10 +32,9 @@ function createStars() {
 }
 
 function moveStars() {
-  const speedFactor = cleanedUserSpeed + 1;
   for (const star of stars) {
-    star.x += star.vx * speedFactor;
-    star.y += star.vy * speedFactor;
+    star.x += star.vx * (speedFactor + 1);
+    star.y += star.vy * (speedFactor + 1);
 
     if (star.x < 0) star.x = width;
     if (star.x > width) star.x = 0;
