@@ -51,7 +51,6 @@ function drawStarsWithLines() {
    
   //determine the lines
   brush.lineWidth = 1;
-  brush.strokeStyle = 'rgba(0, 0, 0, 1)';
   for (let i = 0; i < stars.length; i++) {
     for (let j = i + 1; j < stars.length; j++) {
       const aStar = stars[i];
@@ -64,7 +63,7 @@ function drawStarsWithLines() {
       //if star a and star b aren't too far apart, draw the line
       if (distance < maxLinkDistance) {
         const alpha = (1 - distance / maxLinkDistance) * opacityModifier;
-        brush.globalAlpha = alpha;
+        brush.strokeStyle = 'rgba(0, 0, 0, ${alpha})';
         brush.beginPath();
         brush.moveTo(aStar.x, aStar.y);
         brush.lineTo(bStar.x, bStar.y);
