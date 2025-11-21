@@ -12,12 +12,7 @@ let height = 0;
 let scaleFactor = 0;
 let maxStarCount = 0;
 let maxLinkDistance = 0;
-
-let lastX = 0, lastY = 0, lastTime = 0;
-
-let pointerSpeed = 0;//raw px/ms
-let smoothSpeed = 0;//smoothed value for jitter
-let cleanedUserSpeed = 0;//0 to 1 scale
+let cleanedUserSpeed = 0;
 
 /* Stars */
 
@@ -168,20 +163,24 @@ window.addEventListener('resize', () => {
 /* Increase Constelation Speed With Cursor */
 /*-----------------------------------------*/
 
+let lastX = 0, lastY = 0, lastTime = 0;
+let pointerSpeed = 0;
+let smoothSpeed = 0;
+
 function updateSpeed(x, y, time) {
   const dx = x - lastX;
   const dy = y - lastY;
   const dt = time - lastTime;
 
   if (dt > 0) {
-    pointerSpeed = Math.sqrt(dx * dx + dy * dy) / dt; // px per ms
+    pointerSpeed = Math.sqrt(dx * dx + dy * dy) / dt; //px per ms
   }
 
   //smoothing for jitteriness
-  smoothSpeed = smoothSpeed * .8 + pointerSpeed * 30;
+  smoothSpeed = smoothSpeed * .8 + pointerSpeed * 6;
 
   //normalize to avoid extreme speeds
-  cleanedUserSpeed = Math.min(smoothSpeed, 30);
+  cleanedUserSpeed = Math.min(smoothSpeed, 6);
 
   lastX = x;
   lastY = y;
