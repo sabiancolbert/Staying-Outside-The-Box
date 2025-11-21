@@ -2,6 +2,7 @@
 /* Cliche Constellation Code */
 /*---------------------------*/
 
+
 const canvas = document.getElementById('constellation-bg');
 const brush = canvas.getContext('2d');
 const stars = [];
