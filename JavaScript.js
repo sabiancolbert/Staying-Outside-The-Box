@@ -40,8 +40,8 @@ function createStars() {
 function moveStars() {
   for (const star of stars) {
     //passive constant star movement
-    star.x += star.vx * (1 + cleanedUserSpeed);
-    star.y += star.vy * (1 + cleanedUserSpeed);
+    star.x += star.vx * cleanedUserSpeed;
+    star.y += star.vy * cleanedUserSpeed;
 
     //attraction to cursor and touch
     if (lastTime !== 0) {
@@ -51,7 +51,7 @@ function moveStars() {
 
       const maxInfluence = 220 * 220;  //~220px influence radius
       if (distSq > 4 && distSq < maxInfluence) {
-        const baseForce = (1 + cleanedUserSpeed) * .1;
+        const baseForce = cleanedUserSpeed * .1;
         const proximity = (maxInfluence - distSq) / maxInfluence;
         const pull = baseForce * proximity;
         star.x += dx * pull;
@@ -67,7 +67,7 @@ function moveStars() {
   }
 
   //decay constellation speed smoothly
-  cleanedUserSpeed *= 0.9;
+  cleanedUserSpeed = Math.min(1, cleanedUserSpeed * 0.9);
 }
 
 function drawStarsWithLines() {
@@ -199,7 +199,7 @@ function updateSpeed(x, y, time) {
   smoothSpeed = smoothSpeed * .8 + pointerSpeed * 10;
 
   //normalize to avoid extreme speeds
-  cleanedUserSpeed = Math.min(smoothSpeed, 10);
+  cleanedUserSpeed = Math.min(smoothSpeed, 10) + 2;
 
   lastX = x;
   lastY = y;
