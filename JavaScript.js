@@ -51,7 +51,7 @@ function moveStars() {
 
       const maxInfluence = 220 * 220;  //~220px influence radius
       if (distSq > 4 && distSq < maxInfluence) {
-        const baseForce = cleanedUserSpeed * .1;
+        const baseForce = cleanedUserSpeed * .01;
         const proximity = (maxInfluence - distSq) / maxInfluence;
         const pull = baseForce * proximity;
         star.x += dx * pull;
