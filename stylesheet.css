@@ -42,8 +42,8 @@ hr{
   /* units for old browsers and modern browsers */
   width:50vw;
   width:50dvw;
-  margin:-10vmin 0 10vmin 0;
-  margin:-10dvmin 0 10dvmin 0;
+  margin-bottom:10vmin;
+  margin-bottom:10dvmin;
   
   border: none;
   height: 3px;
