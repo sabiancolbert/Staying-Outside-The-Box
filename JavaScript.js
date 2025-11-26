@@ -44,14 +44,14 @@ function moveStars() {
     star.y += star.vy * (cleanedUserSpeed + 1);
 
     //attraction to cursor and touch
-    if (lastTime !== 0) {
+    if (lastTime !== 0 && cleanedUserSpeed > 0.19) {
       const dx = lastX - star.x;
       const dy = lastY - star.y;
       const distSq = dx * dx + dy * dy;
 
       const maxInfluence = 220 * 220;  //~220px influence radius
       if (distSq > 4 && distSq < maxInfluence) {
-        const baseForce = 0.008 * (cleanedUserSpeed + 0.5);
+        const baseForce = 0.008 * cleanedUserSpeed;
         const proximity = (maxInfluence - distSq) / maxInfluence;
         const pull = baseForce * proximity;
         star.x += dx * pull;
@@ -215,4 +215,18 @@ window.addEventListener("mousemove", (e) => {
 window.addEventListener("touchmove", (e) => {
   const t = e.touches[0];
   updateSpeed(t.clientX, t.clientY, e.timeStamp);
+});
+
+/* Release Attraction */
+
+window.addEventListener("touchend", () => {
+  cleanedUserSpeed = 0;
+  smoothSpeed = 0;
+  pointerSpeed = 0;
+});
+
+window.addEventListener("mouseup", () => {
+  cleanedUserSpeed = 0;
+  smoothSpeed = 0;
+  pointerSpeed = 0;
 });
