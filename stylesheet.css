@@ -72,6 +72,12 @@ img {
   object-fit: cover;
 }
 
+h1 {
+  /* units for old browsers and modern browsers */
+  font-size: 5vmin;
+  font-size: 5dvmin;
+}
+
 h2 {
   /* units for old browsers and modern browsers */
   font-size: 3vmin;
