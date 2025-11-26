@@ -90,10 +90,7 @@ h1 {
 h2 {
   /* units for old browsers and modern browsers */
   font-size: 3vmin;
-  margin-top:-7vmin;
-  
   font-size: 3dvmin;
-  margin-top:-7dvmin;
 }
       
 h3 {
