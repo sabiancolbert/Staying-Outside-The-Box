@@ -208,7 +208,7 @@ function updateSpeed(x, y, time) {
 
 /* Desktop Cursor Speed Tracking */
 window.addEventListener("mousemove", (e) => {
-  updateSpeed(e.clientX, e.clientY, e.timeStamp);
+  updateSpeed(e.clientX, e.clientY, 2 * e.timeStamp);
 });
 
 /* Touch Speed Tracking (Mobile) */
