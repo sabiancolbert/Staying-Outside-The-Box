@@ -1,4 +1,4 @@
-=/* there are no easter eggs here, I just suck at programming */
+/* there are no easter eggs here, I just suck at programming */
 
 html {
   background-color: #300060;
@@ -83,6 +83,13 @@ img {
   border-radius: 50%;
   border: 3px solid #bdbdbd;
   object-fit: cover;
+}
+
+h1, button {
+  /* units for old browsers and modern browsers */
+  font-size: 7vmin;
+  font-size: 7dvmin;
+  
 }
 
 h2 {
