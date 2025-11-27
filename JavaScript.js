@@ -1,3 +1,12 @@
+/*-------------------*/
+/* Open & Close Elements */
+/*--------------------*/
+
+function toggleElement(x){
+  const element = document.getElementById(x);
+  element.hidden = !element.hidden;
+  }
+
 /*---------------------------*/
 /* Cliche Constellation Code */
 /*---------------------------*/
