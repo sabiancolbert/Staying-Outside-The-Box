@@ -65,7 +65,7 @@ a:hover, a:active, button:hover, button:active {
   border: 3px solid #880000;
 }
 
-.imgButton 
+.imgButton {
   width: 20dvmin;
   height: 20dvmin;
   padding:2dvmin;
