@@ -7,6 +7,7 @@ html {
   margin: 0;
   padding: 0;
   height: 100%;
+  overflow-x:hidden;
 }
 
 body::before {
@@ -24,6 +25,7 @@ body::before {
 }
   
 body {
+  overflow-x:hidden;
   min-height: 100dvh;
   background: transparent;
   margin: 0;
@@ -45,6 +47,23 @@ body {
   height: 100%;
   z-index: -1;
   pointer-events: none;
+}
+
+#transitionContainer {
+  min-height: 100dvh;
+  /* Start off-screen above */
+  transform: translateY(-100dvh);
+  transition: transform 0.6s ease-in-out;
+}
+
+/* When the page is "ready", slide it into view */
+#transitionContainer.ready {
+  transform: translateY(0);
+}
+
+/* When leaving, slide it back up */
+#transitionContainer.slide-out {
+  transform: translateY(-100dvh);
 }
 
 main {
