@@ -67,7 +67,7 @@ a:hover, a:active, button:hover, button:active {
   text-decoration:none;
 }
 
-a img:active, a img:hover {
+.imgButton:active, .imgButton:hover {
   border: 3px solid #880000;
 }
 
@@ -97,9 +97,9 @@ h1 {
 
 h2 {
   /* units for old browsers and modern browsers */
-  font-size: 1vmin;
+  font-size: 2vmin;
   margin-top:-7vmin;
-  font-size: 1dvmin;
+  font-size: 2dvmin;
   margin-top:-7dvmin;
 }
 
