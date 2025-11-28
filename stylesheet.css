@@ -98,6 +98,10 @@ a:hover, a:active, button:hover, button:active {
   color: #880000;
 }
 
+.dead:hover, .dead:active {
+  color: #BB0000;
+}
+
 button {
   background:none;
   border:3px solid #bb0000;
@@ -112,7 +116,7 @@ button {
   
 p {
   margin:0;
-  font-size:.5dvmin;
+  font-size:2dvmin;
 }
 
 .premium {
