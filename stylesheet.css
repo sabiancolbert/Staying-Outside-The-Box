@@ -91,12 +91,6 @@ a {
   padding-bottom: 1dvmin;
 }
 
-/* homepage links */
-.clean {
-  color: inherit;
-  text-decoration:none;
-}
-
 a:hover, a:active, button:hover, button:active {
   color: #880000;
 }
