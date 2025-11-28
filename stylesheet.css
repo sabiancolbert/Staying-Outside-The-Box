@@ -49,6 +49,7 @@ button{
   font-size: 5dvmin;
   border-radius: 5%;
   padding:3dvmin;
+  display: block;
   }
   
   a {
