@@ -1,34 +1,34 @@
 /* there are no easter eggs here, I just suck at programming */
 
 html {
-  background-color: #300060;
+  background-color: #300060; /* fallback */
+  height: 100%;
 }
 
 body::before {
   content: ""; /* required to make this element exist */
-  position: absolute;
+  position: fixed;
   inset: 0;
-  width: 100%;
-  height: 100%;
+  width: 100dvw;
+  height: 100dvh;
+
   background-image: url("/Resources/Background.jpg");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  z-index: -2; /* behind constelations */
+
+  z-index: -2; /* behind constellations */
 }
   
 body {
   margin: 0;
   padding: 0;
-  /* units for old browsers and modern browsers */
-  min-height: 100vh;
   min-height: 100dvh;
-
+  background: transparent; /* important so body doesn’t cover the bg */
+  
   text-align: center;
   font-family: 'New Rocker';
   color: #bdbdbd;
-  /* units for old browsers and modern browsers */
-  font-size: 5vmin;
   font-size: 5dvmin;
 }
 
