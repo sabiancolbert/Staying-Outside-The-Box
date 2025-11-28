@@ -75,17 +75,7 @@ a:hover, a:active, button:hover, button:active {
   object-fit: cover;
 }
 
-h1 {
-  /* units for old browsers and modern browsers */
-  font-size: 9vmin;
-  font-size: 9dvmin;
-  
-}
-
 h2 {
-  /* units for old browsers and modern browsers */
-  font-size: 2vmin;
-  margin-top:-7vmin;
   font-size: 2dvmin;
   margin-top:-7dvmin;
 }
