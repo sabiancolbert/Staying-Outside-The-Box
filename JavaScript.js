@@ -36,9 +36,28 @@ let cleanedUserSpeed = 0;
 
 /* Stars */
 
-function createStars() {
-  for (let i = 0; i < maxStarCount; i++) {
-    stars.push({
+function initStars() {
+  //if there were stars saved from another page, load those
+  const saved = localStorage.getItem('constellationStars');
+
+  if (saved) {
+    try {
+      const parsed = JSON.parse(saved);
+
+      //sanity-check the data so we don’t blow up if it’s bad
+      if (Array.isArray(parsed) && parsed.length) {
+        stars = parsed;
+      } else {
+        createStars();
+      }
+    } catch (err) {
+      console.error('Could not parse saved stars, recreating.', err);
+      createStars();
+    }
+  } else {
+    //if no save is found, then make stars
+    for (let i = 0; i < maxStarCount; i++) {
+      stars.push({
       x: Math.random() * width,
       y: Math.random() * height,
       vx: randomBetween(-.25, .25),
@@ -49,6 +68,7 @@ function createStars() {
       redValue: randomBetween(0, 150),
       whiteValue: 0
     });
+    }
   }
 }
 
@@ -193,7 +213,7 @@ function randomBetween(min, max) {
 /* On Page Load */
 
 resizeCanvas();
-createStars();
+initStars();
 animate();
 window.addEventListener('resize', () => {
   resizeCanvas();
@@ -245,3 +265,45 @@ window.addEventListener("mouseup", () => {
   smoothSpeed = 0;
   pointerSpeed = 0;
 });
+
+/*--------------------------*/
+/* Animate Page Transitions */
+/*--------------------------*/
+
+window.addEventListener('load', () => {
+  const wrapper = document.getElementById('page-wrapper');
+  // Use rAF so the browser sees the initial translateY before we add "ready"
+  requestAnimationFrame(() => {
+    wrapper.classList.add('ready');
+  });
+});
+
+/**
+ * Call this instead of a normal link click.
+ * It slides content up, then navigates to `url`.
+ */
+function navigateWithSlide(url) {
+  const wrapper = document.getElementById('page-wrapper');
+
+  // Add the slide-out class to start the upward animation
+  wrapper.classList.add('slide-out');
+
+  // When the transition finishes, then change page
+  const handler = (event) => {
+    if (event.propertyName === 'transform') {
+      wrapper.removeEventListener('transitionend', handler);
+      window.location.href = url;
+    }
+  };
+
+  wrapper.addEventListener('transitionend', handler);
+}
+
+// Save the latest stars state right before leaving the page to keep them on the next page
+window.addEventListener('beforeunload', () => {
+  try {
+    localStorage.setItem('constellationStars', JSON.stringify(stars));
+  } catch (err) {
+    console.warn('Could not save stars:', err);
+  }
+})
