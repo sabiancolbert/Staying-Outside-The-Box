@@ -93,26 +93,29 @@ h1, button {
 }
 
 h2 {
-  /* units for old browsers and modern browsers */
+  /* units for old browsers and modern browsers 
   font-size: 3vmin;
   margin-top:-7vmin;
   font-size: 3dvmin;
   margin-top:-7dvmin;
+  */
 }
       
 h3 {
-  /* units for old browsers and modern browsers */
+  /* units for old browsers and modern browsers 
   font-size: 7.5vmin;
   margin: -2vmin 0 10vmin 0;
   
   font-size: 7.5dvmin;
   margin: -2dvmin 0 10dvmin 0;
+  */
 }
 
 h4 {
-  /* units for old browsers and modern browsers */
+  /* units for old browsers and modern browsers 
   font-size: 3vmin;
   font-size: 3dvmin;
+  */
 }
 
 #constellations {
