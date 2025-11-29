@@ -1,16 +1,16 @@
-/*------------*/
-/* Background */
-/*------------*/
+/*=============================*
+ *  GLOBAL BACKGROUND & LAYOUT
+ *=============================*/
 
 html {
-  background-color: #300060; /* fallback background */
+  background-color: #300060;      /* Fallback background color */
   margin: 0;
   padding: 0;
-  overflow: hidden;          /* <-- stop window-level scrolling */
+  overflow: hidden;               /* Disable window-level scrolling */
 }
 
 body::before {
-  content: ""; /* required to make this element exist */
+  content: "";                    /* Required pseudo-element */
   position: fixed;
   inset: 0;
   width: 100dvw;
@@ -19,27 +19,25 @@ body::before {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  z-index: -2; /* behind constellations */
-  pointer-events: none;
+  z-index: -2;                    /* Sits behind canvas layer */
+  pointer-events: none;           /* Prevent interaction */
 }
-  
+
 body {
-  /* window itself won't scroll anymore */
-  overflow: hidden;          
+  overflow: hidden;               /* Disable body scroll; container handles it */
   min-height: 100dvh;
   height: 100dvh;
-
   background: transparent;
   margin: 0;
-  padding: 0;                /* <-- remove the bottom padding here */
+  padding: 0;
   text-align: center;
   font-family: 'New Rocker';
   color: #bdbdbd;
   font-size: 7dvmin;
 
-  display: flex;
+  display: flex;                  /* Layout: header (optional) + container */
   flex-direction: column;
-  align-items: stretch;      /* <-- let child fill full width */
+  align-items: stretch;           /* Allow children to span full width */
 }
 
 #constellations {
@@ -47,48 +45,49 @@ body {
   inset: 0;
   width: 100%;
   height: 100%;
-  z-index: -1;
+  z-index: -1;                    /* Above background, below content */
   pointer-events: none;
 }
 
 main {
-  padding-bottom:2dvmin;
+  padding-bottom: 2dvmin;
 }
 
-/*---------*/
-/* Content */
-/*---------*/
+
+/*=============================*
+ *  GENERAL CONTENT STYLES
+ *=============================*/
 
 h2 {
   font-size: 2dvmin;
-  margin-top:-7dvmin;
+  margin-top: -7dvmin;
 }
 
 hr {
-  width:50dvw;
+  width: 50dvw;
   border: none;
   height: 3px;
   background-color: #bdbdbd;
 }
 
-/* small hr */
 .divider {
-  width:25dvw;
+  width: 25dvw;
 }
 
-/* homepage icons */
+/* Homepage circular image buttons */
 .imgButton {
   width: 20dvmin;
   height: 20dvmin;
-  padding:2dvmin;
+  padding: 2dvmin;
   font: 1dvmin Arial;
   border-radius: 50%;
   border: 3px solid #bdbdbd;
   object-fit: cover;
 }
 
-.imgButton:active, .imgButton:hover {
-  border: 3px solid #880000;
+.imgButton:hover,
+.imgButton:active {
+  border-color: #880000;
 }
 
 a {
@@ -99,147 +98,157 @@ a {
   padding-bottom: 1dvmin;
 }
 
-a:hover, a:active, button:hover, button:active {
+a:hover,
+a:active,
+button:hover,
+button:active {
   color: #880000;
 }
 
-.dead, .dead:hover, .dead:active {
+.dead,
+.dead:hover,
+.dead:active {
   color: #880000;
 }
 
 button {
-  background:none;
-  border:3px solid #EE0000;
+  background: none;
+  border: 3px solid #EE0000;
   font-family: 'New Rocker';
   color: #EE0000;
   font-size: 5dvmin;
   border-radius: 9999px;
-  padding:3dvmin;
+  padding: 3dvmin;
   display: block;
-  margin:1dvmin auto;
+  margin: 1dvmin auto;
 }
-  
+
 p {
-  margin:0;
-  font-size:4dvmin;
+  margin: 0;
+  font-size: 4dvmin;
 }
 
 .premium {
   text-shadow: 3px 3px 3px purple;
 }
 
-/*------------*/
-/* Characters */
-/*------------*/
 
-.roman, .sage{
-margin-top:1em;
-color:red;
-font-weight: bold;
+/*=============================*
+ *  CHARACTER NAME COLORS
+ *=============================*/
+
+.roman, .sage {
+  margin-top: 1em;
+  color: red;
+  font-weight: bold;
 }
 
 .elena {
-margin-top:1em;
-color:yellow;
-font-weight: bold;
+  margin-top: 1em;
+  color: yellow;
+  font-weight: bold;
 }
 
 .iris, .darian {
-margin-top:1em;
-color:blue;
-font-weight: bold;
+  margin-top: 1em;
+  color: blue;
+  font-weight: bold;
 }
 
 .walter {
-margin-top:1em;
-color:brown;
-font-weight: bold;
+  margin-top: 1em;
+  color: brown;
+  font-weight: bold;
 }
 
 .trent {
-margin-top:1em;
-color:orange;
-font-weight: bold;
+  margin-top: 1em;
+  color: orange;
+  font-weight: bold;
 }
 
 .dave {
-margin-top:1em;
-color:pink;
-font-weight: bold;
+  margin-top: 1em;
+  color: pink;
+  font-weight: bold;
 }
 
 .fireRider {
-margin-top:1em;
-color:firebrick;
-font-weight: bold;
+  margin-top: 1em;
+  color: firebrick;
+  font-weight: bold;
 }
 
 .sidecharacter {
-margin-top:1em;
-color:inherit;
-font-weight: bold;
+  margin-top: 1em;
+  color: inherit;
+  font-weight: bold;
 }
 
-/*--------------*/
-/* Slide Screen */
-/*--------------*/
+
+/*=============================*
+ *  SLIDE-IN / SLIDE-OUT SYSTEM
+ *=============================*/
 
 :root {
-  --slide-duration: 0.6s; /* fallback if JS can't set it */
+  --slide-duration: 0.6s;         /* Default animation duration */
 }
 
+/* Main scroll container (content area) */
 #transitionContainer {
-  flex: 1;               /* fill remaining height in the body flex column */
+  flex: 1;                        /* Fill remaining body height */
   min-height: 100dvh;
   width: 100%;
-  overflow-y: auto;      /* <-- vertical scrolling lives here now */
+  overflow-y: auto;               /* Local vertical scrolling */
   overflow-x: hidden;
 }
 
-/* HOMEPAGE: start hidden above and slide down */
+/*--- Homepage transitions (slide from top) ---*/
 .homeJs #transitionContainer {
-  transform: translateY(-300%);
+  transform: translateY(-300%);   /* Start fully above screen */
   transition: transform var(--slide-duration) ease-in-out;
 }
 
 .homeJs #transitionContainer.ready {
-  transform: translateY(0);
+  transform: translateY(0);       /* Slide into view */
 }
 
 .homeJs #transitionContainer.slide-out {
-  transform: translateY(-300%);
+  transform: translateY(-300%);   /* Slide back upward on exit */
 }
 
-/* OTHER PAGES: start below and slide up */
+/*--- Other pages transitions (slide from bottom) ---*/
 .otherJs #transitionContainer {
-  transform: translateY(100%);
+  transform: translateY(100%);    /* Start fully below screen */
   transition: transform var(--slide-duration) ease-in-out;
 }
 
 .otherJs #transitionContainer.ready {
-  transform: translateY(0);
+  transform: translateY(0);       /* Slide upward into view */
 }
 
 .otherJs #transitionContainer.slide-out {
-  transform: translateY(100%);
+  transform: translateY(100%);    /* Slide downward on exit */
 }
 
-/* JavaScript failsafe */
+/* JavaScript fallback: disable transforms */
 .noJs #transitionContainer {
   transform: none !important;
   transition: none !important;
 }
 
-/*-------------------------*/
-/* For Low Motion Settings */
-/*-------------------------*/
+
+/*=============================*
+ *  REDUCED-MOTION ACCESSIBILITY
+ *=============================*/
+
 @media (prefers-reduced-motion: reduce) {
   #constellations {
-    display: none;
+    display: none;                /* Disable animated starfield */
   }
 
   #transitionContainer {
-    transition: none;
+    transition: none;             /* Disable slide animations */
     transform: translateY(0);
   }
 }
