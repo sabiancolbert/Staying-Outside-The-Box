@@ -49,29 +49,6 @@ body {
   pointer-events: none;
 }
 
-.js #transitionContainer {
-  min-height: 100dvh;
-  width: 100%;
-  transform: translateY(-300%);
-  transition: transform 0.6s ease-in-out;
-}
-
-/* When the page is "ready", slide it into view */
-.js #transitionContainer.ready {
-  transform: translateY(0);
-}
-
-/* When leaving, slide it back up */
-.js #transitionContainer.slide-out {
-  transform: translateY(-300%);
-}
-
-/* JavaScript failsafe */
-.nojs #transitionContainer {
-  transform: none !important;
-  transition: none !important;
-}
-
 main {
   padding-bottom:2dvmin;
 }
@@ -199,6 +176,50 @@ font-weight: bold;
 margin-top:1em;
 color:inherit;
 font-weight: bold;
+}
+
+/*--------------*/
+/* Slide Screen */
+/*--------------*/
+
+/* start homepage hidden */
+.homeJs #transitionContainer {
+  min-height: 100dvh;
+  width: 100%;
+  transform: translateY(-300%);
+  transition: transform 0.6s ease-in-out;
+}
+
+/* when homepage is "ready", slide it down into view */
+.homeJs #transitionContainer.ready {
+  transform: translateY(0);
+}
+
+/* when leaving, slide homepage back up */
+.homeJs #transitionContainer.slide-out {
+  transform: translateY(-300%);
+}
+
+/* same stuff, but down for all other pages */
+.otherJs #transitionContainer {
+  min-height: 100dvh;
+  width: 100%;
+  transform: translateY(300%);
+  transition: transform 0.6s ease-in-out;
+}
+
+.otherJs #transitionContainer.ready {
+  transform: translateY(0);
+}
+
+.otherJs #transitionContainer.slide-out {
+  transform: translateY(300%);
+}
+
+/* JavaScript failsafe */
+.noJs #transitionContainer {
+  transform: none !important;
+  transition: none !important;
 }
 
 /*-------------------------*/
