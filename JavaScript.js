@@ -302,6 +302,7 @@ window.addEventListener("mouseup", () => {
 /*--------------------------*/
 
 const BACK_KEY = 'homepageBackUrl';
+let isInternalReferrer = false;
 
 window.addEventListener('load', () => {
   const page = document.getElementById('transitionContainer');
@@ -315,7 +316,6 @@ window.addEventListener('load', () => {
   if (backLink) {
     // Figure out if we came here from inside the site
     const ref = document.referrer;
-    let isInternalReferrer = false;
 
     if (ref) {
       try {
@@ -407,5 +407,13 @@ function saveStarsToStorage() {
   }
 }
 
-//failsafe:
-window.addEventListener('beforeunload', saveStarsToStorage);
+//failsafe and reset stars
+window.addEventListener('beforeunload', () => {
+  saveStarsToStorage();
+
+  // If the next page is NOT inside your site, reset stars
+  if (!isInternalReferrer) {
+    localStorage.removeItem('constellationStars');
+    localStorage.removeItem('constellationMeta');
+  }
+});
