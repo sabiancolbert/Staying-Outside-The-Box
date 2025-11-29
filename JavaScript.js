@@ -317,11 +317,9 @@ window.addEventListener('load', () => {
     ratio = Math.max(1, Math.min(ratio, 3)); // between 1x and 3x
 
     // Base duration in seconds for a 1-screen-tall page
-    const baseDuration = 0.5; // adjust to taste
+    const durationSeconds = .5 * ratio;
 
-    const durationSeconds = baseDuration * ratio;
-
-    // Put it into a CSS custom property
+    // Put it into CSS property
     document.documentElement.style.setProperty(
       '--slide-duration',
       `${durationSeconds}s`
