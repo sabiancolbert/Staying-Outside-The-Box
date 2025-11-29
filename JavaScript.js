@@ -368,29 +368,69 @@ window.addEventListener('load', () => {
   }
 });
 
-function transitionTo(url) {
+function scrollToTopSmooth() {
+  return new Promise((resolve) => {
+    const startY = window.scrollY || document.documentElement.scrollTop;
+
+    // Already at top
+    if (startY === 0) {
+      resolve();
+      return;
+    }
+
+    // Trigger smooth scroll
+    window.scrollTo({ top: 0, behavior: "smooth" });
+
+    let lastY = startY;
+
+    function check() {
+      const y = window.scrollY || document.documentElement.scrollTop;
+
+      // If we reached (or basically reached) the top, or scrolling stopped
+      if (y === 0 || Math.abs(y - lastY) < 1) {
+        resolve();
+      } else {
+        lastY = y;
+        requestAnimationFrame(check);
+      }
+    }
+
+    requestAnimationFrame(check);
+  });
+}
+
+let isTransitioning = false;
+
+async function transitionTo(url) {
+  if (isTransitioning) return;
+  isTransitioning = true;
+
   const page = document.getElementById('transitionContainer');
 
   // Special case: 'back'
   if (url === 'back') {
     const stored = localStorage.getItem('homepageBackUrl');
     if (!stored) {
-      // No back target; do nothing (or you could fallback to window.history.back())
+      isTransitioning = false;
       return;
     }
     url = stored;
   }
 
+  // If there's no transition container, just go
   if (!page) {
     window.location.href = url;
     return;
   }
 
-window.scrollTo({ top: 0, behavior: "smooth" });
-  // Freeze and save stars before sliding out
+  // 1) Wait for smooth scroll to top to finish
+  await scrollToTopSmooth();
+
+  // 2) Now freeze and save stars
   freezeConstellation = true;
   saveStarsToStorage();
 
+  // 3) Start slide-out animation
   page.classList.add('slide-out');
 
   const handler = (event) => {
