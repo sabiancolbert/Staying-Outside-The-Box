@@ -307,7 +307,6 @@ window.addEventListener('load', () => {
   const page = document.getElementById('transitionContainer');
   if (page) {
     requestAnimationFrame(() => {
-      document.documentElement.classList.add('scrollReady');
       page.classList.add('ready');
     });
   }
