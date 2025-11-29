@@ -119,6 +119,29 @@ function moveStars() {
         star.x += dx * pull;
         star.y += dy * pull;
       }
+      
+      //twinkle the stars
+    {
+      //return color from white stars
+      if(star.whiteValue > 0){
+        star.whiteValue -= Math.max(0, star.whiteValue * .02);
+      }
+      //adjust opacity
+      if(star.opacity <= 0.005){
+        star.opacity = 1;
+        //chance to twinkle white 
+        if (Math.random() < 0.07) {
+          star.whiteValue = 1;
+        }
+      }
+      else if(star.opacity > 0.02){
+        star.opacity-=.005 * star.fadeSpeed;
+      }
+      //if the star is no longer visible, keep it hidden for a while
+      else{
+        star.opacity -= .0001;
+      }
+    }
     }
 
     //wrap stars around the edges
@@ -171,28 +194,7 @@ function drawStarsWithLines() {
     brush.arc(star.x, star.y, tempSize, 0, Math.PI * 2);
     brush.fill();
     
-    //thinkle the stars
-    {
-      //return color from white stars
-      if(star.whiteValue > 0){
-        star.whiteValue -= Math.max(0, star.whiteValue * .02);
-      }
-      //adjust opacity
-      if(star.opacity <= 0.005){
-        star.opacity = 1;
-        //chance to twinkle white 
-        if (Math.random() < 0.07) {
-          star.whiteValue = 1;
-        }
-      }
-      else if(star.opacity > 0.02){
-        star.opacity-=.005 * star.fadeSpeed;
-      }
-      //if the star is no longer visible, keep it hidden for a while
-      else{
-        star.opacity -= .0001;
-      }
-    }
+    
   }
 }
 
