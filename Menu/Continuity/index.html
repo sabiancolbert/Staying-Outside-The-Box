@@ -1,6 +1,11 @@
 <!DOCTYPE html>
-<html>
+<html class="noJs">
   <head>
+    <script>
+      //only allow the body to be hidden if JavaScript can pull it into view
+      document.documentElement.classList.remove('noJs');
+      document.documentElement.classList.add('otherJs');
+    </script>
     <title>Menu - I Can't Stop Dying Series</title>
     <meta name="description" content="I Can't Stop Dying is a horror audiobook series featuring slow-burn terror, psychological dread, and cinematic sound design. Listen on Spotify, Apple Podcasts, YouTube, and more.">
     <meta charset="UTF-8">
