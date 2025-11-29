@@ -296,6 +296,7 @@ if (!page) {
     window.location.href = url;
     return;
   }
+  window.scrollTo(0, 0);
   // Add the slide-out class to start the upward animation
   page.classList.add('slide-out');
 
