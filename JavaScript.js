@@ -303,27 +303,61 @@ window.addEventListener("mouseup", () => {
 
 window.addEventListener('load', () => {
   const page = document.getElementById('transitionContainer');
-  if (!page) return;
-  // Use rAF so the browser sees the initial translateY before we add "ready"
-  requestAnimationFrame(() => {
-    page.classList.add('ready');
-  });
+  if (page) {
+    requestAnimationFrame(() => {
+      page.classList.add('ready');
+    });
+  }
+
+  // Homepage-only: toggle back button based on localStorage
+  const backLink = document.getElementById('homepageBack');
+  if (backLink) {
+    const backUrl = localStorage.getItem(BACK_KEY);
+    backLink.style.display = backUrl ? 'block' : 'none';
+  }
 });
 
 
 function transitionTo(url) {
   const page = document.getElementById('transitionContainer');
+
+  // Special case: 'back'
+  if (url === 'back') {
+    const stored = localStorage.getItem(BACK_KEY);
+    if (!stored) {
+      // No back target; nothing to do, or fall back somewhere
+      return;
+    }
+    url = stored;
+  } else {
+    // If we're going TO the homepage, remember where we came from
+    // Adjust this condition to match your actual homepage path
+    const target = url.toLowerCase();
+    if (
+      target.endsWith('/index.html') ||
+      target === './' ||
+      target === '/' ||
+      target.includes('homepage') // optional fallback
+    ) {
+      try {
+        localStorage.setItem(BACK_KEY, window.location.href);
+      } catch (err) {
+        console.warn('Could not save back URL:', err);
+      }
+    }
+  }
+
   if (!page) {
     window.location.href = url;
     return;
   }
-  if(url = "back"){
-    url = localsave;
-    }
+
+  // Freeze and save stars (your existing logic)
   freezeConstellation = true;
   saveStarsToStorage();
   window.scrollTo(0, 0);
   page.classList.add('slide-out');
+
   const handler = (event) => {
     if (event.propertyName === 'transform') {
       page.removeEventListener('transitionend', handler);
