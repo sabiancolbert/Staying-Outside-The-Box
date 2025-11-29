@@ -305,33 +305,45 @@ let isInternalReferrer = false;
 
 window.addEventListener('load', () => {
   const page = document.getElementById('transitionContainer');
+  const hasHash = !!window.location.hash;
+
   if (page) {
-    // Measure content height vs viewport height
-    const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
-    const contentHeight = page.offsetHeight;
+    if (hasHash) {
+      // If there's an anchor in the URL, don't animate the slide
+      page.style.transform = 'translateY(0)';
+      page.style.transition = 'none';
 
-    // Ratio: 1 = one-screen tall, 2 = twice screen height, etc.
-    let ratio = contentHeight / viewportHeight;
+      // Optionally, make extra sure the anchor is in view AFTER layout
+      requestAnimationFrame(() => {
+        const id = window.location.hash.slice(1);
+        const target = document.getElementById(id);
+        if (target) {
+          target.scrollIntoView({ block: 'start' });
+        }
+      });
+    } else {
+      // Your existing "measure height and set slide duration" logic
+      const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+      const contentHeight = page.offsetHeight;
 
-    // Clamp ratio so it doesn't get ridiculous
-    ratio = Math.max(1, Math.min(ratio, 3)); // between 1x and 3x
+      let ratio = contentHeight / viewportHeight;
+      ratio = Math.max(1, Math.min(ratio, 3)); // clamp between 1x and 3x
 
-    // Base duration in seconds for a 1-screen-tall page
-    const durationSeconds = .5 * ratio;
+      const baseDuration = 0.5;
+      const durationSeconds = baseDuration * ratio;
 
-    // Put it into CSS property
-    document.documentElement.style.setProperty(
-      '--slide-duration',
-      `${durationSeconds}s`
-    );
+      document.documentElement.style.setProperty(
+        '--slide-duration',
+        `${durationSeconds}s`
+      );
 
-    // Now trigger the slide-in
-    requestAnimationFrame(() => {
-      page.classList.add('ready');
-    });
+      requestAnimationFrame(() => {
+        page.classList.add('ready');
+      });
+    }
   }
 
-  // Determine if we came here from inside the same origin
+  // --- your referrer / back button / constellation reset logic stays as-is below ---
   const ref = document.referrer;
   if (ref) {
     try {
@@ -344,18 +356,15 @@ window.addEventListener('load', () => {
     isInternalReferrer = false;
   }
 
-  // Back-link handling (ONLY for the homepage)
   const backLink = document.getElementById('homepageBack');
   if (backLink) {
     if (isInternalReferrer && ref) {
-      // Came from another page on this site → remember where
       try {
         localStorage.setItem('homepageBackUrl', ref);
       } catch (err) {
         console.warn('Could not save homepageBackUrl:', err);
       }
     } else {
-      // Fresh / external visit → clear any old back target
       localStorage.removeItem('homepageBackUrl');
     }
 
@@ -363,7 +372,6 @@ window.addEventListener('load', () => {
     backLink.style.display = backUrl ? 'block' : 'none';
   }
 
-  //reset constellation when coming from outside
   if (!isInternalReferrer) {
     localStorage.removeItem('constellationStars');
     localStorage.removeItem('constellationMeta');
