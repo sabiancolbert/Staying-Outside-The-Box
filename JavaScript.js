@@ -278,6 +278,7 @@ window.addEventListener("mouseup", () => {
 
 window.addEventListener('load', () => {
   const wrapper = document.getElementById('transitionContainer');
+  if (!wrapper) return;
   // Use rAF so the browser sees the initial translateY before we add "ready"
   requestAnimationFrame(() => {
     wrapper.classList.add('ready');
@@ -290,7 +291,11 @@ window.addEventListener('load', () => {
  */
 function transitionTo(url) {
   const page = document.getElementById('transitionContainer');
-
+if (!page) {
+    // fallback: no animation, just go
+    window.location.href = url;
+    return;
+  }
   // Add the slide-out class to start the upward animation
   page.classList.add('slide-out');
 
