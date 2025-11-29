@@ -52,7 +52,7 @@ body {
 .js #transitionContainer {
   min-height: 100dvh;
   width: 100%;
-  transform: translateY(-100%);
+  transform: translateY(-200%);
   transition: transform 0.6s ease-in-out;
 }
 
@@ -63,7 +63,7 @@ body {
 
 /* When leaving, slide it back up */
 .js #transitionContainer.slide-out {
-  transform: translateY(-100%);
+  transform: translateY(-200%);
 }
 
 /* JavaScript failsafe */
