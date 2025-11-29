@@ -331,9 +331,6 @@ window.addEventListener('load', () => {
     requestAnimationFrame(() => {
       page.classList.add('ready');
     });
-    requestAnimationFrame(() => {
-      page.classList.add('ready');
-    });
   }
 
   // Determine if we came here from inside the same origin
