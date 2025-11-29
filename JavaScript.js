@@ -352,60 +352,6 @@ let isInternalReferrer = false;
 let isTransitioning = false;
 
 /**
- * Smoothly scroll to top before starting a page transition.
- * Returns a Promise that resolves once scrolling finishes.
- */
-function scrollToTopSmooth(duration = 400) {
-  return new Promise((resolve) => {
-    // Prefer scrolling the main content container
-    const container = document.getElementById('transitionContainer');
-    let el = container;
-
-    // If that doesn't actually scroll, fall back to the document scroll root
-    if (!el || el.scrollHeight <= el.clientHeight) {
-      el =
-        document.scrollingElement ||
-        document.documentElement ||
-        document.body;
-    }
-
-    const startY = el.scrollTop;
-
-    // Already at the top (or close enough)
-    if (startY <= 0) {
-      resolve();
-      return;
-    }
-
-    const startTime = performance.now();
-    const previousFreeze = freezeConstellation;
-    // Lighten the load while scrolling
-    freezeConstellation = true;
-
-    function step(now) {
-      const elapsed = now - startTime;
-      const t = Math.min(elapsed / duration, 1); // 0 → 1
-
-      // easeOutQuad: fast at first, gentle at the end
-      const eased = 1 - (1 - t) * (1 - t);
-
-      const newY = startY + (0 - startY) * eased;
-      el.scrollTop = newY;
-
-      if (t < 1) {
-        requestAnimationFrame(step);
-      } else {
-        // Restore whatever freeze state we had before
-        freezeConstellation = previousFreeze;
-        resolve();
-      }
-    }
-
-    requestAnimationFrame(step);
-  });
-}
-
-/**
  * Transition to another URL with:
  *  - smooth scroll to top
  *  - saving constellation state
@@ -413,6 +359,8 @@ function scrollToTopSmooth(duration = 400) {
  *
  * Special case: url === 'back' uses stored internal referrer.
  */
+let isTransitioning = false;
+
 async function transitionTo(url) {
   if (isTransitioning) return;
   isTransitioning = true;
@@ -435,14 +383,11 @@ async function transitionTo(url) {
     return;
   }
 
-  // 1) Wait for smooth scroll to finish
-  await scrollToTopSmooth();
-
-  // 2) Freeze and save stars
+  // Freeze and save stars so they match on the next page
   freezeConstellation = true;
   saveStarsToStorage();
 
-  // 3) Start slide-out animation
+  // Trigger the slide-out animation
   page.classList.add('slide-out');
 
   const handler = (event) => {
