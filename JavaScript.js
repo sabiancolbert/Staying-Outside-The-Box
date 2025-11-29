@@ -301,6 +301,8 @@ window.addEventListener("mouseup", () => {
 /* Animate Page Transitions */
 /*--------------------------*/
 
+const BACK_KEY = 'homepageBackUrl';
+
 window.addEventListener('load', () => {
   const page = document.getElementById('transitionContainer');
   if (page) {
@@ -309,10 +311,30 @@ window.addEventListener('load', () => {
     });
   }
 
-  // Homepage-only: toggle back button based on localStorage
   const backLink = document.getElementById('homepageBack');
   if (backLink) {
-    const backUrl = localStorage.getItem(BACK_KEY);
+    // Figure out if we came here from inside the site
+    const ref = document.referrer;
+    let isInternalReferrer = false;
+
+    if (ref) {
+      try {
+        const refUrl = new URL(ref);
+        isInternalReferrer = refUrl.origin === window.location.origin;
+      } catch (e) {
+        // ignore parse errors, treat as external
+      }
+    }
+
+    let backUrl = localStorage.getItem(BACK_KEY);
+
+    // If we did NOT come from inside the site this time,
+    // treat this as a fresh visit and clear any old backUrl.
+    if (!isInternalReferrer) {
+      backUrl = null;
+      localStorage.removeItem(BACK_KEY);
+    }
+
     backLink.style.display = backUrl ? 'block' : 'none';
   }
 });
