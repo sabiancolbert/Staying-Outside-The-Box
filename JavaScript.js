@@ -311,34 +311,42 @@ window.addEventListener('load', () => {
     });
   }
 
-  // 1) Determine if we came from inside the same origin
+  // Determine if we came here from inside the same origin
   const ref = document.referrer;
   if (ref) {
     try {
       const refUrl = new URL(ref);
       isInternalReferrer = refUrl.origin === window.location.origin;
     } catch (e) {
-      // bad referrer → treat as external
       isInternalReferrer = false;
     }
   } else {
-    // no referrer at all → usually direct / external visit
     isInternalReferrer = false;
   }
 
-  // 2) If we did NOT come from inside the site, treat as fresh visit:
-  //    wipe old back URL and old starfield.
-  if (!isInternalReferrer) {
-    localStorage.removeItem('homepageBackUrl');
-    localStorage.removeItem('constellationStars');
-    localStorage.removeItem('constellationMeta');
-  }
-
-  // 3) Home page back button logic (if present)
+  // Back-link handling (ONLY for the homepage)
   const backLink = document.getElementById('homepageBack');
   if (backLink) {
+    if (isInternalReferrer && ref) {
+      // Came from another page on this site → remember where
+      try {
+        localStorage.setItem('homepageBackUrl', ref);
+      } catch (err) {
+        console.warn('Could not save homepageBackUrl:', err);
+      }
+    } else {
+      // Fresh / external visit → clear any old back target
+      localStorage.removeItem('homepageBackUrl');
+    }
+
     const backUrl = localStorage.getItem('homepageBackUrl');
     backLink.style.display = backUrl ? 'block' : 'none';
+  }
+
+  //reset constellation when coming from outside
+  if (!isInternalReferrer) {
+    localStorage.removeItem('constellationStars');
+    localStorage.removeItem('constellationMeta');
   }
 });
 
@@ -349,26 +357,10 @@ function transitionTo(url) {
   if (url === 'back') {
     const stored = localStorage.getItem('homepageBackUrl');
     if (!stored) {
-      // No back target; nothing to do, or fall back somewhere
+      // No back target; do nothing (or you could fallback to window.history.back())
       return;
     }
     url = stored;
-  } else {
-    // If we're going TO the homepage, remember where we came from
-    // Adjust this condition to match your actual homepage path
-    const target = url.toLowerCase();
-    if (
-      target.endsWith('/index.html') ||
-      target === './' ||
-      target === '/' ||
-      target.includes('homepage') // optional fallback
-    ) {
-      try {
-        localStorage.setItem('homepageBackUrl', window.location.href);
-      } catch (err) {
-        console.warn('Could not save back URL:', err);
-      }
-    }
   }
 
   if (!page) {
@@ -376,10 +368,11 @@ function transitionTo(url) {
     return;
   }
 
-  // Freeze and save stars (your existing logic)
+  // Freeze and save stars before sliding out
   freezeConstellation = true;
   saveStarsToStorage();
   window.scrollTo(0, 0);
+
   page.classList.add('slide-out');
 
   const handler = (event) => {
