@@ -38,16 +38,6 @@ body {
   align-items: center;
 }
 
-/* Default: other pages can't scroll while the screen is off-screen */
-.otherJs body {
-  overflow-y: hidden;
-}
-
-/* Once JS marks the page as ready, allow scrolling normally */
-.otherJs.scrollReady body {
-  overflow-y: auto;
-}
-
 #constellations {
   position: fixed;
   inset: 0;
@@ -212,6 +202,7 @@ font-weight: bold;
 .otherJs #transitionContainer {
   min-height: 100dvh;
   width: 100%;
+  /* v unintentional constelation playground v */
   transform: translateY(100%);
   transition: transform 0.6s ease-in-out;
 }
