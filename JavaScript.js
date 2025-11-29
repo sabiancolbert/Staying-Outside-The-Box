@@ -355,7 +355,7 @@ let isTransitioning = false;
  * Smoothly scroll to top before starting a page transition.
  * Returns a Promise that resolves once scrolling finishes.
  */
-function scrollToTopSmooth(duration = 600) {
+function scrollToTopSmooth(duration = 400, minDistance = 80) {
   return new Promise((resolve) => {
     const startY =
       window.scrollY ||
@@ -363,23 +363,37 @@ function scrollToTopSmooth(duration = 600) {
       document.body.scrollTop ||
       0;
 
-    // Already at (or basically at) the top
-    if (startY <= 0) {
+    // If we're already near the top, don't bother animating
+    if (startY <= minDistance) {
+      window.scrollTo(0, 0);
       resolve();
       return;
     }
 
+    const supportsNativeSmooth =
+      'scrollBehavior' in document.documentElement.style;
+
+    // Prefer native smooth scroll if available (much smoother)
+    if (supportsNativeSmooth) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      // Just wait roughly `duration` ms, then resolve
+      setTimeout(() => {
+        resolve();
+      }, duration);
+
+      return;
+    }
+
+    // Fallback: simple JS animation (linear to avoid end-slowdown)
     const startTime = performance.now();
 
     function step(now) {
       const elapsed = now - startTime;
-      const t = Math.min(elapsed / duration, 1);
+      const t = Math.min(elapsed / duration, 1); // 0 → 1
 
-      // easeInQuad: starts slow, ends fast (no slowdown at the top)
-      const eased = t * t;
-
-      // Interpolate from startY → 0
-      const newY = Math.round(startY * (1 - eased));
+      // Linear easing: constant speed
+      const newY = Math.round(startY * (1 - t));
       window.scrollTo(0, newY);
 
       if (t < 1) {
