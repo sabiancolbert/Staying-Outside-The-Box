@@ -81,7 +81,7 @@ function initStars() {
 }
 
 
-  //if no save is found, then make stars
+//if no save is found, then make stars
 function createStars(){
   stars = [];
     for (let i = 0; i < maxStarCount; i++) {
@@ -122,14 +122,12 @@ function moveStars() {
       }
     }
 
-    // twinkle the stars
-    // --------------------------------
     // return color from white stars
     if (star.whiteValue > 0) {
       star.whiteValue -= Math.max(0, star.whiteValue * 0.02);
     }
 
-    // adjust opacity
+    // twinkle back if its been hidden for a while
     if (star.opacity <= 0.005) {
       star.opacity = 1;
 
@@ -137,10 +135,11 @@ function moveStars() {
       if (Math.random() < 0.07) {
         star.whiteValue = 1;
       }
+      //slowly fade away
     } else if (star.opacity > 0.02) {
       star.opacity -= 0.005 * star.fadeSpeed;
     } else {
-      // if the star is no longer visible, keep it hidden longer
+      // if the star is no longer visible, keep it hidden for a bit
       star.opacity -= 0.0001;
     }
 
@@ -151,7 +150,7 @@ function moveStars() {
     if (star.y > height) star.y = 0;
   }
 
-  // decay constellation speed smoothly
+  // decay constellation speed smoothly after interactions
   cleanedUserSpeed *= 0.9;
 }
 
@@ -197,9 +196,7 @@ function drawStarsWithLines() {
     
   }
 }
-
-/* Functional */
-
+//make sure stars are reacting properly to the window size
 function resizeCanvas() {
   const oldWidth = width;
   const oldHeight = height;
@@ -229,6 +226,7 @@ function resizeCanvas() {
   }
 }
 
+
 function animate() {
   if (!freezeConstellation) {
     moveStars();
@@ -237,6 +235,7 @@ function animate() {
   requestAnimationFrame(animate);
 }
 
+//just functional
 function randomBetween(min, max) {
   return Math.random() * (max - min) + min;
 }
