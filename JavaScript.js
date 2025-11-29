@@ -285,22 +285,16 @@ window.addEventListener('load', () => {
   });
 });
 
-/**
- * Call this instead of a normal link click.
- * It slides content up, then navigates to `url`.
- */
+
 function transitionTo(url) {
   const page = document.getElementById('transitionContainer');
-if (!page) {
-    // fallback: no animation, just go
+  if (!page) {
     window.location.href = url;
     return;
   }
+  saveStarsToStorage();
   window.scrollTo(0, 0);
-  // Add the slide-out class to start the upward animation
   page.classList.add('slide-out');
-
-  // When the transition finishes, then change page
   const handler = (event) => {
     if (event.propertyName === 'transform') {
       page.removeEventListener('transitionend', handler);
@@ -311,7 +305,16 @@ if (!page) {
   page.addEventListener('transitionend', handler);
 }
 
-// Save the latest stars state right before leaving the page to keep them on the next page
+//save the stars
+function saveStarsToStorage() {
+  try {
+    localStorage.setItem('constellationStars', JSON.stringify(stars));
+  } catch (err) {
+    console.warn('Could not save stars:', err);
+  }
+}
+
+//failsafe
 window.addEventListener('beforeunload', () => {
   try {
     localStorage.setItem('constellationStars', JSON.stringify(stars));
