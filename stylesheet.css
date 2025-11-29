@@ -115,17 +115,12 @@ button:active {
 
 article:hover .imgButton, article:active .imgButton {
   border-color: var(--link-dark);
-  box-shadow: var(--shadow);
+  filter: var(--shadow);
 }
 
 article:hover a, article:active a {
   color: var(--link-dark);
-  box-shadow: var(--shadow);
-}
-
-article:hover, article:active{
-  border-color: none;
-  box-shadow: none;
+  text-shadow: var(--shadow);
 }
 
 /* Placeholder links */
