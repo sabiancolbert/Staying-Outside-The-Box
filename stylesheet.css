@@ -95,8 +95,6 @@ hr {
 
 a {
   display: block;
-  width: fit-content;
-  margin: 0 auto;
   color: var(--link-light);
   padding-bottom: 1dvmin;
 }
@@ -111,6 +109,11 @@ button:active {
 /* Homepage social links */
 .clean{
   color:var(--no-link);
+}
+
+article {
+  width: fit-content;
+  margin: 0 auto;
 }
 
 article:hover .imgButton, article:active .imgButton {
