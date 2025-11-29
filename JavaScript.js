@@ -302,6 +302,7 @@ window.addEventListener("mouseup", () => {
 /*--------------------------*/
 
 let isInternalReferrer = false;
+
 window.addEventListener('load', () => {
   const page = document.getElementById('transitionContainer');
 
@@ -333,43 +334,6 @@ window.addEventListener('load', () => {
 
   // --- referrer / back button / constellation reset logic ---
 
-  const ref = document.referrer;
-  if (ref) {
-    try {
-      const refUrl = new URL(ref);
-      isInternalReferrer = refUrl.origin === window.location.origin;
-    } catch (e) {
-      isInternalReferrer = false;
-    }
-  } else {
-    isInternalReferrer = false;
-  }
-
-  const backLink = document.getElementById('homepageBack');
-  if (backLink) {
-    if (isInternalReferrer && ref) {
-      try {
-        localStorage.setItem('homepageBackUrl', ref);
-      } catch (err) {
-        console.warn('Could not save homepageBackUrl:', err);
-      }
-    } else {
-      localStorage.removeItem('homepageBackUrl');
-    }
-
-    const backUrl = localStorage.getItem('homepageBackUrl');
-    backLink.style.display = backUrl ? 'block' : 'none';
-  }
-
-  if (!isInternalReferrer) {
-    localStorage.removeItem('constellationStars');
-    localStorage.removeItem('constellationMeta');
-  }
-});
-
-
-
-  // --- your referrer / back button / constellation reset logic stays as-is below ---
   const ref = document.referrer;
   if (ref) {
     try {
