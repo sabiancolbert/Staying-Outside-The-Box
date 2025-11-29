@@ -12,11 +12,6 @@ function toggleElement(id) {
   }
 }
 
-// Reset color / focus state of buttons when finger is lifted (mobile)
-document.addEventListener('touchend', () => {
-  document.activeElement?.blur();
-});
-
 /*---------------------------*/
 /* CONSTELLATION CANVAS SETUP */
 /*---------------------------*/
