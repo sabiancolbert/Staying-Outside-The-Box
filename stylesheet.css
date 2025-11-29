@@ -6,7 +6,6 @@ html {
   background-color: #300060; /* fallback background */
   margin: 0;
   padding: 0;
-  height: 100%;
   overflow-x:hidden;
 }
 
@@ -26,11 +25,10 @@ body::before {
   
 body {
   overflow-x:hidden;
-  min-height: 100dvh;
+  min-height: 100%;
   background: transparent;
   margin: 0;
   padding: 0 0 2dvmin 0;
-  height: 100%;
   text-align: center;
   font-family: 'New Rocker';
   color: #bdbdbd;
