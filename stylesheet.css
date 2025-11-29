@@ -38,6 +38,16 @@ body {
   align-items: center;
 }
 
+/* Default: other pages can't scroll while the screen is off-screen */
+.otherJs body {
+  overflow-y: hidden;
+}
+
+/* Once JS marks the page as ready, allow scrolling normally */
+.otherJs.scrollReady body {
+  overflow-y: auto;
+}
+
 #constellations {
   position: fixed;
   inset: 0;
