@@ -6,7 +6,7 @@ html {
   background-color: #300060; /* fallback background */
   margin: 0;
   padding: 0;
-  overflow-x:hidden;
+  overflow: hidden;          /* <-- stop window-level scrolling */
 }
 
 body::before {
@@ -20,22 +20,26 @@ body::before {
   background-position: center;
   background-repeat: no-repeat;
   z-index: -2; /* behind constellations */
-  pointer-events: none; /* just in case */
+  pointer-events: none;
 }
   
 body {
-  overflow-x:hidden;
-  min-height: 100%;
+  /* window itself won't scroll anymore */
+  overflow: hidden;          
+  min-height: 100dvh;
+  height: 100dvh;
+
   background: transparent;
   margin: 0;
-  padding: 0 0 2dvmin 0;
+  padding: 0;                /* <-- remove the bottom padding here */
   text-align: center;
   font-family: 'New Rocker';
   color: #bdbdbd;
   font-size: 7dvmin;
+
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;      /* <-- let child fill full width */
 }
 
 #constellations {
@@ -184,31 +188,32 @@ font-weight: bold;
   --slide-duration: 0.6s; /* fallback if JS can't set it */
 }
 
-/* start homepage hidden */
-.homeJs #transitionContainer {
+#transitionContainer {
+  flex: 1;               /* fill remaining height in the body flex column */
   min-height: 100dvh;
   width: 100%;
-  transform: translateY(-300%);
-  transition: transform 2s ease-in-out;
+  overflow-y: auto;      /* <-- vertical scrolling lives here now */
+  overflow-x: hidden;
 }
 
-/* when homepage is "ready", slide it down into view */
+/* HOMEPAGE: start hidden above and slide down */
+.homeJs #transitionContainer {
+  transform: translateY(-300%);
+  transition: transform var(--slide-duration) ease-in-out;
+}
+
 .homeJs #transitionContainer.ready {
   transform: translateY(0);
 }
 
-/* when leaving, slide homepage back up */
 .homeJs #transitionContainer.slide-out {
   transform: translateY(-300%);
 }
 
-/* same stuff, but down for all other pages */
+/* OTHER PAGES: start below and slide up */
 .otherJs #transitionContainer {
-  min-height: 100dvh;
-  width: 100%;
-  /* v unintentional constelation playground v */
   transform: translateY(100%);
-  transition: transform var(--slide-duration) ease-in-out;;
+  transition: transform var(--slide-duration) ease-in-out;
 }
 
 .otherJs #transitionContainer.ready {
