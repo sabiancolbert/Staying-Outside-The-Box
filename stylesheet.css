@@ -49,7 +49,7 @@ body {
   pointer-events: none;
 }
 
-#transitionContainer {
+.js #transitionContainer {
   min-height: 100dvh;
   width: 100%;
   transform: translateY(-100%);
@@ -57,20 +57,19 @@ body {
 }
 
 /* When the page is "ready", slide it into view */
-#transitionContainer.ready {
+.js #transitionContainer.ready {
   transform: translateY(0);
 }
 
 /* When leaving, slide it back up */
-#transitionContainer.slide-out {
+.js #transitionContainer.slide-out {
   transform: translateY(-100%);
 }
 
-/*JavaScript Failsafe*/
-#transitionContainer {
+/* JavaScript failsafe */
+.nojs #transitionContainer {
   transform: none !important;
   transition: none !important;
-  opacity: 1 !important;
 }
 
 main {
