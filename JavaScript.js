@@ -355,33 +355,15 @@ let isTransitioning = false;
  * Smoothly scroll to top before starting a page transition.
  * Returns a Promise that resolves once scrolling finishes.
  */
-function scrollToTopSmooth(duration = 600) {
+function scrollToTopSmooth(duration = 600, cutoff = 10) {
   return new Promise((resolve) => {
-    const page = document.getElementById('transitionContainer');
+    const el = document.scrollingElement || document.documentElement;
 
-    // Potential scroll containers (in priority order)
-    const candidates = [
-      page,
-      document.scrollingElement,
-      document.documentElement,
-      document.body
-    ].filter(Boolean);
+    const startY = el.scrollTop;
 
-    // Find the largest current scrollTop among all candidates
-    let startY = 0;
-    for (const el of candidates) {
-      if (el.scrollTop > startY) {
-        startY = el.scrollTop;
-      }
-    }
-
-    // Also look at window.scrollY just in case
-    if (window.scrollY > startY) {
-      startY = window.scrollY;
-    }
-
-    // If everything is already at the top, just resolve
-    if (startY <= 0) {
+    // If we are already near the top, skip
+    if (startY <= cutoff) {
+      el.scrollTop = cutoff;
       resolve();
       return;
     }
@@ -390,22 +372,16 @@ function scrollToTopSmooth(duration = 600) {
 
     function step(now) {
       const elapsed = now - startTime;
-      const t = Math.min(elapsed / duration, 1); // 0 → 1
+      const t = Math.min(elapsed / duration, 1);
 
-      // easeInOutQuad
+      // easeInOutQuad (same curve you used)
       const eased = t < 0.5
         ? 2 * t * t
         : 1 - Math.pow(-2 * t + 2, 2) / 2;
 
-      const newY = Math.round(startY * (1 - eased));
-
-      // Apply to all candidate scroll containers
-      for (const el of candidates) {
-        el.scrollTop = newY;
-      }
-
-      // Also set window scroll for good measure
-      window.scrollTo(0, newY);
+      // Interpolate from startY → cutoff
+      const newY = Math.round(startY * (1 - eased) + cutoff * eased);
+      el.scrollTop = newY;
 
       if (t < 1) {
         requestAnimationFrame(step);
