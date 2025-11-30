@@ -446,7 +446,6 @@ window.addEventListener('touchmove', (e) => {
   updateSpeed(t.clientX, t.clientY, e.timeStamp);
 });
 
-// Also treat touchstart as activity so music can begin even before a drag
 window.addEventListener('touchstart', (e) => {
   const t = e.touches[0];
   updateSpeed(t.clientX, t.clientY, e.timeStamp);
