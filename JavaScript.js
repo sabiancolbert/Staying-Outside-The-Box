@@ -470,7 +470,7 @@ let isTransitioning = false;
  *
  * Special case: url === 'back' uses stored internal referrer.
  */
-async function transitionTo(url) {
+function transitionTo(url) {
   if (isTransitioning) return;
   isTransitioning = true;
 
