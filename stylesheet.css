@@ -128,7 +128,10 @@ article:hover a, article:active a {
 /* Navigation */
 
 .navButtons {
-  
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
 }
 
 .navButtons img {
