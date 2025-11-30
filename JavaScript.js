@@ -308,7 +308,7 @@ function moveStars() {
     if (star.y > height) star.y = 0;
   }
 
-    // Slow decay of constellation speed after interactions
+  // Slow decay of constellation speed after interactions
   cleanedUserSpeed *= 0.9;
 
   // If it's tiny, just call it zero
@@ -318,7 +318,6 @@ function moveStars() {
 
   // Update music volume based on current speed
   updateBgmVolumeFromSpeed();
-}
 }
 
 /**
