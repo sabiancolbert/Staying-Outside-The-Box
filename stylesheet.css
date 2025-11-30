@@ -76,7 +76,6 @@ hr {
   border: none;
   height: 3px;
   background-color: var(--no-link);
-  margin: 0;
 }
 
 .divider {
@@ -116,6 +115,7 @@ article {
 
 article:hover .imgButton, article:active .imgButton {
   border-color: var(--link-dark);
+  box-shadow: var(--shadow); 
 }
 
 article:hover a, article:active a {
@@ -147,6 +147,7 @@ article:hover a, article:active a {
 
 navButtons:hover img, navButtons:active img {
   border-color: var(--link-dark);
+  box-shadow: var(--shadow); 
 }
 
 /* Placeholder links */
