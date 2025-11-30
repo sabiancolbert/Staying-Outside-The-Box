@@ -175,6 +175,7 @@ button:hover, button:active {
   border-color: var(--link-dark);
   color: var(--link-dark);
   box-shadow: var(--shadow);
+  text-shadow: var(--shadow);
 }
 
 p {
