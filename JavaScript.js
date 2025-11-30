@@ -45,8 +45,9 @@ window.addEventListener('load', () => {
     try {
       const refUrl = new URL(ref);
       isInternalReferrer = refUrl.origin === window.location.origin;
-      
-      if (refUrl.origin === window.location.origin) {
+      let isMenu = false;
+      //isMenu = if(local storage)
+      if (isMenu) {
           isInternalReferrer = false;
       }
     } catch (e) {
@@ -475,35 +476,13 @@ let isTransitioning = false;
  *
  * Special case: url === 'back' uses stored internal referrer.
  */
-function transitionTo(url) {
+function transitionTo(url, isMenu = false) {
   if (isTransitioning) return;
   isTransitioning = true;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    if (isMenu){
+      //save isMenu to local storage
+      }
   const page = document.getElementById('transitionContainer');
 
   // Special case: 'back'
