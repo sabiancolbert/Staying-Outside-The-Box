@@ -138,7 +138,7 @@ article:hover a, article:active a {
   width: 12dvmin;
   height: 12dvmin;
   padding: 1dvmin;
-  margin: 0 10%;
+  margin: 0 10dvw;
   font: 1dvmin Arial; /* for if the image fails to load */
   border-radius: 50%;
   border: 3px solid var(--no-link);
