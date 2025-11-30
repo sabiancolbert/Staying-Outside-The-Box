@@ -21,6 +21,7 @@ window.addEventListener('load', () => {
   }
 
   if (page) {
+    new Audio("/Resources/crunch.wav").play();
     // Measure height and set slide duration relative to content size
     const viewportHeight =
       window.innerHeight || document.documentElement.clientHeight;
@@ -485,7 +486,7 @@ let isTransitioning = false;
 function transitionTo(url, isMenu = false) {
   if (isTransitioning) return;
   isTransitioning = true;
-  new Audio("/Resources/crunch.wav").play();
+  new Audio("/Resources/Crunch.wav").play();
   // If this navigation came from menu, tell the next page
   if (isMenu) {
     sessionStorage.setItem('suppressHomeBack', '1');
