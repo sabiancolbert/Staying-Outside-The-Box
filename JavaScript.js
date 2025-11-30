@@ -57,7 +57,7 @@ window.addEventListener('load', () => {
     isInternalReferrer = false;
   }
 
-      const backLink = document.getElementById('homepageBack');
+  const backLink = document.getElementById('homepageBack');
   if (backLink) {
     if (!suppressHomeBack && isInternalReferrer && ref) {
       // normal behavior: store back URL
@@ -310,6 +310,9 @@ function moveStars() {
 
   // Slow decay of constellation speed after interactions
   cleanedUserSpeed *= 0.9;
+
+  // Update music volume based on current speed
+  updateBgmVolumeFromSpeed();
 }
 
 /**
@@ -414,82 +417,51 @@ function animate() {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 /*==============================*
  *  BACKGROUND AMBIENT AUDIO
  *==============================*/
 
-// IMPORTANT: no leading slash if this is a GitHub project page
+// Sound used for transitions
 const crunch = new Audio("/Resources/Crunch.wav");
-const bgm    = new Audio("/Resources/bgmFile.mp3");
 
+// Background ambience – change filename to your actual loop
+const bgm = new Audio("/Resources/bgmFile.wav");
 bgm.loop = true;
 bgm.volume = 0; // start silent
 
 let bgmStarted = false;
-let bgmFadeInterval = null;
-let bgmIdleTimer = null;
 
-const BGM_TARGET_VOL   = 0.4;  // max volume when moving
-const BGM_FADE_MS      = 1000; // fade in/out time in ms (1s so you really notice)
-const BGM_IDLE_DELAYMS = 600;  // wait this long after last move before fading out
+// CONFIG
+const BGM_MAX_VOL       = 0.4; // max volume at high speed
+const BGM_SPEED_FOR_MAX = 5.0; // cleanedUserSpeed value that maps to BGM_MAX_VOL
+const BGM_LERP_FACTOR   = 0.05; // smoothing factor
 
-function fadeBgmTo(targetVol) {
-  if (bgmFadeInterval) clearInterval(bgmFadeInterval);
+/** Start audio only once on first user interaction */
+function ensureBgmPlaying() {
+  if (bgmStarted) return;
+  bgmStarted = true;
 
-  const steps    = 40; // more steps = smoother
-  const stepTime = BGM_FADE_MS / steps;
-  const startVol = bgm.volume;
-  const delta    = (targetVol - startVol) / steps;
-  let currentStep = 0;
-
-  bgmFadeInterval = setInterval(() => {
-    currentStep++;
-    let v = startVol + delta * currentStep;
-
-    // clamp [0,1]
-    if (v < 0) v = 0;
-    if (v > 1) v = 1;
-
-    bgm.volume = v;
-
-    if (currentStep >= steps) {
-      clearInterval(bgmFadeInterval);
-      bgmFadeInterval = null;
-    }
-  }, stepTime);
+  bgm.play().catch(err => {
+    console.warn("BGM play blocked or failed:", err);
+  });
 }
 
-function handlePointerActivityForAudio() {
-  // First interaction: start playback
-  if (!bgmStarted) {
-    bgmStarted = true;
-    bgm.play().catch(err => {
-      console.warn("BGM play blocked:", err);
-    });
-  }
+/** Called every frame — sync volume to current user speed */
+function updateBgmVolumeFromSpeed() {
+  if (!bgmStarted) return;
 
-  // Fade in toward target volume
-  fadeBgmTo(BGM_TARGET_VOL);
+  // Map cleanedUserSpeed (0–10) to [0–1]
+  const normalized = Math.max(
+    0,
+    Math.min(cleanedUserSpeed / BGM_SPEED_FOR_MAX, 1)
+  );
 
-  // Reset idle timer; when pointer stops, schedule fade out
-  if (bgmIdleTimer) clearTimeout(bgmIdleTimer);
-  bgmIdleTimer = setTimeout(() => {
-    fadeBgmTo(0);
-  }, BGM_IDLE_DELAYMS);
+  const targetVol = normalized * BGM_MAX_VOL;
+
+  // Smoothly interpolate volume toward target
+  bgm.volume += (targetVol - bgm.volume) * BGM_LERP_FACTOR;
 }
+
 
 /*==============================*
  *  POINTER SPEED TRACKING
@@ -519,34 +491,35 @@ function updateSpeed(x, y, time) {
 /* Desktop cursor tracking */
 window.addEventListener('mousemove', (e) => {
   updateSpeed(e.clientX, e.clientY, e.timeStamp);
-  handlePointerActivityForAudio();
+  ensureBgmPlaying();
 });
 
 /* Touch tracking (mobile) */
 window.addEventListener('touchmove', (e) => {
   const t = e.touches[0];
   updateSpeed(t.clientX, t.clientY, e.timeStamp);
-  handlePointerActivityForAudio();
+  ensureBgmPlaying();
 });
 
 /* Also treat touchstart as activity so music can begin even before a drag */
 window.addEventListener('touchstart', (e) => {
   const t = e.touches[0];
   updateSpeed(t.clientX, t.clientY, e.timeStamp);
-  handlePointerActivityForAudio();
+  ensureBgmPlaying();
 });
 
+/* Release attraction / reset speed on end of interaction */
+window.addEventListener('touchend', () => {
+  cleanedUserSpeed = 0;
+  smoothSpeed = 0;
+  pointerSpeed = 0;
+});
 
-
-
-
-
-
-
-
-
-
-
+window.addEventListener('mouseup', () => {
+  cleanedUserSpeed = 0;
+  smoothSpeed = 0;
+  pointerSpeed = 0;
+});
 
 
 /*==============================*
@@ -566,9 +539,11 @@ let isTransitioning = false;
 function transitionTo(url, isMenu = false) {
   if (isTransitioning) return;
   isTransitioning = true;
+
   // play crunch sound
   crunch.currentTime = 0;
   crunch.play().catch(console.warn);
+
   // If this navigation came from menu, tell the next page
   if (isMenu) {
     sessionStorage.setItem('suppressHomeBack', '1');
