@@ -3,9 +3,11 @@
  *  PAGE LOAD HANDLER (must be at the top)
  *==============================*/
 
+const crunch = new Audio("/Resources/Crunch.wav");
 window.addEventListener('load', () => {
   const page = document.getElementById('transitionContainer');
-
+  //preload audio
+crunch.load();
   // NEW: read the flag from sessionStorage
   const suppressHomeBack = sessionStorage.getItem('suppressHomeBack') === '1';
   // Optional: clear it so it only applies once
@@ -21,7 +23,6 @@ window.addEventListener('load', () => {
   }
 
   if (page) {
-    new Audio("/Resources/Crunch In.wav").play();
     // Measure height and set slide duration relative to content size
     const viewportHeight =
       window.innerHeight || document.documentElement.clientHeight;
@@ -486,7 +487,9 @@ let isTransitioning = false;
 function transitionTo(url, isMenu = false) {
   if (isTransitioning) return;
   isTransitioning = true;
-  new Audio("/Resources/Crunch.wav").play();
+  // play crunch sound
+  crunch.currentTime = 0;
+  crunch.play().catch(console.warn);
   // If this navigation came from menu, tell the next page
   if (isMenu) {
     sessionStorage.setItem('suppressHomeBack', '1');
