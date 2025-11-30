@@ -249,7 +249,7 @@ p {
 
 /*--- Homepage transitions (slide from top) ---*/
 .homeJs #transitionContainer {
-  transform: translateY(-300%);   /* Start fully above screen */
+  transform: translateY(-100%);   /* Start fully above screen */
   transition: transform var(--slide-duration) ease-in-out;
 }
 
@@ -258,7 +258,7 @@ p {
 }
 
 .homeJs #transitionContainer.slide-out {
-  transform: translateY(-300%);   /* Slide back upward on exit */
+  transform: translateY(-100%);   /* Slide back upward on exit */
 }
 
 /*--- Other pages transitions (slide from bottom) ---*/
