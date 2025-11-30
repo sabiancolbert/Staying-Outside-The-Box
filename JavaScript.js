@@ -338,10 +338,10 @@ function moveStars() {
   bgm.volume = cleanedUserSpeed * .03;
 
   // Slow decay of star and sound speed after interactions
-  cleanedUserSpeed *= 0.9;
+  cleanedUserSpeed *= 0.95;
 
   // If it's tiny, just call it zero
-  if (cleanedUserSpeed < 0.1) {
+  if (cleanedUserSpeed < 0.05) {
     cleanedUserSpeed = 0;
     bgm.pause();
     bgmStarted = false;
