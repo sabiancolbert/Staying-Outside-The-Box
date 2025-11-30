@@ -432,8 +432,8 @@ function animate() {
  *==============================*/
 
 // IMPORTANT: no leading slash if this is a GitHub project page
-const crunch = new Audio("Resources/Crunch.wav");
-const bgm    = new Audio("Resources/bgmFile.mp3");
+const crunch = new Audio("/Resources/Crunch.wav");
+const bgm    = new Audio("/Resources/bgmFile.mp3");
 
 bgm.loop = true;
 bgm.volume = 0; // start silent
