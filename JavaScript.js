@@ -1,4 +1,5 @@
 /* thank heavens for chatGPT <3 */
+
 /*==============================*
  *  PAGE LOAD HANDLER (must be at the top)
  *==============================*/
@@ -475,25 +476,46 @@ function updateSpeed(x, y, time) {
   lastTime = time;
 }
 
-/* Desktop cursor tracking */
-window.addEventListener('mousemove', (e) => {
-  updateSpeed(e.clientX, e.clientY, e.timeStamp);
-  ensureBgmPlaying();
-});
+/*==============================*
+ *  INTERACTION / SPEED HANDLERS
+ *==============================*/
 
-/* Touch tracking (mobile) */
-window.addEventListener('touchmove', (e) => {
-  const t = e.touches[0];
-  updateSpeed(t.clientX, t.clientY, e.timeStamp);
-  ensureBgmPlaying();
-});
+function initInteractionHandlers() {
+  // Unified movement handler
+  const handleMove = (e) => {
+    let x, y, time = e.timeStamp;
 
-/* Also treat touchstart as activity so music can begin even before a drag */
-window.addEventListener('touchstart', (e) => {
-  const t = e.touches[0];
-  updateSpeed(t.clientX, t.clientY, e.timeStamp);
-  ensureBgmPlaying();
-});
+    if (e.touches && e.touches[0]) {
+      // Touch event
+      x = e.touches[0].clientX;
+      y = e.touches[0].clientY;
+    } else {
+      // Pointer / mouse event
+      x = e.clientX;
+      y = e.clientY;
+    }
+
+    updateSpeed(x, y, time);
+    ensureBgmPlaying();
+  };
+
+  // Pointer events (modern browsers: mouse + touch)
+  if (window.PointerEvent) {
+    window.addEventListener('pointerdown', handleMove);
+    window.addEventListener('pointermove', handleMove);
+  } else {
+    // Fallback for very old / weird browsers
+    window.addEventListener('mousemove', handleMove);
+    window.addEventListener('touchmove', handleMove, { passive: true });
+    window.addEventListener('touchstart', handleMove, { passive: true });
+  }
+
+  // Extra "gesture" hooks that don't care about position, just user intent
+  const startOnly = () => ensureBgmPlaying();
+
+  window.addEventListener('click', startOnly);
+  window.addEventListener('keydown', startOnly);
+}
 
 
 /*==============================*
@@ -596,6 +618,7 @@ window.addEventListener('beforeunload', () => {
 resizeCanvas();
 initStars();
 animate();
+initInteractionHandlers();
 
 // Keep canvas in sync with viewport
 window.addEventListener('resize', () => {
