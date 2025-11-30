@@ -1,6 +1,6 @@
-/*--------------------------*/
-/* PAGE LOAD HANDLER */
-/*--------------------------*/
+/*==============================*
+ *  PAGE LOAD HANDLER (must be at the top)
+ *==============================*/
 
 window.addEventListener('load', () => {
   const page = document.getElementById('transitionContainer');
@@ -16,11 +16,12 @@ window.addEventListener('load', () => {
 
   if (page) {
     // Measure height and set slide duration relative to content size
-    const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+    const viewportHeight =
+      window.innerHeight || document.documentElement.clientHeight;
     const contentHeight = page.offsetHeight;
 
     let ratio = contentHeight / viewportHeight;
-    ratio = Math.max(1, Math.min(ratio, 3)); // clamp between 1x and 3x
+    ratio = Math.max(1, Math.min(ratio, 3)); // clamp between 1× and 3×
 
     const baseDuration = 0.5;
     const durationSeconds = baseDuration * ratio;
@@ -73,9 +74,9 @@ window.addEventListener('load', () => {
   }
 });
 
-/*--------------------------*/
-/* HANDLE BACK/FORWARD CACHE */
-/*--------------------------*/
+/*==============================*
+ *  BACK/FORWARD CACHE HANDLER
+ *==============================*/
 
 window.addEventListener('pageshow', (event) => {
   const page = document.getElementById('transitionContainer');
@@ -101,13 +102,14 @@ window.addEventListener('pageshow', (event) => {
     // Reset transition lock so links work again
     isTransitioning = false;
 
+    // Reset scroll inside the transition container
     page.scrollTop = 0;
   }
 });
 
-/*-------------------*/
-/* HTML ELEMENTS */
-/*-------------------*/
+/*==============================*
+ *  SIMPLE HTML HELPERS
+ *==============================*/
 
 /**
  * Toggle visibility of an element by id using the `hidden` attribute.
@@ -119,9 +121,10 @@ function toggleElement(id) {
   }
 }
 
-/*---------------------------*/
-/* CONSTELLATION CANVAS SETUP */
-/*---------------------------*/
+
+/*==============================*
+ *  CONSTELLATION CANVAS SETUP
+ *==============================*/
 
 const canvas = document.getElementById('constellations');
 const brush = canvas.getContext('2d');
@@ -146,9 +149,10 @@ let maxLinkDistance = 0;
 // Star collection
 let stars = [];
 
-/*---------------------------*/
-/* UTILITY FUNCTIONS */
-/*---------------------------*/
+
+/*==============================*
+ *  UTILITY FUNCTIONS
+ *==============================*/
 
 /**
  * Return a random number between min (inclusive) and max (exclusive).
@@ -157,9 +161,10 @@ function randomBetween(min, max) {
   return Math.random() * (max - min) + min;
 }
 
-/*---------------------------*/
-/* STAR INITIALIZATION */
-/*---------------------------*/
+
+/*==============================*
+ *  STAR INITIALIZATION
+ *==============================*/
 
 /**
  * Initialize stars from localStorage if possible,
@@ -210,7 +215,7 @@ function initStars() {
 
 /**
  * Create a fresh star field sized to the current canvas.
- * This is used on first load or when no saved stars are valid.
+ * Used on first load or when no saved stars are valid.
  */
 function createStars() {
   stars = [];
@@ -230,9 +235,10 @@ function createStars() {
   }
 }
 
-/*---------------------------*/
-/* STAR ANIMATION LOGIC */
-/*---------------------------*/
+
+/*==============================*
+ *  STAR ANIMATION LOGIC
+ *==============================*/
 
 /**
  * Move stars based on their velocity, pointer attraction,
@@ -341,9 +347,10 @@ function drawStarsWithLines() {
   }
 }
 
-/*---------------------------*/
-/* CANVAS RESIZE HANDLING */
-/*---------------------------*/
+
+/*==============================*
+ *  CANVAS RESIZE HANDLING
+ *==============================*/
 
 /**
  * Resize the canvas to match the viewport and scale stars accordingly.
@@ -380,9 +387,10 @@ function resizeCanvas() {
   }
 }
 
-/*---------------------------*/
-/* MAIN ANIMATION LOOP */
-/*---------------------------*/
+
+/*==============================*
+ *  MAIN ANIMATION LOOP
+ *==============================*/
 
 function animate() {
   if (!freezeConstellation) {
@@ -393,9 +401,10 @@ function animate() {
   requestAnimationFrame(animate);
 }
 
-/*---------------------------*/
-/* POINTER SPEED TRACKING */
-/*---------------------------*/
+
+/*==============================*
+ *  POINTER SPEED TRACKING
+ *==============================*/
 
 /**
  * Update pointer speed and derived smoothed speed,
@@ -446,22 +455,21 @@ window.addEventListener('mouseup', () => {
   pointerSpeed = 0;
 });
 
-/*--------------------------*/
-/* PAGE TRANSITIONS & SCROLL */
-/*--------------------------*/
+
+/*==============================*
+ *  PAGE TRANSITIONS & STORAGE
+ *==============================*/
 
 let isInternalReferrer = false;
 let isTransitioning = false;
 
 /**
  * Transition to another URL with:
- *  - smooth scroll to top
  *  - saving constellation state
  *  - slide-out CSS animation
  *
  * Special case: url === 'back' uses stored internal referrer.
  */
-
 async function transitionTo(url) {
   if (isTransitioning) return;
   isTransitioning = true;
@@ -525,9 +533,9 @@ window.addEventListener('beforeunload', () => {
   saveStarsToStorage();
 });
 
-/*--------------------------*/
-/* INITIALIZATION */
-/*--------------------------*/
+/*==============================*
+ *  INITIALIZATION
+ *==============================*/
 
 // Initial canvas sizing + star setup + animation loop
 resizeCanvas();
