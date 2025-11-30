@@ -3,14 +3,9 @@
  *  PAGE LOAD HANDLER (must be at the top)
  *==============================*/
 
-const crunch = new Audio("/Resources/Crunch.wav");
-const bgm = new Audio("/Resources/bgmFile.wav");
-
 window.addEventListener('load', () => {
   const page = document.getElementById('transitionContainer');
-  //preload audio
-  crunch.load();
-  bgm.load();
+  
   // NEW: read the flag from sessionStorage
   const suppressHomeBack = sessionStorage.getItem('suppressHomeBack') === '1';
   // Optional: clear it so it only applies once
@@ -436,6 +431,10 @@ function animate() {
  *  BACKGROUND AMBIENT AUDIO
  *==============================*/
 
+const crunch = new Audio("/Resources/Crunch.wav");
+const bgm = new Audio("/Resources/bgmFile.wav");
+crunch.load();
+bgm.load();
 bgm.loop = true;
 bgm.volume = 0; // start silent
 
