@@ -125,6 +125,11 @@ article:hover .imgButton, article:active .imgButton {
   box-shadow: var(--shadow); 
 }
 
+article:hover a, article:active a {
+  color: var(--link-dark);
+  text-shadow: var(--shadow); 
+}
+
 /* Navigation */
 
 .navButtons {
