@@ -107,6 +107,7 @@ a {
 
 a:hover, a:active, button:hover, button:active {
   color: var(--link-dark);
+  text-shadow: var(--shadow);
 }
 
 /* Homepage social links */
@@ -122,11 +123,6 @@ article {
 article:hover .imgButton, article:active .imgButton {
   border-color: var(--link-dark);
   box-shadow: var(--shadow); 
-}
-
-article:hover a, article:active a {
-  color: var(--link-dark);
-  text-shadow: var(--shadow);
 }
 
 /* Navigation */
