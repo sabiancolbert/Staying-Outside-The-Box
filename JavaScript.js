@@ -6,6 +6,11 @@
 window.addEventListener('load', () => {
   const page = document.getElementById('transitionContainer');
 
+  // NEW: read the flag from sessionStorage
+  const suppressHomeBack = sessionStorage.getItem('suppressHomeBack') === '1';
+  // Optional: clear it so it only applies once
+  sessionStorage.removeItem('suppressHomeBack');
+  
   // Remove hash if present (so #ids don't block the transition)
   if (window.location.hash) {
     history.replaceState(
@@ -52,7 +57,7 @@ window.addEventListener('load', () => {
     isInternalReferrer = false;
   }
 
-    const backLink = document.getElementById('homepageBack');
+      const backLink = document.getElementById('homepageBack');
   if (backLink) {
     if (!suppressHomeBack && isInternalReferrer && ref) {
       // normal behavior: store back URL
