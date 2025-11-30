@@ -3,8 +3,6 @@
  *  PAGE LOAD HANDLER (must be at the top)
  *==============================*/
 
-let originIsMenie = false;
-
 window.addEventListener('load', () => {
   const page = document.getElementById('transitionContainer');
 
@@ -48,27 +46,9 @@ window.addEventListener('load', () => {
       const refUrl = new URL(ref);
       isInternalReferrer = refUrl.origin === window.location.origin;
       
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
+      if (refUrl.origin === window.location.origin) {
+          isInternalReferrer = false;
+      }
     } catch (e) {
       isInternalReferrer = false;
     }
