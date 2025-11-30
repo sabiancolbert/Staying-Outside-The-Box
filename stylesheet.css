@@ -135,8 +135,8 @@ article:hover a, article:active a {
 }
 
 .navButtons img {
-  width: 5dvmin;
-  height: 5dvmin;
+  width: 10dvmin;
+  height: 10dvmin;
   padding: 1dvmin;
   margin: 0 4dvmin;
   font: 1dvmin Arial; /* for if the image fails to load */
