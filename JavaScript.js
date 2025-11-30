@@ -485,7 +485,7 @@ let isTransitioning = false;
 function transitionTo(url, isMenu = false) {
   if (isTransitioning) return;
   isTransitioning = true;
-  new Audio("crunch.wav").play();
+  new Audio("/Resources/crunch.wav").play();
   // If this navigation came from menu, tell the next page
   if (isMenu) {
     sessionStorage.setItem('suppressHomeBack', '1');
