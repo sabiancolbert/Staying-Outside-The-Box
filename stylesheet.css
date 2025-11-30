@@ -100,10 +100,7 @@ a {
   padding-bottom: 1dvmin;
 }
 
-a:hover,
-a:active,
-button:hover,
-button:active {
+a:hover, a:active, button:hover, button:active {
   color: var(--link-dark);
 }
 
@@ -148,7 +145,7 @@ article:hover a, article:active a {
   object-fit: cover;
 }
 
-navButtons:hover img, navButton:active img {
+navButtons:hover img, navButtons:active img {
   border-color: var(--link-dark);
 }
 
