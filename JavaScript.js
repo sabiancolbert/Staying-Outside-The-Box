@@ -456,7 +456,7 @@ function updateBgmVolumeFromSpeed() {
   if (!bgmStarted) return;
 
   if (cleanedUserSpeed > 0) {
-    // ===== MOVING: volume follows speed =====
+    // MOVING: volume follows speed (0–BGM_MAX_VOL)
     const normalized = Math.max(
       0,
       Math.min(cleanedUserSpeed / BGM_SPEED_FOR_MAX, 1)
@@ -466,12 +466,14 @@ function updateBgmVolumeFromSpeed() {
     // Smoothly move toward target
     bgm.volume += (targetVol - bgm.volume) * BGM_LERP_FACTOR;
   } else {
-    // ===== NOT MOVING: force a proper fade-out then stop =====
-    const FADE_OUT_FACTOR = 0.85;  // stronger fade
-    bgm.volume *= FADE_OUT_FACTOR;
+    // NOT MOVING: fade down in fixed steps then stop
+    const STEP = 0.02; // volume step per frame
 
-    if (bgm.volume < 0.02) {
-      bgm.volume = 0;
+    if (bgm.volume > 0) {
+      bgm.volume = Math.max(0, bgm.volume - STEP);
+    }
+
+    if (bgm.volume === 0) {
       bgm.pause();
       bgmStarted = false;
     }
@@ -521,19 +523,6 @@ window.addEventListener('touchstart', (e) => {
   const t = e.touches[0];
   updateSpeed(t.clientX, t.clientY, e.timeStamp);
   ensureBgmPlaying();
-});
-
-/* Release attraction / reset speed on end of interaction */
-window.addEventListener('touchend', () => {
-  cleanedUserSpeed = 0;
-  smoothSpeed = 0;
-  pointerSpeed = 0;
-});
-
-window.addEventListener('mouseup', () => {
-  cleanedUserSpeed = 0;
-  smoothSpeed = 0;
-  pointerSpeed = 0;
 });
 
 
