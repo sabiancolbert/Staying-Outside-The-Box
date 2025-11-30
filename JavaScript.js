@@ -455,23 +455,26 @@ function ensureBgmPlaying() {
 function updateBgmVolumeFromSpeed() {
   if (!bgmStarted) return;
 
-  // Map cleanedUserSpeed (0–10) to [0–1]
-  const normalized = Math.max(
-    0,
-    Math.min(cleanedUserSpeed / BGM_SPEED_FOR_MAX, 1)
-  );
+  if (cleanedUserSpeed > 0) {
+    // ===== MOVING: volume follows speed =====
+    const normalized = Math.max(
+      0,
+      Math.min(cleanedUserSpeed / BGM_SPEED_FOR_MAX, 1)
+    );
+    const targetVol = normalized * BGM_MAX_VOL;
 
-  const targetVol = normalized * BGM_MAX_VOL;
+    // Smoothly move toward target
+    bgm.volume += (targetVol - bgm.volume) * BGM_LERP_FACTOR;
+  } else {
+    // ===== NOT MOVING: force a proper fade-out then stop =====
+    const FADE_OUT_FACTOR = 0.85;  // stronger fade
+    bgm.volume *= FADE_OUT_FACTOR;
 
-  // Smoothly interpolate volume toward target
-  bgm.volume += (targetVol - bgm.volume) * BGM_LERP_FACTOR;
-
-  // If both speed and volume are tiny, force true silence
-  if (cleanedUserSpeed === 0 && bgm.volume < 0.01) {
-    bgm.volume = 0;
-    //actually stop playback
-    bgm.pause();
-    bgmStarted = false;
+    if (bgm.volume < 0.02) {
+      bgm.volume = 0;
+      bgm.pause();
+      bgmStarted = false;
+    }
   }
 }
 
