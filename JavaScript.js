@@ -4,7 +4,7 @@
  *==============================*/
 
 const crunch = new Audio("/Resources/Crunch.wav");
-const bgm = new Audio("/Resources/AmbientLoop.mp3");
+const bgm = new Audio("/Resources/bgmFile.wav");
 
 window.addEventListener('load', () => {
   const page = document.getElementById('transitionContainer');
