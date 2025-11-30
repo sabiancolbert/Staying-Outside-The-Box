@@ -118,12 +118,32 @@ article {
 
 article:hover .imgButton, article:active .imgButton {
   border-color: var(--link-dark);
-  filter: var(--shadow);
 }
 
 article:hover a, article:active a {
   color: var(--link-dark);
   text-shadow: var(--shadow);
+}
+
+/* Navigation */
+
+.navButtons {
+  
+}
+
+.navButtons img {
+  width: 5dvmin;
+  height: 5dvmin;
+  padding: 1dvmin;
+  margin: 0 4dvmin;
+  font: 1dvmin Arial; /* for if the image fails to load */
+  border-radius: 50%;
+  border: 3px solid var(--no-link);
+  object-fit: cover;
+}
+
+nav:hover img, nav:active .img {
+  border-color: var(--link-dark);
 }
 
 /* Placeholder links */
