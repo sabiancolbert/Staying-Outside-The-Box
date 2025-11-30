@@ -4,6 +4,8 @@
  *  PAGE LOAD HANDLER (must be at the top)
  *==============================*/
 
+let isInternalReferrer = false;
+
 window.addEventListener('load', () => {
   const page = document.getElementById('transitionContainer');
   
@@ -454,7 +456,6 @@ window.addEventListener('touchstart', (e) => {
  *  PAGE TRANSITIONS & STORAGE
  *==============================*/
 
-let isInternalReferrer = false;
 let isTransitioning = false;
 
 // Transition to another URL (with constellation save and slide-out).
