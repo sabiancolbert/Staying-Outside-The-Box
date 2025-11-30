@@ -514,6 +514,11 @@ function transitionTo(url, isMenu = false) {
   if (isTransitioning) return;
   isTransitioning = true;
 
+  //prevent bgm music from playing
+  bgmStarted=true;
+  bgm.volume=0;
+  bgm.pause();
+  
   // play crunch sound
   crunch.currentTime = 0;
   crunch.play().catch(console.warn);
