@@ -1,25 +1,25 @@
 :root {
-  --slide-duration: 0.6s;
-  --shadow: 0 0 20px rgba(150, 0, 255, 1);
-  --link-light: #ee0000;
-  --link-dark: #880000;
-  --no-link: #bdbdbd;
+  --slide-duration: 0.6s;          /* Shared duration for all slide animations */
+  --shadow: 0 0 20px rgba(150, 0, 255, 1);  /* Purple glow used for hover effects */
+  --link-light: #ee0000;           /* Default link color */
+  --link-dark: #880000;            /* Hover/active link color */
+  --no-link: #bdbdbd;              /* Neutral text / inactive icon color */
 }
 
-/*=============================*
- *  GLOBAL BACKGROUND & LAYOUT
- *=============================*/
+/*========================================*
+ *  GLOBAL BACKGROUND & PAGE STRUCTURE
+ *========================================*/
 
 html {
-  background-color: #300060;
+  background-color: #300060;       /* Fallback solid background */
   margin: 0;
   padding: 0;
   overflow: hidden;
 }
 
 body::before {
-  content: "";
-  position: fixed;
+  content: "";                     /* Required to render ::before element */
+  position: fixed;                 /* Full-screen static background image */
   inset: 0;
   width: 100dvw;
   height: 100dvh;
@@ -27,13 +27,13 @@ body::before {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  z-index: -2;
-  pointer-events: none;
+  z-index: -2;                     /* Behind canvas + content */
+  pointer-events: none;            /* Allow clicks to pass through */
 }
 
 body {
-  overflow: hidden;
-  min-height: 100dvh;
+  overflow: hidden;                /* Prevent body-level scrolling */
+  min-height: 100dvh;              /* Ensure body fills viewport */
   height: 100dvh;
   background: transparent;
   margin: 0;
@@ -43,41 +43,41 @@ body {
   color: var(--no-link);
   font-size: 7dvmin;
 
-  display: flex;
+  display: flex;                   /* Vertical layout wrapper */
   flex-direction: column;
   align-items: stretch;
 }
 
 #constellations {
-  position: fixed;
+  position: fixed;                 /* Full-screen animated canvas overlay */
   inset: 0;
   width: 100%;
   height: 100%;
-  z-index: -1;
-  pointer-events: none;
+  z-index: -1;                     /* Above background, behind content */
+  pointer-events: none;            /* Don't block clicks */
 }
 
 main {
-  padding-bottom: 2dvmin;
+  padding-bottom: 2dvmin;          /* Breathing room at bottom of page */
 }
 
 section {
-  padding: 1dvmin;
+  padding: 1dvmin;                 /* Consistent section spacing */
 }
 
-/*=============================*
- *  GENERAL CONTENT STYLES
- *=============================*/
+/*========================================*
+ *  GENERAL CONTENT ELEMENTS
+ *========================================*/
 
 h2 {
   font-size: 4dvmin;
-  margin-top: -7dvmin;
+  margin-top: -7dvmin;             /* Pull headings upward for styling */
 }
 
 hr {
   border: none;
   height: 4px;
-  background-image: url('/Resources/Hr.png');
+  background-image: url('/Resources/Hr.png'); /* Custom horizontal rule */
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
@@ -85,7 +85,7 @@ hr {
 }
 
 .divider {
-  width: 45dvw;
+  width: 45dvw;                    /* Smaller custom divider variant */
 }
 
 /* Homepage circular image buttons */
@@ -93,7 +93,7 @@ hr {
   width: 20dvmin;
   height: 20dvmin;
   padding: 2dvmin;
-  font: 1dvmin Arial; /* for if the image fails to load */
+  font: 1dvmin Arial;              /* Backup text if image fails */
   border-radius: 50%;
   border: 3px solid var(--no-link);
   object-fit: cover;
@@ -102,23 +102,23 @@ hr {
 }
 
 a {
-  display: block;
+  display: block;                  /* Allows centered width control */
   width: fit-content;
   color: var(--link-light);
   padding-bottom: 1dvmin;
-  margin:0 auto;
+  margin: 0 auto;
   transition: color .2s ease-out,
               text-shadow .2s ease-out;
 }
 
 a:hover, a:active, button:hover, button:active {
-  color: var(--link-dark);
-  text-shadow: var(--shadow);
+  color: var(--link-dark);         /* Hover link color */
+  text-shadow: var(--shadow);      /* Glow effect */
 }
 
-/* Homepage social links */
-.clean{
-  color:var(--no-link);
+/* Light-colored, neutral links */
+.clean {
+  color: var(--no-link);
 }
 
 article {
@@ -126,17 +126,22 @@ article {
   margin: 0 auto;
 }
 
-article:hover .imgButton, article:active .imgButton {
+/* Hover effects for homepage items */
+article:hover .imgButton,
+article:active .imgButton {
   border-color: var(--link-dark);
-  box-shadow: var(--shadow); 
+  box-shadow: var(--shadow);
 }
 
-article:hover a, article:active a {
+article:hover a,
+article:active a {
   color: var(--link-dark);
-  text-shadow: var(--shadow); 
+  text-shadow: var(--shadow);
 }
 
-/* Navigation */
+/*========================================*
+ *  NAVIGATION ICON BUTTONS
+ *========================================*/
 
 .navButtons {
   display: flex;
@@ -152,7 +157,7 @@ article:hover a, article:active a {
   height: 12dvmin;
   padding: 1dvmin;
   margin: 0 10dvw;
-  font: 1dvmin Arial; /* for if the image fails to load */
+  font: 1dvmin Arial;
   border-radius: 50%;
   border: 3px solid var(--no-link);
   object-fit: cover;
@@ -160,17 +165,25 @@ article:hover a, article:active a {
               border-color .2s ease-out;
 }
 
-.navButtons a:hover img, .navButtons a:active img {
+.navButtons a:hover img,
+.navButtons a:active img {
   border-color: var(--link-dark);
   box-shadow: var(--shadow);
 }
 
-/* Placeholder links */
+/*========================================*
+ *  PLACEHOLDER / DISABLED LINKS
+ *========================================*/
+
 .dead,
 .dead:hover,
 .dead:active {
-  color: var(--link-dark);
+  color: var(--link-dark);         /* Always appear slightly dimmed */
 }
+
+/*========================================*
+ *  GENERIC BUTTON STYLING
+ *========================================*/
 
 button {
   background: none;
@@ -178,7 +191,7 @@ button {
   font-family: 'New Rocker';
   color: var(--link-light);
   font-size: 5dvmin;
-  border-radius: 9999px;
+  border-radius: 9999px;           /* Fully rounded pill button */
   padding: 3dvmin;
   display: block;
   margin: 1dvmin auto;
@@ -201,13 +214,12 @@ p {
 }
 
 .premium {
-  text-shadow: var(--shadow);
+  text-shadow: var(--shadow);      /* Highlighted premium text */
 }
 
-
-/*=============================*
- *  CHARACTER NAME COLORS
- *=============================*/
+/*========================================*
+ *  CHARACTER NAME COLORS (SCRIPT PAGES)
+ *========================================*/
 
 .roman, .sage {
   margin-top: 1em;
@@ -257,66 +269,64 @@ p {
   font-weight: bold;
 }
 
+/*========================================*
+ *  SLIDE-IN PAGE TRANSITION SYSTEM
+ *========================================*/
 
-/*=============================*
- *  SLIDE-IN / SLIDE-OUT SYSTEM
- *=============================*/
-
-/* Main scroll container (content area) */
+/* Scrollable content wrapper */
 #transitionContainer {
-  flex: 1;                        /* Fill remaining body height */
+  flex: 1;                         /* Take remaining vertical space */
   min-height: 100dvh;
   width: 100%;
-  overflow-y: auto;               /* Local vertical scrolling */
+  overflow-y: auto;                /* Local vertical scroll */
   overflow-x: hidden;
 }
 
-/*--- Homepage transitions (slide from top) ---*/
+/*--- Homepage animation (slides downward into view) ---*/
 .homeJs #transitionContainer {
-  transform: translateY(-100%);   /* Start fully above screen */
+  transform: translateY(-100%);
   transition: transform var(--slide-duration) ease-in-out;
 }
 
 .homeJs #transitionContainer.ready {
-  transform: translateY(0);       /* Slide into view */
+  transform: translateY(0);
 }
 
 .homeJs #transitionContainer.slide-out {
-  transform: translateY(-100%);   /* Slide back upward on exit */
+  transform: translateY(-100%);
 }
 
-/*--- Other pages transitions (slide from bottom) ---*/
+/*--- Other pages animation (slides upward into view) ---*/
 .otherJs #transitionContainer {
-  transform: translateY(100%);    /* Start fully below screen */
+  transform: translateY(100%);
   transition: transform var(--slide-duration) ease-in-out;
 }
 
 .otherJs #transitionContainer.ready {
-  transform: translateY(0);       /* Slide upward into view */
+  transform: translateY(0);
 }
 
 .otherJs #transitionContainer.slide-out {
-  transform: translateY(100%);    /* Slide downward on exit */
+  transform: translateY(100%);
 }
 
-/* JavaScript fallback: disable transforms */
+/* No-JavaScript fallback: disable animation entirely */
 .noJs #transitionContainer {
   transform: none !important;
   transition: none !important;
 }
 
-
-/*=============================*
- *  REDUCED-MOTION ACCESSIBILITY
- *=============================*/
+/*========================================*
+ *  REDUCED-MOTION ACCESSIBILITY SUPPORT
+ *========================================*/
 
 @media (prefers-reduced-motion: reduce) {
   #constellations {
-    display: none;                /* Disable animated starfield */
+    display: none;                 /* Disable animated starfield */
   }
 
   #transitionContainer {
-    transition: none;             /* Disable slide animations */
+    transition: none;              /* Remove slide transitions */
     transform: translateY(0);
   }
 }
