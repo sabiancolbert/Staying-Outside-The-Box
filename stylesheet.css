@@ -75,10 +75,13 @@ h2 {
 }
 
 hr {
-  width: 50dvw;
   border: none;
-  height: 3px;
-  background-color: var(--no-link);
+  height: 10px;
+  background-image: url('/Resources/Hr.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 50dvw;
 }
 
 .divider {
