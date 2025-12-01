@@ -1,5 +1,5 @@
 :root {
-  --slide-duration: 0.6s;         /* Default animation duration */
+  --slide-duration: 0.6s;
   --shadow: 0 0 20px rgba(150, 0, 255, 1);
   --link-light: #ee0000;
   --link-dark: #880000;
@@ -11,7 +11,7 @@
  *=============================*/
 
 html {
-  background-color: #300060;      /* Fallback background color */
+  background-color: #300060;
   margin: 0;
   padding: 0;
   overflow: hidden;
