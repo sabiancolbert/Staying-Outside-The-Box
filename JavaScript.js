@@ -250,7 +250,7 @@ function moveStars() {
     if (lastTime !== 0 && cleanedUserSpeed > 0.19) {
       const dx = lastX - star.x;
       const dy = lastY - star.y;
-      const screenSizeModifier = scaleFactor / 1250;
+      const screenSizeModifier = (scaleFactor / 1250) ** 2;
       const distSq = (dx * dx + dy * dy) * screenSizeModifier;
 
       const maxInfluence = 130 * 130; // ~130px influence radius
@@ -364,8 +364,8 @@ function resizeCanvas() {
   canvas.height = height;
 
   scaleFactor = width + height;
-  if (scaleFactor > 2000) {
-    scaleFactor = 2000;
+  if (scaleFactor > 1500) {
+    scaleFactor = 1500;
   }
 
   maxStarCount = scaleFactor / 10;
