@@ -253,7 +253,7 @@ function moveStars() {
       const screenSizeModifier = (scaleFactor / 1100) * 1.7;
       const distSq = dx * dx + dy * dy;
 
-      const maxInfluence = 130 * 130 * screenSizeModifier;
+      const maxInfluence = 12000 * screenSizeModifier;
       if (distSq > 4 && distSq < maxInfluence) {
         //faster when closer
         const baseForce = 0.005 * cleanedUserSpeed;
