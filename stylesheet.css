@@ -200,19 +200,20 @@ button {
 
   border: none;
 
-  /* The button’s own background IS the outer image */
-  background: url("/Resources/Hr.webp") center/cover no-repeat;
-
-  /* Text is hollow, showing the SAME image under it */
-  color: transparent;
-  -webkit-background-clip: text;
-  background-clip: text;
-
   transition: 
     background .2s ease-out,
     box-shadow .2s ease-out,
     text-shadow .2s ease-out,
     color .2s ease-out;
+}
+
+.innerButton
+{
+  background: url("/Resources/Button.webp") center/cover no-repeat;
+
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
 }
 
 /* Hover changes BOTH container + hollow text together */
