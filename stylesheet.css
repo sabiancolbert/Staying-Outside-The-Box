@@ -207,8 +207,8 @@ button {
               
   background: url("/Resources/Hr.webp") center/cover;
   color: transparent;
-  -webkit-background-clip: text;
-  background-clip: text;
+  -webkit-mask-image: paint(text);
+  mask-image: paint(text);
 }
 
 button:hover, button:active {
