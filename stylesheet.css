@@ -191,19 +191,24 @@ article:active a {
  *========================================*/
 
 button {
-  background: none;
+  /*background: none;
   border: 3px solid var(--link-light);
+  padding: 3dvmin;
+  color: var(--link-light);*/
   font-family: 'New Rocker';
-  color: var(--link-light);
   font-size: 5dvmin;
   border-radius: 9999px;           /* Fully rounded pill button */
-  padding: 3dvmin;
   display: block;
   margin: 1dvmin auto;
   transition: color .2s ease-out,
               box-shadow .2s ease-out,
               border-color .2s ease-out,
               text-shadow .2s ease-out;
+              
+  background: url("/Resources/Hr.webp") center/cover;
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
 }
 
 button:hover, button:active {
