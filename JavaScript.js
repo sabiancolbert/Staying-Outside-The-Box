@@ -250,7 +250,7 @@ function moveStars() {
     if (lastTime !== 0 && cleanedUserSpeed > 0.19) {
       const dx = lastX - star.x;
       const dy = lastY - star.y;
-      const screenSizeModifier = (scaleFactor / 1100) * 2;
+      const screenSizeModifier = (scaleFactor / 1100) * 1.7;
       const distSq = dx * dx + dy * dy;
 
       const maxInfluence = 130 * 130 * screenSizeModifier;
