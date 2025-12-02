@@ -209,7 +209,7 @@ button {
   border: 1dvmin solid transparent;
 
   /* Use a NUMBER for the slice (tune this) */
-  border-image-source: url('/Resources/Hr.webp');
+  border-image-source: url('/Resources/Button.png');
   border-image-slice: 30;        /* try 20–60 and see what looks right */
   border-image-width: 1dvmin;    /* this can be dvmin – controls thickness */
   border-image-repeat: stretch;  /* or round if you want repeating texture */
