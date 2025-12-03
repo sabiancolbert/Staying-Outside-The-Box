@@ -307,7 +307,6 @@ function moveStars() {
   // slowly ease attractionValue back toward 1 every frame
   attractionValue += (1 - attractionValue) * 0.06;
   if (attractionValue > 1) attractionValue = 1;
-  if (attractionValue < -1) attractionValue = -1;
 }
 
 // Draw stars and connecting lines based on distances and opacity.
@@ -445,7 +444,7 @@ window.addEventListener('mousemove', (e) => {
 });
 
 window.addEventListener('mousedown', (e) => {
-  attractionValue = -1; // start fully repulsive on press
+  attractionValue = -3; // start fully repulsive on press
 
   //avoid giant first movement spike
   lastX = e.clientX;
@@ -465,7 +464,7 @@ window.addEventListener('touchmove', (e) => {
 window.addEventListener('touchstart', (e) => {
   const t = e.touches[0];
   if (!t) return;
-  attractionValue = -1; // start repulsive on finger down
+  attractionValue = -3; // start repulsive on finger down
 
   // NEW: avoid giant first movement spike
   lastX = t.clientX;
