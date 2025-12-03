@@ -325,17 +325,17 @@ p {
 
 /* Scrollable content wrapper */
 #transitionContainer {
-  flex: 1;                                   /* Take remaining vertical space */
+  flex: 1;                 /* Take remaining vertical space */
   min-height: 100dvh;
   width: 100%;
-  overflow-y: auto;                          /* Local vertical scroll */
+  overflow-y: auto;        /* Local vertical scroll */
   overflow-x: hidden;
-  transition: transform var(--slide-duration) ease-in-out;
 }
 
 /*--- Homepage animation (slides downward into view) ---*/
 .homeJs #transitionContainer {
   transform: translateY(-100%);
+  transition: transform var(--slide-duration) ease-in-out;
 }
 
 .homeJs #transitionContainer.ready {
@@ -349,6 +349,7 @@ p {
 /*--- Other pages animation (slides upward into view) ---*/
 .otherJs #transitionContainer {
   transform: translateY(100%);
+  transition: transform var(--slide-duration) ease-in-out;
 }
 
 .otherJs #transitionContainer.ready {
