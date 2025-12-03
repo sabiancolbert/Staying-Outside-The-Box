@@ -92,8 +92,17 @@ img {
   width: 40dvmin;
   height: 40dvmin;
   padding: 2dvmin;
+
   border-radius: 50%;
-  border: 3px solid var(--no-link);
+
+  /* Image border */
+  border: 20px solid transparent;
+  border-image-source: url("/Resources/Button.png");
+  border-image-slice: 30;
+  border-image-width: 20px;
+  border-image-repeat: round;
+
+  object-fit: cover;
 }
 
 /* Homepage circular image buttons */
