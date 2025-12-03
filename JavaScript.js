@@ -460,6 +460,12 @@ window.addEventListener('mousemove', (e) => {
 window.addEventListener('mousedown', (e) => {
   isPointerDown = true;
   attractionValue = -1; // start fully repulsive on press
+
+  // NEW: avoid giant first movement spike
+  lastX = e.clientX;
+  lastY = e.clientY;
+  lastTime = e.timeStamp;
+
   updateSpeed(e.clientX, e.clientY, e.timeStamp);
 });
 
@@ -479,6 +485,12 @@ window.addEventListener('touchstart', (e) => {
   if (!t) return;
   isPointerDown = true;
   attractionValue = -1; // start repulsive on finger down
+
+  // NEW: avoid giant first movement spike
+  lastX = t.clientX;
+  lastY = t.clientY;
+  lastTime = e.timeStamp;
+
   updateSpeed(t.clientX, t.clientY, e.timeStamp);
 });
 
