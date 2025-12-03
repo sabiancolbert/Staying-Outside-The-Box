@@ -221,7 +221,7 @@ button span {
 
 display: inline-block;
 
-  background-image: url("/Resources/TextTexture.jpg"); /* or Border.jpg if you want */
+  background-image: url("/Resources/Hr.png"); /* or Border.jpg if you want */
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -232,11 +232,9 @@ display: inline-block;
   background-clip: text;
 }
 
-button:hover,
-button:active {
+button:hover, button:active {
   box-shadow: var(--shadow);
   text-shadow: var(--shadow);
-  filter: brightness(1.2);
 }
 
 button:hover span, button:active span {
