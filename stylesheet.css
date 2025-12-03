@@ -203,7 +203,7 @@ button {
 
 border-image-source: url("/Resources/Button.png");
   border-image-slice: 10;
-  border-image-width: 1dvmin;
+  border-image-width: 10;
   border-image-repeat: round; 
   
   color: var(--link-light);
