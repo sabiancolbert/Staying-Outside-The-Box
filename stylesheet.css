@@ -230,7 +230,13 @@ button:active {
   box-shadow: var(--shadow);
   border-color: var(--link-dark);
   text-shadow: var(--shadow);
+  
+  background-image: none;
+  -webkit-background-clip: border-box;
+  background-clip: border-box;
+
   color: var(--link-dark);
+  -webkit-text-fill-color: var(--link-dark);
 }
 
 p {
