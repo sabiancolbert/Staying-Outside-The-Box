@@ -424,13 +424,10 @@ function updateSpeed(x, y, time) {
   // Normalize to avoid extreme speeds
   cleanedUserSpeed = Math.min(smoothSpeed * (scaleFactor / 1100) ** 2, 10);
 
-  //add repulsion on click
-  const movement = Math.sqrt(dx * dx + dy * dy);
-
+  //add repulsion
   if (isPointerDown) {
     // While pressed: grow attractionValue based on movement
-    // Starts negative (repel), crosses 0 (neutral), up to 1 (normal attraction)
-    attractionValue += movement * 0.004; //check this later
+    attractionValue += movement * .001 * Math.sqrt(dx * dx + dy * dy); //check this later
 
     // Clamp so we never exceed 1 (full normal attraction)
     if (attractionValue > 1) attractionValue = 1;
