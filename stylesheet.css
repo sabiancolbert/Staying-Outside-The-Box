@@ -141,6 +141,17 @@ button:active {
   color: var(--no-link);
 }
 
+/* Placeholder links */
+.dead,
+.dead:hover,
+.dead:active {
+  color: var(--link-dark);                   /* Always appear slightly dimmed */
+}
+
+.premium {
+  text-shadow: var(--shadow);                /* Highlighted premium text */
+}
+
 article {
   width: fit-content;
   margin: 0 auto;
@@ -157,6 +168,11 @@ article:hover a,
 article:active a {
   color: var(--link-dark);
   text-shadow: var(--shadow);
+}
+
+p {
+  margin: 0;
+  font-size: 6dvmin;
 }
 
 /*========================================*
@@ -190,16 +206,6 @@ article:active a {
 .navButtons a:active img {
   border-color: var(--link-dark);
   box-shadow: var(--shadow);
-}
-
-/*========================================*
- *  PLACEHOLDER / DISABLED LINKS
- *========================================*/
-
-.dead,
-.dead:hover,
-.dead:active {
-  color: var(--link-dark);                   /* Always appear slightly dimmed */
 }
 
 /*========================================*
@@ -260,19 +266,6 @@ button:active span {
   color: var(--link-light);
   -webkit-text-fill-color: var(--link-light);
   text-shadow: var(--shadow);
-}
-
-/*========================================*
- *  PARAGRAPHS & PREMIUM TEXT
- *========================================*/
-
-p {
-  margin: 0;
-  font-size: 6dvmin;
-}
-
-.premium {
-  text-shadow: var(--shadow);                /* Highlighted premium text */
 }
 
 /*========================================*
