@@ -200,15 +200,15 @@ button {
   border-radius: 9999px;
   background: transparent;
 
-  /* Border image */
+  /* Border image *
   border: 1dvmin solid transparent;
   border-image-source: url("/Resources/Button.png");
   border-image-slice: 10;
   border-image-width: 1;
-  border-image-repeat: round;
+  border-image-repeat: round;*/
 
   /* Hollow text effect */
-  background-image: url("/Resources/Button.png");
+  background-image: url("/Resources/Border.jpg");
   background-size: cover;
   background-position: center;
 
