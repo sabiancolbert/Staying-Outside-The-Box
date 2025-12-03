@@ -305,7 +305,7 @@ function moveStars() {
   }
 
   // slowly ease attractionValue back toward 1 every frame
-  attractionValue += (1 - attractionValue) * 0.02;
+  attractionValue += (1 - attractionValue) * 0.04;
   if (attractionValue > 1) attractionValue = 1;
   if (attractionValue < -1) attractionValue = -1;
 }
