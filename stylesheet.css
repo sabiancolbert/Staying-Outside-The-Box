@@ -232,7 +232,7 @@ button {
   font-family: 'New Rocker';
   font-size: 5dvmin;
 
-  background-image: url("/Resources/Border.png");
+  background-image: url("/Resources/Button Border.webp");
   background-size: 110% 110%;
   background-position: center;
   background-repeat: no-repeat;
@@ -246,7 +246,7 @@ button {
 button span {
   display: inline-block;
 
-  background-image: url("/Resources/Hr.webp");
+  background-image: url("/Resources/ButtonText.webp");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
