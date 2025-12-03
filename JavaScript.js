@@ -147,7 +147,7 @@ let pointerSpeed = 0;
 let smoothSpeed = 0;
 let cleanedUserSpeed = 0;
 
-let attractionValue = 0;
+let attractionValue = 1;
 let isPointerDown = false;
 
 // Canvas & star scaling
