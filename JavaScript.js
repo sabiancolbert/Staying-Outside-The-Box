@@ -206,6 +206,7 @@ function initStars() {
               star.size *= sizeScale;
             }
           }
+          attractionValue = meta.attractionValue ?? 1;
         } catch (err) {
           console.warn('Could not parse constellationMeta, skipping scale.', err);
         }
@@ -539,7 +540,8 @@ function saveStarsToStorage() {
       JSON.stringify({
         width,
         height,
-        scaleFactor
+        scaleFactor,
+        attractionValue
       })
     );
   } catch (err) {
