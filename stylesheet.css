@@ -209,12 +209,10 @@ font-family: 'New Rocker';
   background-position: center;
   background-repeat: no-repeat;
 
-  color: inherit;
-
   transition: 
     box-shadow .2s ease-out,
     text-shadow .2s ease-out,
-    color .2s ease-out,
+    color .2s ease-out;
 }
 
 button span {
