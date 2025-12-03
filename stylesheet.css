@@ -200,13 +200,6 @@ button {
   border-radius: 9999px;
   background: transparent;
 
-  /* Border image *
-  border: 1dvmin solid transparent;
-  border-image-source: url("/Resources/Button.png");
-  border-image-slice: 10;
-  border-image-width: 1;
-  border-image-repeat: round;*/
-
   /* Hollow text effect */
   background-image: url("/Resources/Border.jpg");
   background-size: cover;
@@ -229,7 +222,10 @@ button:active {
   box-shadow: var(--shadow);
   text-shadow: var(--shadow);
   border-color: var(--link-dark);
+}
+  
 
+button span {
   /* remove hollow-text image */
   background-image: none;
   -webkit-background-clip: border-box;
