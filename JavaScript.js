@@ -303,6 +303,12 @@ function moveStars() {
   if (cleanedUserSpeed < 0.05) {
     cleanedUserSpeed = 0;
   }
+
+  // slowly ease attractionValue back toward 1 every frame
+  attractionValue += (1 - attractionValue) * 0.02;
+  if (attractionValue > 1) attractionValue = 1;
+  if (attractionValue < -1) attractionValue = -1;
+}
 }
 
 // Draw stars and connecting lines based on distances and opacity.
@@ -423,11 +429,6 @@ function updateSpeed(x, y, time) {
 
   // Normalize to avoid extreme speeds
   cleanedUserSpeed = Math.min(smoothSpeed * (scaleFactor / 1100) ** 2, 10);
-
-  //add repulsion
-  if (isPointerDown) {
-    attractionValue = .001 * scaleFactor;
-  }
 
   lastX = x;
   lastY = y;
