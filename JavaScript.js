@@ -444,7 +444,7 @@ window.addEventListener('mousemove', (e) => {
 });
 
 window.addEventListener('mousedown', (e) => {
-  attractionValue = -3; // start fully repulsive on press
+  attractionValue = -2; // start extra repulsive on press
 
   //avoid giant first movement spike
   lastX = e.clientX;
@@ -464,7 +464,7 @@ window.addEventListener('touchmove', (e) => {
 window.addEventListener('touchstart', (e) => {
   const t = e.touches[0];
   if (!t) return;
-  attractionValue = -3; // start repulsive on finger down
+  attractionValue = -2; // start extra repulsive on finger down
 
   // NEW: avoid giant first movement spike
   lastX = t.clientX;
