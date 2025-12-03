@@ -101,6 +101,7 @@ img {
   display: inline-block;                     /* shrink-wrap to image size */
   position: relative;                        /* for ::before positioning */
   border-radius: 50%;                        /* keeps wrapper circular */
+  line-height: 0;
 }
 
 .imgBorder::before {
@@ -113,6 +114,10 @@ img {
   background-position: center;
   border-radius: 50%;                        /* circular border */
   z-index: -1;                               /* sit behind the image */
+}
+
+.imgBorder img {
+  display: block;
 }
 
 /* Homepage circular image buttons */
