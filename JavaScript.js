@@ -457,7 +457,7 @@ window.addEventListener('mousedown', (e) => {
 
   updateSpeed(e.clientX, e.clientY, e.timeStamp);
 
-  // tap adds a little "burst" of speed, up to a cap
+  // apply the "kick" AFTER updateSpeed so it isn't overwritten
   cleanedUserSpeed = Math.min(cleanedUserSpeed + 0.8, 3);
 });
 
@@ -473,7 +473,7 @@ window.addEventListener('touchstart', (e) => {
 
   updateSpeed(t.clientX, t.clientY, e.timeStamp);
 
-  // same burst on touch
+  // same kick on touch
   cleanedUserSpeed = Math.min(cleanedUserSpeed + 0.8, 3);
 });
 
