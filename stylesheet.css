@@ -130,6 +130,7 @@ img {
   width: 20dvmin;
   height: 20dvmin;
   padding:5%;
+  background-color:black;
   font: 1dvmin Arial;                        /* Backup text if image fails */
   object-fit: cover;
   border-radius: 25%;
