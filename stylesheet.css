@@ -128,9 +128,6 @@ img {
 
 /* Homepage circular image buttons */
 .imgButton {
-  max-width: 100%;
-  width: auto;
-  margin: 0 auto;
   height: 20dvmin;
   padding:15%;
   margin-top: 3dvmin;
@@ -150,6 +147,7 @@ a {
   margin: 0 auto;
   padding-bottom: 1dvmin;
   color: var(--link-light);
+  text-decoration:none;
   transition:
     color 0.2s ease-out,
     text-shadow 0.2s ease-out;
