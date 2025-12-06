@@ -131,7 +131,7 @@ img {
   max-width: 100%;
   width: auto;
   height: 20dvmin;
-  padding:5%;
+  padding:7%;
   margin-top: 3dvmin;
   background-color:black;
   font: 1dvmin Arial;                        /* Backup text if image fails */
