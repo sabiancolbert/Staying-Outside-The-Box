@@ -136,7 +136,7 @@ img {
   background-color:black;
   font: 1dvmin Arial;                        /* Backup text if image fails */
   object-fit: cover;
-  border-radius: 15dvmin;
+  border-radius: 10dvmin;
   border: 3px solid var(--no-link);
   transition:
     box-shadow 0.2s ease-out,
