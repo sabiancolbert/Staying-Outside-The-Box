@@ -129,8 +129,11 @@ img {
 .imgButton {
   width: 20dvmin;
   height: 20dvmin;
+  padding:5%;
   font: 1dvmin Arial;                        /* Backup text if image fails */
   object-fit: cover;
+  border-radius: 25%;
+  border: 3px solid var(--no-link);
   transition:
     box-shadow 0.2s ease-out,
     border-color 0.2s ease-out;
@@ -180,6 +183,7 @@ article {
 article:hover .imgButton,
 article:active .imgButton {
   box-shadow: var(--shadow);
+  border-color: var(--link-dark);
 }
 
 article:hover a,
