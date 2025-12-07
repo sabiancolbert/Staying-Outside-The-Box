@@ -1,5 +1,37 @@
 // thank heavens for chatGPT <3
 
+// Track when a touch is in progress so we can style "hover" on mobile
+const isTouchDevice =
+  'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+if (isTouchDevice) {
+  window.addEventListener(
+    'touchstart',
+    () => {
+      document.documentElement.classList.add('touching');
+    },
+    { passive: true }
+  );
+
+  window.addEventListener(
+    'touchend',
+    () => {
+      document.documentElement.classList.remove('touching');
+      document.activeElement?.blur(); // drop any focus outlines
+    },
+    { passive: true }
+  );
+
+  window.addEventListener(
+    'touchcancel',
+    () => {
+      document.documentElement.classList.remove('touching');
+      document.activeElement?.blur();
+    },
+    { passive: true }
+  );
+}
+
 /*==============================*
  *  PAGE LOAD HANDLER
  *==============================*/
