@@ -194,13 +194,12 @@ img {
  *  INTERACTION STATES (HOVER + TOUCH)
  *========================================*/
 
-/* Has to be first to avoid overriding the other transforms */
 a:hover {
   transform: scale(1.3);
 }
 
 :is(button, .imgButton):hover {
-  transform: scale(1.05) !important;
+  transform: scale(1.05);
 }
 
 /* When the article is hovered or focused, style BOTH the image and links (desktop hover) */
@@ -226,7 +225,7 @@ a:hover {
 /* Nav icon glow */
 .navButtons a:hover img,
 .navButtons a:active img {
-  transform: scale(1.05) !important;
+  transform: scale(1.05);
   border-color: var(--link-dark);
   box-shadow: var(--shadow);
 }
@@ -244,7 +243,7 @@ button:active span {
   background-image: none;
   -webkit-background-clip: border-box;
   background-clip: border-box;
-  transform: scale(1.05) !important;
+  transform: scale(1.05);
   color: var(--link-light);
   -webkit-text-fill-color: var(--link-light);
   text-shadow: var(--shadow);
