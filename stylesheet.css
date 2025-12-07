@@ -198,7 +198,12 @@ a:hover {
   transform: scale(1.3);
 }
 
-:is(button, .imgButton):hover {
+/* Image buttons get scaled too much from the anchor scale */
+.imgButton:hover{
+  transform: scale(.8);
+}
+
+button:hover {
   transform: scale(1.05);
 }
 
