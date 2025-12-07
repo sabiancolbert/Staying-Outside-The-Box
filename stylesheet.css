@@ -329,7 +329,7 @@ button {
   background-repeat: no-repeat;
 
   transition:
-    tranform 0.3s ease-out,
+    transform 0.3s ease-out,
     box-shadow 0.3s ease-out;
 }
 
