@@ -194,6 +194,7 @@ img {
  *  INTERACTION STATES (HOVER + TOUCH)
  *========================================*/
 
+/* Has to be first to avoid overriding the other transforms */
 a:hover {
   transform: scale(1.3);
 }
