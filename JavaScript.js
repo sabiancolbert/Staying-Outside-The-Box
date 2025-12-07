@@ -444,11 +444,6 @@ function updateSpeed(x, y, time) {
  *  INTERACTION / SPEED HANDLERS
  *==============================*/
 
-// Fix mobile glitch that keeps hover css activated after finger lift
-document.addEventListener('touchend', () => {
-  document.activeElement?.blur();
-});
-
 // Desktop cursor tracking
 window.addEventListener('mousemove', (e) => {
   updateSpeed(e.clientX, e.clientY, e.timeStamp);
