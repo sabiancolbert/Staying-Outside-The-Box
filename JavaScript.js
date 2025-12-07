@@ -444,6 +444,14 @@ function updateSpeed(x, y, time) {
  *  INTERACTION / SPEED HANDLERS
  *==============================*/
 
+// Disable hover states as soon as the finger lifts (mobile fix)
+document.addEventListener('touchend', () => {
+  document.activeElement?.blur();        // removes focus highlight
+  [...document.querySelectorAll(':hover')].forEach(el =>
+    el.classList.remove('hover')         // clears fake hover states on iOS
+  );
+});
+
 // Desktop cursor tracking
 window.addEventListener('mousemove', (e) => {
   updateSpeed(e.clientX, e.clientY, e.timeStamp);
