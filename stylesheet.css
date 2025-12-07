@@ -152,6 +152,7 @@ a {
     text-shadow 0.2s ease-out;
 }
 
+@media (hover: hover) and (pointer: fine) {
 /* When the article is hovered or focused, style BOTH the image and links */
 .hoverTogether:hover .imgButton,
 .hoverTogether:focus-within .imgButton {
@@ -170,6 +171,29 @@ a:hover,
 button:hover,
 .imgButton:hover {
   transform: scale(1.05);
+}
+
+.navButtons a:hover img {
+  transform: scale(1.05);
+  border-color: var(--link-dark);
+  box-shadow: var(--shadow);
+}
+
+button:hover {
+  transform: scale(1.05);
+  text-shadow: var(--shadow);
+  color: var(--link-dark);
+}
+
+button:hover span {
+  background-image: none;
+  -webkit-background-clip: border-box;
+  background-clip: border-box;
+  transform: scale(1.05);
+  color: var(--link-light);
+  -webkit-text-fill-color: var(--link-light);
+  text-shadow: var(--shadow);
+}
 }
 
 /* Light-colored, neutral links */
@@ -233,11 +257,7 @@ p {
     border-color 0.2s ease-out;
 }
 
-.navButtons a:hover img {
-  transform: scale(1.05);
-  border-color: var(--link-dark);
-  box-shadow: var(--shadow);
-}
+
 
 /*========================================*
  *  GENERIC BUTTON STYLING
@@ -269,11 +289,7 @@ button {
     color 1s ease-out;
 }
 
-button:hover {
-  transform: scale(1.05);
-  text-shadow: var(--shadow);
-  color: var(--link-dark);
-}
+
 
 button span {
   display: inline-block;
@@ -289,19 +305,8 @@ button span {
   background-clip: text;
 }
 
-button:hover {
-  box-shadow: var(--shadow);
-}
 
-button:hover span {
-  background-image: none;
-  -webkit-background-clip: border-box;
-  background-clip: border-box;
-  transform: scale(1.05);
-  color: var(--link-light);
-  -webkit-text-fill-color: var(--link-light);
-  text-shadow: var(--shadow);
-}
+
 
 /*========================================*
  *  CHARACTER NAME COLORS (SCRIPT PAGES)
