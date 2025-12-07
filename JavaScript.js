@@ -5,6 +5,7 @@
  *==============================*/
 
 let isInternalReferrer = false;
+let slideDurationMs = 600; // fallback in case something goes weird
 
 window.addEventListener('load', () => {
   const page = document.getElementById('transitionContainer');
@@ -23,27 +24,31 @@ window.addEventListener('load', () => {
   }
 
   if (page) {
-    // Set slide duration relative to content height (clamped 1–3×)
-    const viewportHeight =
-      window.innerHeight || document.documentElement.clientHeight;
-    const contentHeight = page.offsetHeight;
+  // Set slide duration relative to content height (clamped 1–3×)
+  const viewportHeight =
+    window.innerHeight || document.documentElement.clientHeight;
+  const contentHeight = page.offsetHeight;
 
-    let ratio = contentHeight / viewportHeight;
-    ratio = Math.max(1, Math.min(ratio, 3));
+  let ratio = contentHeight / viewportHeight;
+  ratio = Math.max(1, Math.min(ratio, 3));
 
-    const baseDuration = 0.5;
-    const durationSeconds = baseDuration * ratio;
+  const baseDuration = 0.5;
+  const durationSeconds = baseDuration * ratio;
 
-    document.documentElement.style.setProperty(
-      '--slide-duration',
-      `${durationSeconds}s`
-    );
+  // Save to CSS custom property
+  document.documentElement.style.setProperty(
+    '--slide-duration',
+    `${durationSeconds}s`
+  );
 
-    // Mark page as ready so CSS can run entrance animations
-    requestAnimationFrame(() => {
-      page.classList.add('ready');
-    });
-  }
+  // ALSO save to JS so transitions can be timed without relying on transitionend
+  slideDurationMs = durationSeconds * 1000;
+
+  // Mark page as ready so CSS can run entrance animations
+  requestAnimationFrame(() => {
+    page.classList.add('ready');
+  });
+}
 
   // Detect if we came from the same site
   const ref = document.referrer;
@@ -526,14 +531,12 @@ function transitionTo(url, isMenu = false) {
   // Trigger CSS slide-out
   page.classList.add('slide-out');
 
-  const handler = (event) => {
-    if (event.propertyName === 'transform') {
-      page.removeEventListener('transitionend', handler);
-      window.location.href = url;
-    }
-  };
+  // Use the *same* duration as the CSS transition, plus a tiny buffer
+  const bufferMs = 50; // small padding so it never cuts off visually
 
-  page.addEventListener('transitionend', handler);
+  setTimeout(() => {
+    window.location.href = url;
+  }, slideDurationMs + bufferMs);
 }
 
 // Save stars and related meta to localStorage
