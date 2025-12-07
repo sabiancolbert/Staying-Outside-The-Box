@@ -128,9 +128,9 @@ a {
   color: var(--link-light);
   text-decoration: none;
   transition:
-    transform 0.3s ease-out,
-    color 0.3s ease-out,
-    text-shadow 0.3s ease-out;
+    transform 0.9s ease-out,
+    color 0.9s ease-out,
+    text-shadow 0.9s ease-out;
 }
 
 /*========================================*
@@ -185,9 +185,9 @@ img {
   border: 3px solid var(--no-link);
 
   transition:
-    transform 0.3s ease-out,
-    box-shadow 0.3s ease-out,
-    border-color 0.3s ease-out;
+    transform 0.9s ease-out,
+    box-shadow 0.9s ease-out,
+    border-color 0.9s ease-out;
 }
 
 /*========================================*
@@ -299,8 +299,8 @@ button:active span {
 
   transition:
     transform 0.3s ease-out,
-    box-shadow 0.3s ease-out,
-    border-color 0.3s ease-out;
+    box-shadow 0.9s ease-out,
+    border-color 0.9s ease-out;
 }
 
 /*========================================*
@@ -329,8 +329,8 @@ button {
   background-repeat: no-repeat;
 
   transition:
-    transform 0.3s ease-out,
-    box-shadow 0.3s ease-out;
+    transform 0.9s ease-out,
+    box-shadow 0.9s ease-out;
 }
 
 /* Text inside button uses image as a fill */
@@ -349,8 +349,8 @@ button span {
   
   transition:
     /* No transition for color */
-    text-shadow 0.3s ease-out,
-    -webkit-text-fill-color 1s ease-out;
+    text-shadow 0.9s ease-out,
+    -webkit-text-fill-color 0.9s ease-out;
 }
 
 /*========================================*
