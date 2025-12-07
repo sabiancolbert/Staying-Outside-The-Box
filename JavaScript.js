@@ -1,6 +1,10 @@
 // thank heavens for chatGPT <3
 
-// Track when a touch is in progress so we can style "hover" on mobile
+/*==============================*
+ *  TOUCH STATE (MOBILE HOVER SUPPORT)
+ *==============================*/
+
+// Detect touch-capable devices so we can simulate "hover" while a finger is down
 const isTouchDevice =
   'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
@@ -8,6 +12,7 @@ if (isTouchDevice) {
   window.addEventListener(
     'touchstart',
     () => {
+      // Used by CSS: html.touching :active { ... }
       document.documentElement.classList.add('touching');
     },
     { passive: true }
@@ -17,7 +22,7 @@ if (isTouchDevice) {
     'touchend',
     () => {
       document.documentElement.classList.remove('touching');
-      document.activeElement?.blur(); // drop any focus outlines
+      document.activeElement?.blur(); // drop any focus outlines on release
     },
     { passive: true }
   );
@@ -33,11 +38,16 @@ if (isTouchDevice) {
 }
 
 /*==============================*
- *  PAGE LOAD HANDLER
+ *  GLOBAL PAGE STATE
  *==============================*/
 
-let isInternalReferrer = false;
-let slideDurationMs = 600; // fallback in case something goes weird
+let isInternalReferrer = false;    // true if we came from another page on this site
+let slideDurationMs = 600;         // fallback slide-out duration (ms) if calc fails
+let isTransitioning = false;       // prevents double navigation during transitions
+
+/*==============================*
+ *  PAGE LOAD HANDLER
+ *==============================*/
 
 window.addEventListener('load', () => {
   const page = document.getElementById('transitionContainer');
@@ -46,7 +56,7 @@ window.addEventListener('load', () => {
   const suppressHomeBack = sessionStorage.getItem('suppressHomeBack') === '1';
   sessionStorage.removeItem('suppressHomeBack');
 
-  // Remove URL hash so in-page anchors don't block transitions
+  // Remove URL hash so in-page anchors don't block slide animations
   if (window.location.hash) {
     history.replaceState(
       null,
@@ -55,34 +65,34 @@ window.addEventListener('load', () => {
     );
   }
 
-  if (page) {
   // Set slide duration relative to content height (clamped 1–3×)
-  const viewportHeight =
-    window.innerHeight || document.documentElement.clientHeight;
-  const contentHeight = page.offsetHeight;
+  if (page) {
+    const viewportHeight =
+      window.innerHeight || document.documentElement.clientHeight;
+    const contentHeight = page.offsetHeight;
 
-  let ratio = contentHeight / viewportHeight;
-  ratio = Math.max(1, Math.min(ratio, 3));
+    let ratio = contentHeight / viewportHeight;
+    ratio = Math.max(1, Math.min(ratio, 3)); // clamp ratio to [1, 3]
 
-  const baseDuration = 0.5;
-  const durationSeconds = baseDuration * ratio;
+    const baseDuration = 0.5;               // base seconds for a 1× page
+    const durationSeconds = baseDuration * ratio;
 
-  // Save to CSS custom property
-  document.documentElement.style.setProperty(
-    '--slide-duration',
-    `${durationSeconds}s`
-  );
+    // Save to CSS custom property for the transition timing
+    document.documentElement.style.setProperty(
+      '--slide-duration',
+      `${durationSeconds}s`
+    );
 
-  // ALSO save to JS so transitions can be timed without relying on transitionend
-  slideDurationMs = durationSeconds * 1000;
+    // Mirror in JS so transitionTo() can time navigation
+    slideDurationMs = durationSeconds * 1000;
 
-  // Mark page as ready so CSS can run entrance animations
-  requestAnimationFrame(() => {
-    page.classList.add('ready');
-  });
-}
+    // Mark page as ready so CSS can run entrance animations
+    requestAnimationFrame(() => {
+      page.classList.add('ready');
+    });
+  }
 
-  // Detect if we came from the same site
+  // Detect if we came from the same origin (internal navigation)
   const ref = document.referrer;
   if (ref) {
     try {
@@ -93,6 +103,7 @@ window.addEventListener('load', () => {
     }
   }
 
+  // Handle the "back to previous internal page" link on the homepage
   const backLink = document.getElementById('homepageBack');
   if (backLink) {
     // Store a back URL only when coming from an internal page
@@ -111,7 +122,7 @@ window.addEventListener('load', () => {
       !suppressHomeBack && backUrl ? 'block' : 'none';
   }
 
-  // Clear saved constellations when entering from outside the site
+  // If we entered the site from outside, clear stale constellation data
   if (!isInternalReferrer) {
     localStorage.removeItem('constellationStars');
     localStorage.removeItem('constellationMeta');
@@ -179,7 +190,6 @@ let lastTime = 0;
 let pointerSpeed = 0;
 let smoothSpeed = 0;
 let cleanedUserSpeed = 0;
-
 let attractionValue = 1;
 
 // Canvas & star scaling
@@ -495,7 +505,7 @@ window.addEventListener('mousedown', (e) => {
   cleanedUserSpeed = Math.min(cleanedUserSpeed + 0.8, 3);
 });
 
-// Touch start (mobile)
+// Touch start (mobile pointer)
 window.addEventListener('touchstart', (e) => {
   const t = e.touches[0];
   if (!t) return;
@@ -513,7 +523,7 @@ window.addEventListener('touchstart', (e) => {
   cleanedUserSpeed = Math.min(cleanedUserSpeed + 0.8, 3);
 });
 
-// Touch move (mobile)
+// Touch move (mobile pointer)
 window.addEventListener('touchmove', (e) => {
   const t = e.touches[0];
   if (!t) return;
@@ -523,8 +533,6 @@ window.addEventListener('touchmove', (e) => {
 /*==============================*
  *  PAGE TRANSITIONS & STORAGE
  *==============================*/
-
-let isTransitioning = false;
 
 // Navigate with slide-out and stored constellation state
 function transitionTo(url, isMenu = false) {
@@ -550,7 +558,7 @@ function transitionTo(url, isMenu = false) {
     url = stored;
   }
 
-  // If we can't animate, just navigate
+  // If we can't animate, just navigate immediately
   if (!page) {
     window.location.href = url;
     return;
@@ -563,7 +571,7 @@ function transitionTo(url, isMenu = false) {
   // Trigger CSS slide-out
   page.classList.add('slide-out');
 
-  // Use the *same* duration as the CSS transition, plus a tiny buffer
+  // Use the same duration as the CSS transition, plus a tiny buffer
   const bufferMs = 50; // small padding so it never cuts off visually
 
   setTimeout(() => {
