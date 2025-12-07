@@ -7,6 +7,12 @@
   --link-light: #ee0000;                     /* Primary link color */
   --link-dark: #880000;                      /* Hover/active link color */
   --no-link: #bdbdbd;                        /* Neutral / inactive text color */
+
+  /* Transitions */
+  --slow-transform: transform 0.5s ease-out;
+  --slow-border: border-color 0.3s ease-out;
+  --slow-shadow: box-shadow 0.9s ease-out;
+  --slow-color: color 0.9s ease-out;
 }
 
 /*========================================*
@@ -128,9 +134,9 @@ a {
   color: var(--link-light);
   text-decoration: none;
   transition:
-    transform 0.9s ease-out,
-    color 0.9s ease-out,
-    text-shadow 0.9s ease-out;
+    transform var(--slow-transform),
+    color var(--slow-color),
+    text-shadow var(--slow-shadow);
 }
 
 /*========================================*
@@ -185,9 +191,9 @@ img {
   border: 3px solid var(--no-link);
 
   transition:
-    transform 0.9s ease-out,
-    box-shadow 0.9s ease-out,
-    border-color 0.9s ease-out;
+    transform var(--slow-transform),
+    box-shadow var(--slow-shadow),
+    border-color var(--slow-border);
 }
 
 /*========================================*
@@ -298,9 +304,9 @@ button:active span {
   object-fit: cover;
 
   transition:
-    transform 0.3s ease-out,
-    box-shadow 0.9s ease-out,
-    border-color 0.9s ease-out;
+    transform var(--slow-transform),
+    box-shadow var(--slow-shadow),
+    border-color var(--slow-border);
 }
 
 /*========================================*
@@ -329,8 +335,8 @@ button {
   background-repeat: no-repeat;
 
   transition:
-    transform 0.9s ease-out,
-    box-shadow 0.9s ease-out;
+    transform var(--slow-transform),
+    box-shadow var(--slow-shadow);
 }
 
 /* Text inside button uses image as a fill */
@@ -349,8 +355,8 @@ button span {
   
   transition:
     /* No transition for color */
-    text-shadow 0.9s ease-out,
-    -webkit-text-fill-color 0.9s ease-out;
+    text-shadow var(--slow-shadow),
+    -webkit-text-fill-color var(--slow-color);
 }
 
 /*========================================*
