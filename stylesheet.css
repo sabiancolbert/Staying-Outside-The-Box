@@ -132,7 +132,6 @@ img {
   height: 20dvmin;
   width: auto;
   margin-top: 3dvmin;
-  padding:10dvmin;
   background-color: black;
   font: 1dvmin Arial;       /* fallback text if image fails */
   object-fit: contain;      /* show full badge without cropping */
@@ -155,15 +154,10 @@ a {
     text-shadow 0.2s ease-out;
 }
 
-a:hover, a:active, button:hover, button:active{
+a:hover, a:active, button:hover, button:active, .imgButton:hover, .imgButton:active{
   transform: scale(1.05);
   text-shadow: var(--shadow);
   color: var(--link-dark);
-}
-
-article:hover .imgButton,
-article:active .imgButton {
-  transform: scale(1.05);
   box-shadow: var(--shadow);
   border-color: var(--link-dark);
 }
