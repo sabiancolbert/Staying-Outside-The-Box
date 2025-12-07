@@ -444,12 +444,21 @@ function updateSpeed(x, y, time) {
  *  INTERACTION / SPEED HANDLERS
  *==============================*/
 
-// Disable hover states as soon as the finger lifts (mobile fix)
+// Fix mobile glitch that keeps hover css activated after finger lift
 document.addEventListener('touchend', () => {
-  document.activeElement?.blur();        // removes focus highlight
-  [...document.querySelectorAll(':hover')].forEach(el =>
-    el.classList.remove('hover')         // clears fake hover states on iOS
-  );
+  try {
+    // Clear active element
+    document.activeElement?.blur();
+
+    // Force all elements to drop hover quickly
+    const hovered = document.querySelectorAll(':hover');
+    for (const el of hovered) el.style.pointerEvents = 'none';
+
+    // Quickly restore pointer events
+    setTimeout(() => {
+      for (const el of hovered) el.style.pointerEvents = '';
+    }, 10);
+  } catch {}
 });
 
 // Desktop cursor tracking
