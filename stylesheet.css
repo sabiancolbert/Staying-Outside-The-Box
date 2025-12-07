@@ -128,38 +128,44 @@ img {
 
 /* Homepage circular image buttons */
 .imgButton {
+  display: block;
   height: 20dvmin;
   width: auto;
-  padding:15%;
   margin-top: 3dvmin;
-  background-color:black;
-  font: 1dvmin Arial;                        /* Backup text if image fails */
-  object-fit: cover;
+  padding:10dvmin;
+  background-color: black;
+  font: 1dvmin Arial;       /* fallback text if image fails */
+  object-fit: contain;      /* show full badge without cropping */
   border-radius: 10dvmin;
   border: 3px solid var(--no-link);
   transition:
+    transform 0.2s ease-out,
     box-shadow 0.2s ease-out,
     border-color 0.2s ease-out;
 }
 
 a {
-  display: block;                            /* Allows centered width control */
-  width: fit-content;
+  display: inline-block;
   margin: 0 auto;
   padding-bottom: 1dvmin;
   color: var(--link-light);
-  text-decoration:none;
+  text-decoration: none;
   transition:
     color 0.2s ease-out,
     text-shadow 0.2s ease-out;
 }
 
-a:hover,
-a:active,
-button:hover,
-button:active {
-  color: var(--link-dark);                   /* Hover link color */
-  text-shadow: var(--shadow);                /* Glow effect */
+a:hover, a:active, button:hover, button:active{
+  transform: scale(1.05);
+  text-shadow: var(--shadow);
+  color: var(--link-dark);
+}
+
+article:hover .imgButton,
+article:active .imgButton {
+  transform: scale(1.05);
+  box-shadow: var(--shadow);
+  border-color: var(--link-dark);
 }
 
 /* Light-colored, neutral links */
@@ -171,6 +177,7 @@ button:active {
 .dead,
 .dead:hover,
 .dead:active {
+  transform: scale(1);
   color: var(--link-dark);                   /* Always appear slightly dimmed */
 }
 
@@ -179,8 +186,10 @@ button:active {
 }
 
 article {
-  width: fit-content;
-  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 auto 3dvmin;
 }
 
 /* Hover effects for homepage items */
@@ -230,6 +239,7 @@ p {
 
 .navButtons a:hover img,
 .navButtons a:active img {
+  transform: scale(1.05);
   border-color: var(--link-dark);
   box-shadow: var(--shadow);
 }
@@ -288,7 +298,7 @@ button:active span {
   background-image: none;
   -webkit-background-clip: border-box;
   background-clip: border-box;
-
+  transform: scale(1.05);
   color: var(--link-light);
   -webkit-text-fill-color: var(--link-light);
   text-shadow: var(--shadow);
