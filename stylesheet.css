@@ -194,10 +194,12 @@ img {
  *  INTERACTION STATES (HOVER + TOUCH)
  *========================================*/
 
-/* Shared scale for links, buttons, and image buttons */
-:is(a, button, .imgButton):hover,
-:is(a, button, .imgButton):active {
+:is(button, .imgButton):hover {
   transform: scale(1.05);
+}
+
+a:hover {
+  transform: scale(1.3);
 }
 
 /* When the article is hovered or focused, style BOTH the image and links (desktop hover) */
@@ -254,9 +256,6 @@ button:active span {
 /* Light-colored, neutral links */
 .clean {
   color: var(--no-link);
-}
-.clean: hover{
-  transform: scale(1.4);
 }
 
 /* Placeholder / “dead” links that always look slightly dimmed */
