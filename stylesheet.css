@@ -260,8 +260,8 @@ button {
 
   transition:
     box-shadow 0.2s ease-out,
-    text-shadow 0.2s ease-out,
-    color 0.2s ease-out;
+    text-shadow 1s ease-out,
+    color 1s ease-out;
 }
 
 button span {
