@@ -189,6 +189,11 @@ article {
   margin: 0 auto 3dvmin;
 }
 
+/* hide chapter parts */
+article[hidden] {
+  display: none !important;
+}
+
 p {
   margin: 0;
   font-size: 6dvmin;
