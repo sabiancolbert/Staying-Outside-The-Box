@@ -446,19 +446,7 @@ function updateSpeed(x, y, time) {
 
 // Fix mobile glitch that keeps hover css activated after finger lift
 document.addEventListener('touchend', () => {
-  try {
-    // Clear active element
-    document.activeElement?.blur();
-
-    // Force all elements to drop hover quickly
-    const hovered = document.querySelectorAll(':hover');
-    for (const el of hovered) el.style.pointerEvents = 'none';
-
-    // Quickly restore pointer events
-    setTimeout(() => {
-      for (const el of hovered) el.style.pointerEvents = '';
-    }, 10);
-  } catch {}
+  document.activeElement?.blur();
 });
 
 // Desktop cursor tracking
