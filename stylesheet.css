@@ -194,83 +194,49 @@ a {
  *  INTERACTION STATES (HOVER + TOUCH)
  *========================================*/
 
-/* DESKTOP / DEVICES WITH REAL HOVER */
-@media (hover: hover) and (pointer: fine) {
-  /* Shared scale / glow for links, buttons, and image-buttons */
-  :is(a, button, .imgButton):hover {
-    transform: scale(1.05);
-  }
-
-  /* When the article is hovered or focused, style BOTH the image and links */
-  .hoverTogether:hover .imgButton,
-  .hoverTogether:focus-within .imgButton {
-    box-shadow: var(--shadow);
-    border-color: var(--link-dark);
-  }
-
-  .hoverTogether:hover a,
-  .hoverTogether:focus-within a,
-  a:hover {
-    text-shadow: var(--shadow);
-    color: var(--link-dark);
-  }
-
-  .navButtons a:hover img {
-    transform: scale(1.05);
-    border-color: var(--link-dark);
-    box-shadow: var(--shadow);
-  }
-
-  button:hover {
-    text-shadow: var(--shadow);
-    color: var(--link-dark);
-    box-shadow: var(--shadow);
-  }
-
-  button:hover span {
-    background-image: none;
-    -webkit-background-clip: border-box;
-    background-clip: border-box;
-    transform: scale(1.05);
-    color: var(--link-light);
-    -webkit-text-fill-color: var(--link-light);
-    text-shadow: var(--shadow);
-  }
-}
-
-/* MOBILE / TOUCH “HOVER” WHILE FINGER IS DOWN */
-html.touching :is(a, button, .imgButton):active {
+/* Shared scale for links, buttons, and image buttons */
+:is(a, button, .imgButton):hover,
+:is(a, button, .imgButton):active {
   transform: scale(1.05);
 }
 
-/* Image button glow + border in hoverTogether on touch */
-html.touching .hoverTogether :is(a, .imgButton):active .imgButton,
-html.touching .hoverTogether .imgButton:active {
+/* When the article is hovered or focused, style BOTH the image and links (desktop hover) */
+.hoverTogether:hover .imgButton,
+.hoverTogether:focus-within .imgButton {
   box-shadow: var(--shadow);
   border-color: var(--link-dark);
 }
 
-/* Link text glow in hoverTogether on touch */
-html.touching .hoverTogether a:active {
+.hoverTogether:hover a,
+.hoverTogether:focus-within a {
   text-shadow: var(--shadow);
   color: var(--link-dark);
 }
 
-/* Nav icon glow on touch */
-html.touching .navButtons a:active img {
+/* On touch, the pressed link still gets the glow/text color */
+.hoverTogether a:active {
+  text-shadow: var(--shadow);
+  color: var(--link-dark);
+}
+
+/* Nav icon glow */
+.navButtons a:hover img,
+.navButtons a:active img {
   transform: scale(1.05);
   border-color: var(--link-dark);
   box-shadow: var(--shadow);
 }
 
-/* Button + fancy text effect on touch */
-html.touching button:active {
+/* Button + fancy text effect */
+button:hover,
+button:active {
   text-shadow: var(--shadow);
   color: var(--link-dark);
   box-shadow: var(--shadow);
 }
 
-html.touching button:active span {
+button:hover span,
+button:active span {
   background-image: none;
   -webkit-background-clip: border-box;
   background-clip: border-box;
