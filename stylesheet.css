@@ -128,9 +128,9 @@ a {
   color: var(--link-light);
   text-decoration: none;
   transition:
-    transform 0.2s ease-out,
-    color 0.2s ease-out,
-    text-shadow 0.2s ease-out;
+    transform 0.4s ease-out,
+    color 0.4s ease-out,
+    text-shadow 0.4s ease-out;
 }
 
 /*========================================*
@@ -185,9 +185,9 @@ img {
   border: 3px solid var(--no-link);
 
   transition:
-    transform 0.2s ease-out,
-    box-shadow 0.2s ease-out,
-    border-color 0.2s ease-out;
+    transform 0.4s ease-out,
+    box-shadow 0.4s ease-out,
+    border-color 0.4s ease-out;
 }
 
 /*========================================*
@@ -293,8 +293,8 @@ button:active span {
   object-fit: cover;
 
   transition:
-    box-shadow 0.2s ease-out,
-    border-color 0.2s ease-out;
+    box-shadow 0.4s ease-out,
+    border-color 0.4s ease-out;
 }
 
 /*========================================*
@@ -323,9 +323,9 @@ button {
   background-repeat: no-repeat;
 
   transition:
-    box-shadow 0.2s ease-out,
-    text-shadow 1s ease-out,
-    color 1s ease-out;
+    box-shadow 0.4s ease-out,
+    text-shadow 0.4s ease-out,
+    color 0.4s ease-out;
 }
 
 /* Text inside button uses image as a fill */
