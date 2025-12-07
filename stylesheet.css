@@ -200,7 +200,7 @@ a:hover {
 }
 
 :is(button, .imgButton):hover {
-  transform: scale(1.05);
+  transform: scale(1.05) !important;
 }
 
 /* When the article is hovered or focused, style BOTH the image and links (desktop hover) */
@@ -226,7 +226,7 @@ a:hover {
 /* Nav icon glow */
 .navButtons a:hover img,
 .navButtons a:active img {
-  transform: scale(1.05);
+  transform: scale(1.05) !important;
   border-color: var(--link-dark);
   box-shadow: var(--shadow);
 }
@@ -244,7 +244,7 @@ button:active span {
   background-image: none;
   -webkit-background-clip: border-box;
   background-clip: border-box;
-  transform: scale(1.05);
+  transform: scale(1.05) !important;
   color: var(--link-light);
   -webkit-text-fill-color: var(--link-light);
   text-shadow: var(--shadow);
