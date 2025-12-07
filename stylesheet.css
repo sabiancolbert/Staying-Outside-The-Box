@@ -256,6 +256,7 @@ button:active span {
 /* Light-colored, neutral links */
 .clean {
   color: var(--no-link);
+  transform: scale(1.05); /* A bit extra for homepage links */
 }
 
 /* Placeholder / “dead” links that always look slightly dimmed */
