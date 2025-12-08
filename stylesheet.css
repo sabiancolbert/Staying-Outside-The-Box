@@ -354,7 +354,7 @@ button span {
   background-clip: text;
   
   transition:
-    /* No transition for color */
+    color 0.3s ease-out,
     text-shadow var(--slow-shadow),
     -webkit-text-fill-color 0.9s ease-out;
 }
