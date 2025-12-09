@@ -97,6 +97,9 @@ window.addEventListener('load', () => {
  *==============================*/
 
 window.addEventListener('pageshow', (event) => {
+  //avoid extra space at the bottom
+  document.body.style.overflow = "hidden";
+  
   const page = document.getElementById('transitionContainer');
   if (!page) return;
 
@@ -123,9 +126,7 @@ window.addEventListener('pageshow', (event) => {
     // Reset scroll inside the transition container
     page.scrollTop = 0;
 
-    // Force reflow after the animation
-document.body.style.height = "auto"; // Reset height if necessary
-document.body.offsetHeight; // Trigger a reflow by accessing the offsetHeight
+  //to allow scroll again
   document.body.style.overflow = "visible";
 });
   }
