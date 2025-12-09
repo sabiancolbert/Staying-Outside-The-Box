@@ -52,9 +52,7 @@ window.addEventListener('load', () => {
     // Mark page as ready so CSS can run entrance animations
     requestAnimationFrame(() => {
       page.classList.add('ready');
-      const container = document.getElementById("transitionContainer");
-  container.style.height = container.scrollHeight + "px";
-  container.style.overflowY = "auto";
+      element.dispatchEvent(new Event('click', { bubbles: true, cancelable: true }));
     });
   }
 
