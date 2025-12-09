@@ -423,6 +423,7 @@ button span {
 #transitionContainer {
   flex: 0 0 auto;       /* instead of flex: 1 */
   min-height: auto;     /* optional but highly recommended */
+  contain: paint;
 }
 
 /*--- Homepage animation (slides downward into view) ---*/
