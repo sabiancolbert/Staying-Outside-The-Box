@@ -108,6 +108,9 @@ window.addEventListener('load', () => {
  *==============================*/
 
 window.addEventListener('pageshow', (event) => {
+  document.documentElement.style.overflow = 'auto';
+  document.body.style.overflow = 'auto';
+  
   const page = document.getElementById('transitionContainer');
   if (!page) return;
 
@@ -128,11 +131,14 @@ window.addEventListener('pageshow', (event) => {
     smoothSpeed = 0;
     pointerSpeed = 0;
 
-    // Allow transitions again
-    isTransitioning = false;
-
     // Reset scroll inside the transition container
     page.scrollTop = 0;
+    
+    document.documentElement.style.overflow = 'hidden';
+document.body.style.overflow = 'hidden';
+
+// Allow transitions again
+    isTransitioning = false;
   }
 });
 
@@ -522,7 +528,6 @@ function transitionTo(url, isMenu = false) {
   if (isTransitioning) return;
   isTransitioning = true;
 
-  // Record whether navigation came from the menu
   if (isMenu) {
     sessionStorage.setItem('suppressHomeBack', '1');
   } else {
@@ -531,7 +536,6 @@ function transitionTo(url, isMenu = false) {
 
   const page = document.getElementById('transitionContainer');
 
-  // Special case: "back" uses stored homepage URL
   if (url === 'back') {
     const stored = localStorage.getItem('homepageBackUrl');
     if (!stored) {
@@ -541,7 +545,6 @@ function transitionTo(url, isMenu = false) {
     url = stored;
   }
 
-  // If we can't animate, just navigate immediately
   if (!page) {
     window.location.href = url;
     return;
@@ -551,15 +554,17 @@ function transitionTo(url, isMenu = false) {
   freezeConstellation = true;
   saveStarsToStorage();
 
-// 🔒 Lock the card to exactly the viewport & stop its own scrolling
-  page.style.height = `${window.innerHeight}px`;
-  page.style.overflowY = 'hidden';
+  // ✅ DO *NOT* lock the height/overflow anymore
+  // page.style.height = `${window.innerHeight}px`;
+  // page.style.overflowY = 'hidden';
+
+  // (Optional but nice): always start slide-out from the top of the card
+  page.scrollTop = 0;
 
   // Trigger CSS slide-out
   page.classList.add('slide-out');
 
-  // Use the same duration as the CSS transition, plus a tiny buffer
-  const bufferMs = 50; // small padding so it never cuts off visually
+  const bufferMs = 50;
 
   setTimeout(() => {
     window.location.href = url;
