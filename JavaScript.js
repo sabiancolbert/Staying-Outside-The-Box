@@ -97,7 +97,7 @@ window.addEventListener('load', () => {
  *==============================*/
 
 window.addEventListener('pageshow', (event) => {
-  //avoid extra space at the bottom
+  // avoid extra space at the bottom on mobile
   document.body.style.overflow = "hidden";
   
   const page = document.getElementById('transitionContainer');
@@ -125,11 +125,10 @@ window.addEventListener('pageshow', (event) => {
 
     // Reset scroll inside the transition container
     page.scrollTop = 0;
-
-  //to allow scroll again
-  document.body.style.overflow = "auto";
-});
   }
+
+  // allow scroll again
+  document.body.style.overflow = "auto";
 });
 
 /*==============================*
