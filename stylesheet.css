@@ -421,10 +421,8 @@ button span {
 
 /* Scrollable content wrapper */
 #transitionContainer {
-  flex: 1;                                  /* Take remaining vertical space */
-  min-height: 100dvh;
-  width: 100%;
-  overflow: visible;
+  flex: 0 0 auto;       /* instead of flex: 1 */
+  min-height: auto;     /* optional but highly recommended */
 }
 
 /*--- Homepage animation (slides downward into view) ---*/
