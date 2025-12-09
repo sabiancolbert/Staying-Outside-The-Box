@@ -22,7 +22,8 @@
 html {
   margin: 0;
   padding: 0;
-  overflow: hidden;                          /* Disable window-level scroll; use #transitionContainer instead */
+  overflow-x: hidden;                        /* keep horizontal hidden */
+  overflow-y: auto;
   background-color: #300060;                 /* Fallback solid background */
 }
 
@@ -46,8 +47,9 @@ body {
   align-items: stretch;
 
   min-height: 100dvh;
-  height: 100dvh;
-  overflow: hidden;                          /* Prevent body-level scrolling */
+  height: auto;                              /* don't lock to viewport height */
+  overflow-x: hidden;
+  overflow-y: auto;                            /* Prevent body-level scrolling */
   margin: 0;
   padding: 0;
   background: transparent;
@@ -422,8 +424,7 @@ button span {
   flex: 1;                                  /* Take remaining vertical space */
   min-height: 100dvh;
   width: 100%;
-  overflow-y: auto;                         /* Local vertical scroll */
-  overflow-x: hidden;
+  overflow: visible;
 }
 
 /*--- Homepage animation (slides downward into view) ---*/
