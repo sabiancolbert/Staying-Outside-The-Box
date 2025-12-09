@@ -52,6 +52,7 @@ window.addEventListener('load', () => {
     // Mark page as ready so CSS can run entrance animations
     requestAnimationFrame(() => {
       page.classList.add('ready');
+      page.offsetHeight;   // forces layout flush
     });
   }
 
