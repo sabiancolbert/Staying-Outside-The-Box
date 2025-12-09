@@ -52,7 +52,7 @@ window.addEventListener('load', () => {
     // Mark page as ready so CSS can run entrance animations
     requestAnimationFrame(() => {
       page.classList.add('ready');
-      element.dispatchEvent(new Event('click', { bubbles: true, cancelable: true }));
+      element.click();
     });
   }
 
