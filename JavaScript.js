@@ -52,8 +52,9 @@ window.addEventListener('load', () => {
     // Mark page as ready so CSS can run entrance animations
     requestAnimationFrame(() => {
       page.classList.add('ready');
-      document.getElementById("transitionContainer").style.minHeight = "auto";
-document.getElementById("transitionContainer").style.overflowY = "auto";
+      const container = document.getElementById("transitionContainer");
+  container.style.height = container.scrollHeight + "px";
+  container.style.overflowY = "auto";
     });
   }
 
