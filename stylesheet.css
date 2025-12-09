@@ -47,7 +47,7 @@ body {
   align-items: stretch;
 
   min-height: 100dvh;
-  height: auto;                              /* don't lock to viewport height */
+  height: 100dvmin;                              /* don't lock to viewport height */
   overflow-x: hidden;
   overflow-y: auto;                            /* Prevent body-level scrolling */
   margin: 0;
@@ -422,7 +422,7 @@ button span {
 /* Scrollable content wrapper */
 #transitionContainer {
   flex: 1 0 auto;      /* don’t force extra growth */
-  min-height: 0;       /* or just remove the min-height line entirely */
+  height:100%;       /* or just remove the min-height line entirely */
   width: 100%;
   overflow-x: hidden;
 }
