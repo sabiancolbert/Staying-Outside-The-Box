@@ -126,6 +126,8 @@ window.addEventListener('pageshow', (event) => {
     // Force reflow after the animation
 document.body.style.height = "auto"; // Reset height if necessary
 document.body.offsetHeight; // Trigger a reflow by accessing the offsetHeight
+  document.body.style.overflow = "visible";
+});
   }
 });
 
