@@ -162,10 +162,6 @@ window.addEventListener('load', () => {
       '--slide-duration',
       `${getSlideDurationSeconds()}s`
     );
-    document.documentElement.style.setProperty(
-      "--slide-distance",
-      `${window.scrollY}px`
-    );
 
     // Wait one frame to avoid flashing before animation
     requestAnimationFrame(() => {
@@ -284,6 +280,13 @@ function transitionTo(url, isMenu = false) {
 
   // Give body the scroll responsibility again
   freeScrollLayout(PAGE);
+
+  // Tell css how far to scroll
+  const DIST = window.innerHeight + window.scrollY;
+  document.documentElement.style.setProperty(
+    '--slide-distance',
+    `${DIST}px`
+  );
 
   // Kick off slide-out animation
   PAGE.classList.add('slide-out');
