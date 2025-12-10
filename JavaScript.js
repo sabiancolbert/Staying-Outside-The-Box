@@ -4,8 +4,8 @@
  *  GLOBAL PAGE STATE
  *==============================*/
 
-let isInternalReferrer = false;
-let isTransitioning = false;
+let IS_INTERNAL_REFERRER = false;
+let IS_TRANSITIONING = false;
 
 /*==============================*
  *  SMALL HELPERS
@@ -19,32 +19,31 @@ function isHomepage() {
   return !!document.querySelector('#menuButton');
 }
 
-
 // Use #transitionContainer as the only scroll area
-function lockScrollToContainer(page = getPage()) {
-  const html = document.documentElement;
-  const body = document.body;
-  html.style.overflowY = 'hidden';
-  body.style.height = '100dvmin';
-  if (page) page.style.overflowY = 'auto';
+function lockScrollToContainer(PAGE = getPage()) {
+  const HTML = document.documentElement;
+  const BODY = document.body;
+  HTML.style.overflowY = 'hidden';
+  BODY.style.height = '100dvmin';
+  if (PAGE) PAGE.style.overflowY = 'auto';
 }
 
 // Let the whole page scroll normally during transition
-function freeScrollLayout(page = getPage()) {
-  const html = document.documentElement;
-  const body = document.body;
+function freeScrollLayout(PAGE = getPage()) {
+  const HTML = document.documentElement;
+  const BODY = document.body;
 
   // 1) Read the current scroll position from the *old* scroll container
-  const currentScroll = (page && page.scrollTop);
+  const CURRENT_SCROLL = PAGE && PAGE.scrollTop;
 
   // 2) Switch to window/body scrolling
-  html.style.overflowY = 'auto';
-  body.style.height = 'auto';
-  page.style.overflowY = 'visible';
+  HTML.style.overflowY = 'auto';
+  BODY.style.height = 'auto';
+  PAGE.style.overflowY = 'visible';
 
   // 3) After layout updates, apply the same scroll offset to the new scroll container
   requestAnimationFrame(() => {
-    window.scrollTo(0, currentScroll);
+    window.scrollTo(0, CURRENT_SCROLL);
   });
 }
 
@@ -53,10 +52,10 @@ function freeScrollLayout(page = getPage()) {
  *==============================*/
 
 window.addEventListener('load', () => {
-  const page = getPage();
+  const PAGE = getPage();
 
   // Clear menu-return flag for this page view
-  const suppressHomeBack =
+  const SUPPRESS_HOME_BACK =
     sessionStorage.getItem('suppressHomeBack') === '1';
   sessionStorage.removeItem('suppressHomeBack');
 
@@ -70,58 +69,57 @@ window.addEventListener('load', () => {
   }
 
   // Configure slide-in timing and lock scroll after transition
-  if (page) {
-
+  if (PAGE) {
     // Slower on homepage, faster on other pages
-    const slideSeconds = isHomepage() ? 1.2 : 0.6;
+    const SLIDE_SECONDS = isHomepage() ? 1.2 : 0.6;
 
     document.documentElement.style.setProperty(
       '--slide-duration',
-      `${slideSeconds}s`
+      `${SLIDE_SECONDS}s`
     );
 
     requestAnimationFrame(() => {
-      page.classList.add('ready');
+      PAGE.classList.add('ready');
 
-      page.addEventListener(
+      PAGE.addEventListener(
         'transitionend',
-        () => lockScrollToContainer(page),
+        () => lockScrollToContainer(PAGE),
         { once: true }
       );
     });
   }
 
   // Detect if we came from another page on this site
-  const ref = document.referrer;
-  if (ref) {
+  const REF = document.referrer;
+  if (REF) {
     try {
-      const refUrl = new URL(ref);
-      isInternalReferrer = refUrl.origin === window.location.origin;
+      const REF_URL = new URL(REF);
+      IS_INTERNAL_REFERRER = REF_URL.origin === window.location.origin;
     } catch {
-      isInternalReferrer = false;
+      IS_INTERNAL_REFERRER = false;
     }
   }
 
   // Show or hide the homepage back link
-  const backLink = document.getElementById('homepageBack');
-  if (backLink) {
-    if (!suppressHomeBack && isInternalReferrer && ref) {
+  const BACK_LINK = document.getElementById('homepageBack');
+  if (BACK_LINK) {
+    if (!SUPPRESS_HOME_BACK && IS_INTERNAL_REFERRER && REF) {
       try {
-        localStorage.setItem('homepageBackUrl', ref);
-      } catch (err) {
-        console.warn('Could not save homepageBackUrl:', err);
+        localStorage.setItem('homepageBackUrl', REF);
+      } catch (ERR) {
+        console.warn('Could not save homepageBackUrl:', ERR);
       }
     } else {
       localStorage.removeItem('homepageBackUrl');
     }
 
-    const backUrl = localStorage.getItem('homepageBackUrl');
-    backLink.style.display =
-      !suppressHomeBack && backUrl ? 'block' : 'none';
+    const BACK_URL = localStorage.getItem('homepageBackUrl');
+    BACK_LINK.style.display =
+      !SUPPRESS_HOME_BACK && BACK_URL ? 'block' : 'none';
   }
 
   // Clear saved constellations on fresh external entry
-  if (!isInternalReferrer) {
+  if (!IS_INTERNAL_REFERRER) {
     localStorage.removeItem('constellationStars');
     localStorage.removeItem('constellationMeta');
   }
@@ -132,28 +130,28 @@ window.addEventListener('load', () => {
  *==============================*/
 
 window.addEventListener('pageshow', (event) => {
-  const page = getPage();
-  if (!page) return;
+  const PAGE = getPage();
+  if (!PAGE) return;
 
-  const navEntries = performance.getEntriesByType
+  const NAV_ENTRIES = performance.getEntriesByType
     ? performance.getEntriesByType('navigation')
     : [];
-  const navType = navEntries[0] && navEntries[0].type;
+  const NAV_TYPE = NAV_ENTRIES[0] && NAV_ENTRIES[0].type;
 
   // Fix state when page is restored from bfcache
-  if (event.persisted || navType === 'back_forward') {
-    page.classList.remove('slide-out');
-    page.classList.add('ready');
+  if (event.persisted || NAV_TYPE === 'back_forward') {
+    PAGE.classList.remove('slide-out');
+    PAGE.classList.add('ready');
 
-    lockScrollToContainer(page);
+    lockScrollToContainer(PAGE);
 
-    freezeConstellation = false;
-    cleanedUserSpeed = 0;
-    smoothSpeed = 0;
-    pointerSpeed = 0;
+    FREEZE_CONSTELLATION = false;
+    CLEANED_USER_SPEED = 0;
+    SMOOTH_SPEED = 0;
+    POINTER_SPEED = 0;
 
-    page.scrollTop = 0;
-    isTransitioning = false;
+    PAGE.scrollTop = 0;
+    IS_TRANSITIONING = false;
   }
 });
 
@@ -163,8 +161,8 @@ window.addEventListener('pageshow', (event) => {
 
 // Toggle an element using the hidden attribute
 function toggleElement(id) {
-  const el = document.getElementById(id);
-  if (el) el.hidden = !el.hidden;
+  const EL = document.getElementById(id);
+  if (EL) EL.hidden = !EL.hidden;
 }
 
 // Drop focus after touch so active states clear
@@ -180,29 +178,29 @@ document.addEventListener(
  *  CONSTELLATION CANVAS SETUP
  *==============================*/
 
-const canvas = document.getElementById('constellations');
-const brush = canvas.getContext('2d');
+const CANVAS = document.getElementById('constellations');
+const BRUSH = CANVAS.getContext('2d');
 
-let freezeConstellation = false;
+let FREEZE_CONSTELLATION = false;
 
 // Mouse/touch movement tracking
-let lastX = 0,
-  lastY = 0,
-  lastTime = 0,
-  pointerSpeed = 0,
-  smoothSpeed = 0,
-  cleanedUserSpeed = 0,
-  attractionValue = 1;
+let LAST_X = 0,
+  LAST_Y = 0,
+  LAST_TIME = 0,
+  POINTER_SPEED = 0,
+  SMOOTH_SPEED = 0,
+  CLEANED_USER_SPEED = 0,
+  ATTRACTION_VALUE = 1;
 
 // Canvas size and star scaling
-let width = 0,
-  height = 0,
-  scaleFactor = 0,
-  maxStarCount = 0,
-  maxLinkDistance = 0;
+let WIDTH = 0,
+  HEIGHT = 0,
+  SCALE_FACTOR = 0,
+  MAX_STAR_COUNT = 0,
+  MAX_LINK_DISTANCE = 0;
 
 // Star objects
-let stars = [];
+let STARS = [];
 
 /*==============================*
  *  STAR HELPERS
@@ -218,64 +216,64 @@ const randomBetween = (min, max) =>
 
 // Load saved stars or create new ones
 function initStars() {
-  const saved = localStorage.getItem('constellationStars');
+  const SAVED = localStorage.getItem('constellationStars');
 
-  if (!saved) {
+  if (!SAVED) {
     createStars();
     return;
   }
 
   try {
-    const parsed = JSON.parse(saved);
+    const PARSED = JSON.parse(SAVED);
 
-    if (Array.isArray(parsed) && parsed.length) {
-      stars = parsed;
+    if (Array.isArray(PARSED) && PARSED.length) {
+      STARS = PARSED;
 
-      const metaRaw = localStorage.getItem('constellationMeta');
-      if (metaRaw) {
+      const META_RAW = localStorage.getItem('constellationMeta');
+      if (META_RAW) {
         try {
-          const meta = JSON.parse(metaRaw);
-          if (meta.width > 0 && meta.height > 0) {
-            const scaleX = width / meta.width;
-            const scaleY = height / meta.height;
-            const sizeScale =
-              (width + height) / (meta.width + meta.height);
+          const META = JSON.parse(META_RAW);
+          if (META.width > 0 && META.height > 0) {
+            const SCALE_X = WIDTH / META.width;
+            const SCALE_Y = HEIGHT / META.height;
+            const SIZE_SCALE =
+              (WIDTH + HEIGHT) / (META.width + META.height);
 
-            for (const star of stars) {
-              star.x *= scaleX;
-              star.y *= scaleY;
-              star.size *= sizeScale;
+            for (const STAR of STARS) {
+              STAR.x *= SCALE_X;
+              STAR.y *= SCALE_Y;
+              STAR.size *= SIZE_SCALE;
             }
           }
 
-          attractionValue = meta.attractionValue ?? 1;
-          cleanedUserSpeed = meta.cleanedUserSpeed ?? 0;
-          smoothSpeed = meta.smoothSpeed ?? 0;
-          pointerSpeed = meta.pointerSpeed ?? 0;
-        } catch (err) {
-          console.warn('Could not parse constellationMeta, skipping scale.', err);
+          ATTRACTION_VALUE = META.attractionValue ?? 1;
+          CLEANED_USER_SPEED = META.cleanedUserSpeed ?? 0;
+          SMOOTH_SPEED = META.smoothSpeed ?? 0;
+          POINTER_SPEED = META.pointerSpeed ?? 0;
+        } catch (ERR) {
+          console.warn('Could not parse constellationMeta, skipping scale.', ERR);
         }
       }
     } else {
       createStars();
     }
-  } catch (err) {
-    console.error('Could not parse saved stars, recreating.', err);
+  } catch (ERR) {
+    console.error('Could not parse saved stars, recreating.', ERR);
     createStars();
   }
 }
 
 // Build a new starfield for the current canvas
 function createStars() {
-  stars = [];
+  STARS = [];
 
-  for (let i = 0; i < maxStarCount; i++) {
-    stars.push({
-      x: Math.random() * width,
-      y: Math.random() * height,
+  for (let I = 0; I < MAX_STAR_COUNT; I++) {
+    STARS.push({
+      x: Math.random() * WIDTH,
+      y: Math.random() * HEIGHT,
       vx: randomBetween(-0.25, 0.25),
       vy: randomBetween(-0.25, 0.25),
-      size: randomBetween(3, scaleFactor / 400),
+      size: randomBetween(3, SCALE_FACTOR / 400),
       opacity: randomBetween(0.005, 1.8),
       fadeSpeed: randomBetween(1, 2.1),
       redValue: randomBetween(0, 200),
@@ -290,103 +288,103 @@ function createStars() {
 
 // Move, fade, and wrap stars around the screen
 function moveStars() {
-  for (const star of stars) {
-    star.x += star.vx * (cleanedUserSpeed + 1);
-    star.y += star.vy * (cleanedUserSpeed + 1);
+  for (const STAR of STARS) {
+    STAR.x += STAR.vx * (CLEANED_USER_SPEED + 1);
+    STAR.y += STAR.vy * (CLEANED_USER_SPEED + 1);
 
     // Pointer pull / push
-    if (lastTime !== 0 && cleanedUserSpeed > 0.19) {
-      const dx = lastX - star.x;
-      const dy = lastY - star.y;
-      const screenSizeModifier = scaleFactor / 500;
-      const distSq = dx * dx + dy * dy;
-      const maxInfluence = 12000 * screenSizeModifier;
+    if (LAST_TIME !== 0 && CLEANED_USER_SPEED > 0.19) {
+      const DX = LAST_X - STAR.x;
+      const DY = LAST_Y - STAR.y;
+      const SCREEN_SIZE_MODIFIER = SCALE_FACTOR / 500;
+      const DIST_SQ = DX * DX + DY * DY;
+      const MAX_INFLUENCE = 12000 * SCREEN_SIZE_MODIFIER;
 
-      if (distSq > 4 && distSq < maxInfluence) {
-        const proximity = (maxInfluence - distSq) / maxInfluence;
-        const pull =
+      if (DIST_SQ > 4 && DIST_SQ < MAX_INFLUENCE) {
+        const PROXIMITY = (MAX_INFLUENCE - DIST_SQ) / MAX_INFLUENCE;
+        const PULL =
           0.005 *
-          cleanedUserSpeed *
-          proximity *
-          (attractionValue < 0 ? attractionValue * 2.5 : attractionValue);
+          CLEANED_USER_SPEED *
+          PROXIMITY *
+          (ATTRACTION_VALUE < 0 ? ATTRACTION_VALUE * 2.5 : ATTRACTION_VALUE);
 
-        star.x += dx * pull;
-        star.y += dy * pull;
+        STAR.x += DX * PULL;
+        STAR.y += DY * PULL;
       }
     }
 
     // Fade white flashes
-    if (star.whiteValue > 0) {
-      star.whiteValue -= Math.max(0, star.whiteValue * 0.02);
+    if (STAR.whiteValue > 0) {
+      STAR.whiteValue -= Math.max(0, STAR.whiteValue * 0.02);
     }
 
     // Opacity and twinkle
-    if (star.opacity <= 0.005) {
-      star.opacity = 1;
-      if (Math.random() < 0.07) star.whiteValue = 1;
-    } else if (star.opacity > 0.02) {
-      star.opacity -= 0.005 * star.fadeSpeed;
+    if (STAR.opacity <= 0.005) {
+      STAR.opacity = 1;
+      if (Math.random() < 0.07) STAR.whiteValue = 1;
+    } else if (STAR.opacity > 0.02) {
+      STAR.opacity -= 0.005 * STAR.fadeSpeed;
     } else {
-      star.opacity -= 0.0001;
+      STAR.opacity -= 0.0001;
     }
 
     // Wrap at canvas edges
-    if (star.x < 0) star.x = width;
-    if (star.x > width) star.x = 0;
-    if (star.y < 0) star.y = height;
-    if (star.y > height) star.y = 0;
+    if (STAR.x < 0) STAR.x = WIDTH;
+    if (STAR.x > WIDTH) STAR.x = 0;
+    if (STAR.y < 0) STAR.y = HEIGHT;
+    if (STAR.y > HEIGHT) STAR.y = 0;
   }
 
   // Slowly decay pointer speed
-  cleanedUserSpeed *= 0.95;
-  if (cleanedUserSpeed < 0.05) cleanedUserSpeed = 0;
+  CLEANED_USER_SPEED *= 0.95;
+  if (CLEANED_USER_SPEED < 0.05) CLEANED_USER_SPEED = 0;
 
   // Ease attraction back to normal
-  attractionValue += (1 - attractionValue) * 0.06;
-  if (attractionValue > 1) attractionValue = 1;
+  ATTRACTION_VALUE += (1 - ATTRACTION_VALUE) * 0.06;
+  if (ATTRACTION_VALUE > 1) ATTRACTION_VALUE = 1;
 }
 
 // Draw star links and star circles
 function drawStarsWithLines() {
-  brush.clearRect(0, 0, width, height);
+  BRUSH.clearRect(0, 0, WIDTH, HEIGHT);
 
   // Lines between nearby stars
-  brush.lineWidth = 1;
-  for (let i = 0; i < stars.length; i++) {
-    for (let j = i + 1; j < stars.length; j++) {
-      const a = stars[i];
-      const b = stars[j];
-      const dx = a.x - b.x;
-      const dy = a.y - b.y;
-      const dist = Math.hypot(dx, dy);
+  BRUSH.lineWidth = 1;
+  for (let I = 0; I < STARS.length; I++) {
+    for (let J = I + 1; J < STARS.length; J++) {
+      const A = STARS[I];
+      const B = STARS[J];
+      const DX = A.x - B.x;
+      const DY = A.y - B.y;
+      const DIST = Math.hypot(DX, DY);
 
-      if (dist < maxLinkDistance) {
-        const opacityModifier = (a.opacity + b.opacity) / 2;
-        const alpha =
-          (1 - dist / maxLinkDistance) * opacityModifier;
+      if (DIST < MAX_LINK_DISTANCE) {
+        const OPACITY_MODIFIER = (A.opacity + B.opacity) / 2;
+        const ALPHA =
+          (1 - DIST / MAX_LINK_DISTANCE) * OPACITY_MODIFIER;
 
-        brush.strokeStyle = `rgba(0, 0, 0, ${alpha})`;
-        brush.beginPath();
-        brush.moveTo(a.x, a.y);
-        brush.lineTo(b.x, b.y);
-        brush.stroke();
+        BRUSH.strokeStyle = `rgba(0, 0, 0, ${ALPHA})`;
+        BRUSH.beginPath();
+        BRUSH.moveTo(A.x, A.y);
+        BRUSH.lineTo(B.x, B.y);
+        BRUSH.stroke();
       }
     }
   }
 
   // Star bodies
-  for (const star of stars) {
-    let tempRed = 255 * star.whiteValue + star.redValue;
-    if (tempRed > 255) tempRed = 255;
+  for (const STAR of STARS) {
+    let TEMP_RED = 255 * STAR.whiteValue + STAR.redValue;
+    if (TEMP_RED > 255) TEMP_RED = 255;
 
-    const tempGreen = 255 * star.whiteValue;
-    const tempBlue = 255 * star.whiteValue;
-    const tempSize = star.whiteValue * 2 + star.size;
+    const TEMP_GREEN = 255 * STAR.whiteValue;
+    const TEMP_BLUE = 255 * STAR.whiteValue;
+    const TEMP_SIZE = STAR.whiteValue * 2 + STAR.size;
 
-    brush.beginPath();
-    brush.fillStyle = `rgba(${tempRed}, ${tempGreen}, ${tempBlue}, ${star.opacity})`;
-    brush.arc(star.x, star.y, tempSize, 0, Math.PI * 2);
-    brush.fill();
+    BRUSH.beginPath();
+    BRUSH.fillStyle = `rgba(${TEMP_RED}, ${TEMP_GREEN}, ${TEMP_BLUE}, ${STAR.opacity})`;
+    BRUSH.arc(STAR.x, STAR.y, TEMP_SIZE, 0, Math.PI * 2);
+    BRUSH.fill();
   }
 }
 
@@ -396,35 +394,35 @@ function drawStarsWithLines() {
 
 // Match canvas to viewport and rescale stars
 function resizeCanvas() {
-  const oldWidth = width;
-  const oldHeight = height;
-  const oldScaleFactor = scaleFactor;
+  const OLD_WIDTH = WIDTH;
+  const OLD_HEIGHT = HEIGHT;
+  const OLD_SCALE_FACTOR = SCALE_FACTOR;
 
-  width = window.innerWidth;
-  height = window.innerHeight;
-  canvas.width = width;
-  canvas.height = height;
+  WIDTH = window.innerWidth;
+  HEIGHT = window.innerHeight;
+  CANVAS.width = WIDTH;
+  CANVAS.height = HEIGHT;
 
-  scaleFactor = Math.min(width + height, 2000);
-  maxStarCount = scaleFactor / 10;
-  maxLinkDistance = scaleFactor / 10;
+  SCALE_FACTOR = Math.min(WIDTH + HEIGHT, 2000);
+  MAX_STAR_COUNT = SCALE_FACTOR / 10;
+  MAX_LINK_DISTANCE = SCALE_FACTOR / 10;
 
-  if (oldWidth !== 0) {
-    const scaleX = width / oldWidth;
-    const scaleY = height / oldHeight;
-    const scaleSize = scaleFactor / oldScaleFactor;
+  if (OLD_WIDTH !== 0) {
+    const SCALE_X = WIDTH / OLD_WIDTH;
+    const SCALE_Y = HEIGHT / OLD_HEIGHT;
+    const SCALE_SIZE = SCALE_FACTOR / OLD_SCALE_FACTOR;
 
-    for (const star of stars) {
-      star.x *= scaleX;
-      star.y *= scaleY;
-      star.size *= scaleSize;
+    for (const STAR of STARS) {
+      STAR.x *= SCALE_X;
+      STAR.y *= SCALE_Y;
+      STAR.size *= SCALE_SIZE;
     }
   }
 }
 
 // Main drawing loop
 function animate() {
-  if (!freezeConstellation) moveStars();
+  if (!FREEZE_CONSTELLATION) moveStars();
   drawStarsWithLines();
   requestAnimationFrame(animate);
 }
@@ -435,23 +433,23 @@ function animate() {
 
 // Update pointer speed from mouse or touch
 function updateSpeed(x, y, time) {
-  const dx = x - lastX;
-  const dy = y - lastY;
-  const dt = time - lastTime;
+  const DX = x - LAST_X;
+  const DY = y - LAST_Y;
+  const DT = time - LAST_TIME;
 
-  if (dt > 0) {
-    pointerSpeed = Math.sqrt(dx * dx + dy * dy) / dt;
+  if (DT > 0) {
+    POINTER_SPEED = Math.sqrt(DX * DX + DY * DY) / DT;
   }
 
-  smoothSpeed = smoothSpeed * 0.8 + pointerSpeed * 10;
-  cleanedUserSpeed = Math.min(
-    smoothSpeed * (scaleFactor / 1100) ** 2,
+  SMOOTH_SPEED = SMOOTH_SPEED * 0.8 + POINTER_SPEED * 10;
+  CLEANED_USER_SPEED = Math.min(
+    SMOOTH_SPEED * (SCALE_FACTOR / 1100) ** 2,
     10
   );
 
-  lastX = x;
-  lastY = y;
-  lastTime = time;
+  LAST_X = x;
+  LAST_Y = y;
+  LAST_TIME = time;
 }
 
 window.addEventListener('mousemove', (e) =>
@@ -459,24 +457,24 @@ window.addEventListener('mousemove', (e) =>
 );
 
 window.addEventListener('mousedown', (e) => {
-  attractionValue = -2;
-  lastX = e.clientX;
-  lastY = e.clientY;
-  lastTime = e.timeStamp;
+  ATTRACTION_VALUE = -2;
+  LAST_X = e.clientX;
+  LAST_Y = e.clientY;
+  LAST_TIME = e.timeStamp;
   updateSpeed(e.clientX, e.clientY, e.timeStamp);
-  cleanedUserSpeed = Math.min(cleanedUserSpeed + 0.8, 3);
+  CLEANED_USER_SPEED = Math.min(CLEANED_USER_SPEED + 0.8, 3);
 });
 
 window.addEventListener('touchstart', (e) => {
   const t = e.touches[0];
   if (!t) return;
 
-  attractionValue = -2;
-  lastX = t.clientX;
-  lastY = t.clientY;
-  lastTime = e.timeStamp;
+  ATTRACTION_VALUE = -2;
+  LAST_X = t.clientX;
+  LAST_Y = t.clientY;
+  LAST_TIME = e.timeStamp;
   updateSpeed(t.clientX, t.clientY, e.timeStamp);
-  cleanedUserSpeed = Math.min(cleanedUserSpeed + 0.8, 3);
+  CLEANED_USER_SPEED = Math.min(CLEANED_USER_SPEED + 0.8, 3);
 });
 
 window.addEventListener('touchmove', (e) => {
@@ -491,10 +489,10 @@ window.addEventListener('touchmove', (e) => {
 
 // Trigger slide-out and navigate to a new URL
 function transitionTo(url, isMenu = false) {
-  if (isTransitioning) return;
-  isTransitioning = true;
+  if (IS_TRANSITIONING) return;
+  IS_TRANSITIONING = true;
 
-  const page = getPage();
+  const PAGE = getPage();
 
   if (isMenu) {
     sessionStorage.setItem('suppressHomeBack', '1');
@@ -503,50 +501,50 @@ function transitionTo(url, isMenu = false) {
   }
 
   if (url === 'back') {
-    const stored = localStorage.getItem('homepageBackUrl');
-    if (!stored) {
-      isTransitioning = false;
+    const STORED = localStorage.getItem('homepageBackUrl');
+    if (!STORED) {
+      IS_TRANSITIONING = false;
       return;
     }
-    url = stored;
+    url = STORED;
   }
 
-  if (!page) {
+  if (!PAGE) {
     window.location.href = url;
     return;
   }
 
-  freezeConstellation = true;
+  FREEZE_CONSTELLATION = true;
   saveStarsToStorage();
 
-freeScrollLayout(page);
-page.classList.add('slide-out');
+  freeScrollLayout(PAGE);
+  PAGE.classList.add('slide-out');
 
-const slideSeconds = isHomepage() ? 1.2 : 0.6;
+  const SLIDE_SECONDS = isHomepage() ? 1.2 : 0.6;
 
-setTimeout(() => {
-  window.location.href = url;
-}, slideSeconds * 1000);
+  setTimeout(() => {
+    window.location.href = url;
+  }, SLIDE_SECONDS * 1000);
 }
 
 // Save current starfield to localStorage
 function saveStarsToStorage() {
   try {
-    localStorage.setItem('constellationStars', JSON.stringify(stars));
+    localStorage.setItem('constellationStars', JSON.stringify(STARS));
     localStorage.setItem(
       'constellationMeta',
       JSON.stringify({
-        width,
-        height,
-        scaleFactor,
-        attractionValue,
-        cleanedUserSpeed,
-        smoothSpeed,
-        pointerSpeed
+        width: WIDTH,
+        height: HEIGHT,
+        scaleFactor: SCALE_FACTOR,
+        attractionValue: ATTRACTION_VALUE,
+        cleanedUserSpeed: CLEANED_USER_SPEED,
+        smoothSpeed: SMOOTH_SPEED,
+        pointerSpeed: POINTER_SPEED
       })
     );
-  } catch (err) {
-    console.warn('Could not save stars:', err);
+  } catch (ERR) {
+    console.warn('Could not save stars:', ERR);
   }
 }
 
