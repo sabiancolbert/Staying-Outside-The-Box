@@ -24,14 +24,23 @@ function lockScrollToContainer(page = getPage()) {
   if (page) page.style.overflowY = 'auto';
 }
 
-// Let the whole page scroll normally
+// Let the whole page scroll normally during transition
 function freeScrollLayout(page = getPage()) {
   const html = document.documentElement;
   const body = document.body;
 
+  // 1) Read the current scroll position from the *old* scroll container
+  const currentScroll = (page && page.scrollTop);
+
+  // 2) Switch to window/body scrolling
   html.style.overflowY = 'auto';
   body.style.height = 'auto';
-  if (page) page.style.overflowY = 'visible';
+  page.style.overflowY = 'visible';
+
+  // 3) After layout updates, apply the same scroll offset to the new scroll container
+  requestAnimationFrame(() => {
+    window.scrollTo(0, currentScroll);
+  });
 }
 
 /*==============================*
