@@ -1,3 +1,60 @@
+/*==============================================================*
+ *                           CSS MAP
+ *==============================================================*
+
+  1. DESIGN TOKENS / ROOT VARIABLES
+     - Colors, shadows, animation timing, transitions
+
+  2. LAYOUT, BACKGROUND & CANVAS LAYERS
+     - html + body structure
+     - fixed background image
+     - constellations canvas layer
+
+  3. MAIN CONTENT & TYPOGRAPHY
+     - main, footer
+     - h2, p
+     - dividers + hr
+
+  4. ARTICLES & LINK BASICS
+     - article layout
+     - link base styling
+     - hidden state handling
+
+  5. IMAGE STYLES & IMAGE BUTTONS
+     - circular avatars
+     - decorative border wrapper
+     - homepage “imgButton”s
+
+  6. INTERACTION STATES (HOVER, FOCUS, TOUCH)
+     - hoverTogether system
+     - nav icon hover effects
+     - button hover + text effects
+
+  7. LINK VARIANTS & UTILITIES
+     - .clean, .dead, .premium
+
+  8. NAVIGATION ICON BUTTON STRIP
+     - .navButtons row layout
+     - per-icon styling
+
+  9. GENERIC BUTTONS
+     - pill-button shape
+     - background border image
+     - image-filled text span
+
+ 10. CHARACTER NAME COLORS (SCRIPT PAGES)
+     - base text styling
+     - per-character color overrides
+
+ 11. SLIDE-IN PAGE TRANSITION SYSTEM
+     - #transitionContainer
+     - homepage vs other page motions
+     - JS-controlled classes (.homeJs, .otherJs, .noJs)
+
+ 12. REDUCED-MOTION ACCESSIBILITY
+     - disables starfield + animations
+
+ *==============================================================*/
 /*========================================*
  *  DESIGN TOKENS & ROOT VARIABLES
  *========================================*/
