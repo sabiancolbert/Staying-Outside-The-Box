@@ -22,9 +22,9 @@
 html {
   margin: 0;
   padding: 0;
-  /*overflow: hidden;                          /* Disable window-level scroll; use #transitionContainer instead */
-  overflow-x: hidden;                        /* keep horizontal hidden */
-  overflow-y: auto;
+  overflow: hidden;                          /* Disable window-level scroll; use #transitionContainer instead */
+  /*overflow-x: hidden;                        /* keep horizontal hidden */
+  /*overflow-y: auto;*/
   background-color: #300060;                 /* Fallback solid background */
 }
 
