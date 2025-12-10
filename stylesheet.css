@@ -443,7 +443,7 @@ button span {
 
 /*--- Other pages animation (slides upward into view) ---*/
 .otherJs #transitionContainer {
-  transform: translateY(100vh);
+  transform: translateY(120vh);
   transition: transform var(--slide-duration) ease-in-out;
 }
 
@@ -452,7 +452,7 @@ button span {
 }
 
 .otherJs #transitionContainer.slide-out {
-  transform: translateY(100vh);
+  transform: translateY(120vh);
 }
 
 /* No-JavaScript fallback: disable animation entirely */
