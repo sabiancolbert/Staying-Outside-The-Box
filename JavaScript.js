@@ -13,7 +13,7 @@ let isTransitioning = false;       // prevents double navigation during transiti
  *==============================*/
 
 window.addEventListener('load', () => {
-  applyFreeLayout();
+  //applyFreeLayout();
   const page = document.getElementById('transitionContainer');
 
   // Read and clear the "came from menu" flag
