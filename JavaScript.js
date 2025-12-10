@@ -56,6 +56,9 @@ window.addEventListener('load', () => {
     // then lock layout to viewport height.
     requestAnimationFrame(() => {
       page.classList.add('ready');
+      
+      // Lock html height to viewport to prevent background flashes
+  document.documentElement.style.height = window.innerHeight + "px";
     });
   }
 
@@ -588,5 +591,6 @@ animate();
 
 // Keep canvas & layout synced with viewport size
 window.addEventListener('resize', () => {
+  document.documentElement.style.height = window.innerHeight + "px";
   resizeCanvas();
 });
