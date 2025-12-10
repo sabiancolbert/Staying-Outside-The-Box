@@ -170,6 +170,13 @@ document.addEventListener("touchend", () => {
   try { document.activeElement?.blur(); } catch {}
 });
 
+// Toggle an element's visibility via the [hidden] attribute
+function toggleElement(ID) {
+  if (!ID) return;
+  const EL = document.getElementById(ID);
+  if (EL) EL.hidden = !EL.hidden;
+}
+
 function wireTouchEvent(selector = "a") {
   const items = document.querySelectorAll(selector);
   if (!items.length) return;
