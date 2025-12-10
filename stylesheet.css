@@ -1,60 +1,62 @@
 /*==============================================================*
  *                           CSS MAP
  *==============================================================*
-
-  1. DESIGN TOKENS / ROOT VARIABLES
-     - Colors, shadows, animation timing, transitions
-
-  2. LAYOUT, BACKGROUND & CANVAS LAYERS
-     - html + body structure
-     - fixed background image
-     - constellations canvas layer
-
-  3. MAIN CONTENT & TYPOGRAPHY
-     - main, footer
-     - h2, p
-     - dividers + hr
-
-  4. ARTICLES & LINK BASICS
-     - article layout
-     - link base styling
-     - hidden state handling
-
-  5. IMAGE STYLES & IMAGE BUTTONS
-     - circular avatars
-     - decorative border wrapper
-     - homepage “imgButton”s
-
-  6. INTERACTION STATES (HOVER, FOCUS, TOUCH)
-     - hoverTogether system
-     - nav icon hover effects
-     - button hover + text effects
-
-  7. LINK VARIANTS & UTILITIES
-     - .clean, .dead, .premium
-
-  8. NAVIGATION ICON BUTTON STRIP
-     - .navButtons row layout
-     - per-icon styling
-
-  9. GENERIC BUTTONS
-     - pill-button shape
-     - background border image
-     - image-filled text span
-
- 10. CHARACTER NAME COLORS (SCRIPT PAGES)
-     - base text styling
-     - per-character color overrides
-
- 11. SLIDE-IN PAGE TRANSITION SYSTEM
-     - #transitionContainer
-     - homepage vs other page motions
-     - JS-controlled classes (.homeJs, .otherJs, .noJs)
-
- 12. REDUCED-MOTION ACCESSIBILITY
-     - disables starfield + animations
-
- *==============================================================*/
+ *
+ *  1. DESIGN TOKENS & ROOT VARIABLES
+ *     - Colors, shadows, animation timing, transitions
+ *
+ *  2. LAYOUT, BACKGROUND & CANVAS LAYERS
+ *     - html + body structure
+ *     - fixed background image
+ *     - constellations canvas layer
+ *
+ *  3. MAIN CONTENT & TYPOGRAPHY
+ *     - main, footer
+ *     - headings & paragraphs
+ *     - dividers + hr
+ *
+ *  4. ARTICLES & LINK BASICS
+ *     - article layout
+ *     - base link styling
+ *     - [hidden] handling
+ *
+ *  5. IMAGE STYLES & IMAGE BUTTONS
+ *     - circular avatars
+ *     - decorative border wrapper
+ *     - homepage “imgButton”s
+ *
+ *  6. INTERACTION STATES (HOVER, FOCUS, TOUCH)
+ *     - hoverTogether system
+ *     - nav icon hover effects
+ *     - button hover + text effects
+ *
+ *  7. LINK VARIANTS & UTILITIES
+ *     - .clean, .dead, .premium
+ *
+ *  8. NAVIGATION ICON BUTTON STRIP
+ *     - .navButtons row layout
+ *     - icon button styling
+ *
+ *  9. GENERIC BUTTONS
+ *     - pill-button shape
+ *     - border-image background
+ *     - image-filled text span
+ *
+ * 10. CHARACTER NAME COLORS (SCRIPT PAGES)
+ *     - shared name styling
+ *     - per-character colors
+ *
+ * 11. SLIDE-IN PAGE TRANSITION SYSTEM
+ *     - #transitionContainer
+ *     - homepage vs other page motions
+ *     - .homeJs / .otherJs / .noJs
+ *
+ * 12. REDUCED-MOTION ACCESSIBILITY
+ *     - disables starfield and transitions
+ *
+ *  NOTE: Each major block is marked with /* #region ... *\/
+ *        so editors can fold and jump between sections.
+ *==============================================================*
 
 
 /* #region 1. DESIGN TOKENS & ROOT VARIABLES */
@@ -63,28 +65,28 @@
  *========================================*/
 
 :root {
-  /* Slide offset (JS can overwrite this) */
-  --slide-distance: 100vh;
+  /* Slide offset */
+  --SLIDE_DISTANCE: 100vh;
 
-  /* Slide timing (JS overwrites this too) */
-  --slide-duration: 0.6s;
+  /* Slide timing */
+  --SLIDE_DURATION: 0.6s;
 
-  /* Shared glow */
-  --shadow: 0 0 20px rgba(150, 0, 255, 1);
+  /* Glow */
+  --SHADOW: 0 0 20px rgba(150, 0, 255, 1);
 
   /* Brand colors */
-  --link-light: #ee0000;
-  --link-dark: #880000;
-  --no-link: #bdbdbd;
+  --LINK_LIGHT: #ee0000;
+  --LINK_DARK:  #880000;
+  --NO_LINK:    #bdbdbd;
 
-  /* Transition easings */
-  --slow-transform: 0.3s ease-out;
-  --slow-border: 0.3s ease-out;
-  --slow-shadow: 0.7s ease-out;
-  --slow-color: 0.5s ease-out;
+  /* Transitions */
+  --SLOW_TRANSFORM: 0.3s ease-out;
+  --SLOW_BORDER:    0.3s ease-out;
+  --SLOW_SHADOW:    0.7s ease-out;
+  --SLOW_COLOR:     0.5s ease-out;
 }
 
-/* #endregion 1. DESIGN TOKENS & ROOT VARIABLES */
+/* #endregion 1 */
 
 
 
@@ -93,28 +95,21 @@
  *  2 LAYOUT, BACKGROUND & CANVAS LAYERS
  *========================================*/
 
-/* Root page structure */
 html {
   margin: 0;
   padding: 0;
-  
-  /* DONT TOUCH - important for proper scroll transition */
-  overflow: auto;                         /* JS swaps body/html scroll control */
-  
-  background-color: #300060;              /* Fallback behind everything */
+  overflow: auto;
+  background-color: #300060;
 }
 
 body {
-  display: flex;                          /* Vertical layout wrapper */
+  display: flex;
   flex-direction: column;
   align-items: stretch;
-
   min-height: 100dvh;
-  
-  /* DONT TOUCH - important for proper scroll transition */
   height: auto;
-  overflow: hidden;                       /* Default: no body scroll */
-  
+  overflow: hidden;
+
   margin: 0;
   padding: 0;
   background: transparent;
@@ -122,10 +117,9 @@ body {
   text-align: center;
   font-family: 'New Rocker';
   font-size: 7dvmin;
-  color: var(--no-link);
+  color: var(--NO_LINK);
 }
 
-/* Fixed background image behind everything */
 body::before {
   content: "";
   position: fixed;
@@ -135,22 +129,20 @@ body::before {
   background-image: url("/Resources/Background.webp");
   background-size: cover;
   background-position: center;
-  background-repeat: no-repeat;
-  z-index: -2;                            /* Behind canvas + content */
-  pointer-events: none;                   /* Never block clicks */
+  z-index: -2;
+  pointer-events: none;
 }
 
-/* Full-screen animated constellations canvas */
 #constellations {
   position: fixed;
   inset: 0;
   width: 100%;
   height: 100%;
-  z-index: -1;                            /* Above bg, below content */
   pointer-events: none;
+  z-index: -1;
 }
 
-/* #endregion 2. LAYOUT, BACKGROUND & CANVAS LAYERS */
+/* #endregion 2 */
 
 
 
@@ -159,7 +151,6 @@ body::before {
  *  3 MAIN CONTENT + TYPOGRAPHY
  *========================================*/
 
-/* Main layout + footer */
 main {
   padding: 2dvmin;
 }
@@ -169,9 +160,8 @@ footer p {
   padding: 2dvmin;
 }
 
-/* Headings & text */
 h2 {
-  margin-top: -7dvmin;                    /* Stylized “pulled up” heading */
+  margin-top: -7dvmin;
   font-size: 4dvmin;
 }
 
@@ -180,22 +170,19 @@ p {
   font-size: 6dvmin;
 }
 
-/* Horizontal rules & dividers */
 hr {
   width: 75dvw;
   height: 4px;
   border: none;
   background-image: url("/Resources/Hr.webp");
   background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
 }
 
 .divider {
-  width: 45dvw;                           /* Smaller version of hr */
+  width: 45dvw;
 }
 
-/* #endregion 3. MAIN CONTENT & TYPOGRAPHY */
+/* #endregion 3 */
 
 
 
@@ -204,7 +191,6 @@ hr {
  *  4 ARTICLES & LINK BASICS
  *========================================*/
 
-/* Article blocks used for grouped image/link sections */
 article {
   display: flex;
   flex-direction: column;
@@ -213,25 +199,22 @@ article {
   margin: 0 auto 3dvmin;
 }
 
-/* Hide sections with [hidden] (used for chapters, etc.) */
 article[hidden] {
   display: none !important;
 }
 
-/* Base link styling */
 a {
   display: inline-block;
-  margin: 0 auto;
   padding-bottom: 1dvmin;
-  color: var(--link-light);
-  text-decoration: none;
+  margin: 0 auto;
+  color: var(--LINK_LIGHT);
   transition:
-    transform var(--slow-transform),
-    color var(--slow-color),
-    text-shadow var(--slow-shadow);
+    transform var(--SLOW_TRANSFORM),
+    color var(--SLOW_COLOR),
+    text-shadow var(--SLOW_SHADOW);
 }
 
-/* #endregion 4. ARTICLES & LINK BASICS */
+/* #endregion 4 */
 
 
 
@@ -240,255 +223,206 @@ a {
  *  5 IMAGE STYLES & IMAGE BUTTONS
  *========================================*/
 
-/* Base circular images */
 img {
   width: 40dvmin;
   height: 40dvmin;
   border-radius: 50%;
   object-fit: cover;
-  overflow: hidden;
 }
 
-/* Wrapper that adds a decorative circular border image */
 .imgBorder {
   display: inline-block;
   position: relative;
   border-radius: 50%;
-  line-height: 0;                         /* Remove inline gap */
 }
 
-/* Border image around circular avatar */
 .imgBorder::before {
   content: "";
   position: absolute;
-  inset: -2dvmin;                         /* Thickness of border frame */
+  inset: -2dvmin;
   background-image: url("/Resources/Image Border.webp");
   background-size: 100% 100%;
-  background-repeat: no-repeat;
-  background-position: center;
   border-radius: 50%;
   z-index: -1;
 }
 
-.imgBorder img {
-  display: block;                         /* Kill baseline gap under img */
-}
-
-/* Homepage circular image buttons */
 .imgButton {
   display: block;
   width: auto;
   height: 20dvmin;
-  margin-top: 3dvmin;
   padding: 5dvmin;
+  margin-top: 3dvmin;
 
   background-color: black;
-  font: 1dvmin Arial;                     /* Fallback text if image fails */
-  object-fit: contain;                    /* Show full badge */
+  font: 1dvmin Arial;
+  object-fit: contain;
+
   border-radius: 10dvmin;
-  border: 3px solid var(--no-link);
+  border: 3px solid var(--NO_LINK);
 
   transition:
-    transform var(--slow-transform),
-    box-shadow var(--slow-shadow),
-    border-color var(--slow-border);
+    transform var(--SLOW_TRANSFORM),
+    box-shadow var(--SLOW_SHADOW),
+    border-color var(--SLOW_BORDER);
 }
 
-/* #endregion 5. IMAGE STYLES & IMAGE BUTTONS */
+/* #endregion 5 */
 
 
 
 /* #region 6. INTERACTION STATES */
 /*========================================*
- *  6 INTERACTION STATES (HOVER, FOCUS, TOUCH)
+ *  6 INTERACTION STATES
  *========================================*/
 
-/* Basic link hover scaling */
 a:hover {
   transform: scale(1.05);
-  text-shadow: var(--shadow);
-  color: var(--link-dark);
+  text-shadow: var(--SHADOW);
+  color: var(--LINK_DARK);
 }
 
-/* Hover or focus on a group boosts its image button + links */
 .hoverTogether:hover .imgButton,
 .hoverTogether:focus-within .imgButton {
-  box-shadow: var(--shadow);
-  border-color: var(--link-dark);
+  border-color: var(--LINK_DARK);
+  box-shadow: var(--SHADOW);
 }
 
 .hoverTogether:hover a,
 .hoverTogether:focus-within a {
-  text-shadow: var(--shadow);
-  color: var(--link-dark);
+  color: var(--LINK_DARK);
+  text-shadow: var(--SHADOW);
 }
 
-/* Active state on touch still gets glow/color */
-.hoverTogether a:active {
-  text-shadow: var(--shadow);
-  color: var(--link-dark);
-}
-
-/* Nav icon glow & scale */
-.navButtons a:hover img,
-.navButtons a:active img {
-  transform: scale(1.05);
-  border-color: var(--link-dark);
-  box-shadow: var(--shadow);
-}
-
-/* Button hover/active glow + slight scale */
 button:hover,
 button:active {
-  text-shadow: var(--shadow);
-  color: var(--link-dark);
-  box-shadow: var(--shadow);
+  text-shadow: var(--SHADOW);
+  color: var(--LINK_DARK);
+  box-shadow: var(--SHADOW);
   transform: scale(1.05);
 }
 
-/* Button text loses image-fill and becomes bright red when active */
 button:hover span,
 button:active span {
   background-image: none;
-  -webkit-background-clip: border-box;
-  background-clip: border-box;
-
-  color: var(--link-light);
-  -webkit-text-fill-color: var(--link-light);
-  text-shadow: var(--shadow);
+  color: var(--LINK_LIGHT);
+  -webkit-text-fill-color: var(--LINK_LIGHT);
+  text-shadow: var(--SHADOW);
 }
 
-/* #endregion 6. INTERACTION STATES */
+/* #endregion 6 */
 
 
 
-/* #region 7. LINK VARIANTS & UTILITIES */
+/* #region 7. LINK VARIANTS */
 /*========================================*
- *  7 LINK VARIANTS & UTILITY CLASSES
+ *  7 LINK VARIANTS
  *========================================*/
 
-/* Light colored homepage links */
 .clean {
-  color: var(--no-link);
+  color: var(--NO_LINK);
 }
 
-/* Slightly stronger scale for “clean” links */
 .clean:hover {
   transform: scale(1.1);
 }
 
-/* “Dead” or placeholder links: always dim, no scale */
 .dead,
 .dead:hover {
   transform: scale(1);
-  color: var(--link-dark);
+  color: var(--LINK_DARK);
 }
 
-/* Highlighted premium text */
 .premium {
-  text-shadow: var(--shadow);
+  text-shadow: var(--SHADOW);
 }
 
-/* #endregion 7. LINK VARIANTS & UTILITIES */
+/* #endregion 7 */
 
 
 
-/* #region 8. NAVIGATION ICON BUTTON STRIP */
+/* #region 8. NAV BUTTON STRIP */
 /*========================================*
  *  8 NAVIGATION ICON BUTTON STRIP
  *========================================*/
 
 .navButtons {
   display: flex;
-  flex-direction: row;
-  align-items: center;
   justify-content: center;
-  width: fit-content;
   margin: 0 auto;
 }
 
 .navButtons img {
   width: 12dvmin;
   height: 12dvmin;
+  border-radius: 50%;
   padding: 1dvmin;
   margin: 0 10dvw;
 
-  font: 1dvmin Arial;
-  border-radius: 50%;
-  border: 3px solid var(--no-link);
-  object-fit: cover;
+  border: 3px solid var(--NO_LINK);
 
   transition:
-    transform var(--slow-transform),
-    box-shadow var(--slow-shadow),
-    border-color var(--slow-border);
+    transform var(--SLOW_TRANSFORM),
+    box-shadow var(--SLOW_SHADOW),
+    border-color var(--SLOW_BORDER);
 }
 
-/* #endregion 8. NAVIGATION ICON BUTTON STRIP */
+/* #endregion 8 */
 
 
 
 /* #region 9. GENERIC BUTTONS */
 /*========================================*
- *  9 GENERIC BUTTON STYLING
+ *  9 GENERIC BUTTONS
  *========================================*/
 
 button {
-  -webkit-appearance: none;
   appearance: none;
-
   display: block;
   margin: 1dvmin auto;
   padding: 0.5em 1.5em;
 
   border: none;
   border-radius: 9999px;
+
   background: transparent;
 
   font-family: 'New Rocker';
   font-size: 5dvmin;
 
-  /* Outer frame image (pill border) */
   background-image: url("/Resources/Button Border.webp");
   background-size: 110% 110%;
-  background-position: center;
   background-repeat: no-repeat;
+  background-position: center;
 
   transition:
-    transform var(--slow-transform),
-    box-shadow var(--slow-shadow);
+    transform var(--SLOW_TRANSFORM),
+    box-shadow var(--SLOW_SHADOW);
 }
 
-/* Span text uses image as fill for “metallic ink” look */
 button span {
   display: inline-block;
-
   background-image: url("/Resources/Button Text.webp");
   background-size: cover;
   background-position: center;
-  background-repeat: no-repeat;
-
   color: transparent;
   -webkit-text-fill-color: transparent;
   -webkit-background-clip: text;
-  background-clip: text;
 
   transition:
     color 0.3s ease-out,
-    text-shadow var(--slow-shadow),
+    text-shadow var(--SLOW_SHADOW),
     -webkit-text-fill-color 0.9s ease-out;
 }
 
-/* #endregion 9. GENERIC BUTTONS */
+/* #endregion 9 */
 
 
 
-/* #region 10. CHARACTER NAME COLORS */
+/* #region 10. CHARACTER COLORS */
 /*========================================*
- *  10 CHARACTER NAME COLORS (SCRIPT PAGES)
+ *  10 CHARACTER NAME COLORS
  *========================================*/
 
-/* Shared character name text treatment */
 .roman,
 .sage,
 .elena,
@@ -503,118 +437,91 @@ button span {
   font-weight: bold;
 }
 
-/* Individual character colors */
 .roman,
-.sage {
-  color: red;
-}
+.sage { color: red; }
 
-.elena {
-  color: yellow;
-}
+.elena { color: yellow; }
 
 .iris,
-.darian {
-  color: blue;
-}
+.darian { color: blue; }
 
-.walter {
-  color: brown;
-}
+.walter { color: brown; }
 
-.trent {
-  color: orange;
-}
+.trent { color: orange; }
 
-.dave {
-  color: pink;
-}
+.dave { color: pink; }
 
-.fireRider {
-  color: firebrick;
-}
+.fireRider { color: firebrick; }
 
-.sidecharacter {
-  color: inherit;
-}
+.sidecharacter { color: inherit; }
 
-/* #endregion 10. CHARACTER NAME COLORS */
+/* #endregion 10 */
 
 
 
-/* #region 11. SLIDE-IN PAGE TRANSITION SYSTEM */
+/* #region 11. SLIDE-IN PAGE TRANSITIONS */
 /*========================================*
  *  11 SLIDE-IN PAGE TRANSITION SYSTEM
  *========================================*/
 
-/* Scrollable content wrapper */
 #transitionContainer {
   flex: 1;
   min-height: 100dvh;
   width: 100%;
-  
-  /* DONT TOUCH - important for proper scroll transition */
-  overflow: visible; /* JS swaps scroll responsibility */
+  overflow: visible;
 }
 
-/* Homepage slide (DOWN into view, OUT up) */
 .homeJs #transitionContainer {
-  transform: translateY(-100%); /* start above */
+  transform: translateY(-100%);
   transition: transform 1s ease-in-out;
 }
 
 .homeJs #transitionContainer.ready {
-  transform: translateY(0); /* fully in view */
+  transform: translateY(0);
 }
 
 .homeJs #transitionContainer.slide-out {
-  transform: translateY(-100%); /* back up */
+  transform: translateY(-100%);
 }
 
-/* Other pages slide (UP into view, OUT down) */
 .otherJs #transitionContainer {
-  transform: translateY(100vh); /* start below */
+  transform: translateY(100vh);
   transition: transform 0.6s ease-in-out;
 }
 
 .otherJs #transitionContainer.ready {
-  transform: translateY(0); /* fully in view */
+  transform: translateY(0);
 }
 
 .otherJs #transitionContainer.slide-out {
-  transition: transform var(--slide-duration) ease-in-out;
-  transform: translateY(var(--slide-distance)); /* back down */
+  transition: transform var(--SLIDE_DURATION) ease-in-out;
+  transform: translateY(var(--SLIDE_DISTANCE));
 }
 
-/* No-JS fallback: no transform / no animation */
 .noJs #transitionContainer {
   transform: none !important;
   transition: none !important;
 }
 
-/* No-JS fallback: normal scroll, no animations */
 .noJs body {
   overflow: auto;
 }
 
-/* #endregion 11. SLIDE-IN PAGE TRANSITION SYSTEM */
+/* #endregion 11 */
 
 
 
-/* #region 12. REDUCED-MOTION ACCESSIBILITY */
+/* #region 12. REDUCED MOTION */
 /*========================================*
- *  12 REDUCED-MOTION ACCESSIBILITY
+ *  12 REDUCED MOTION
  *========================================*/
 
 @media (prefers-reduced-motion: reduce) {
-  #constellations {
-    display: none;                        /* Disable animated starfield */
-  }
-
+  #constellations { display: none; }
   #transitionContainer {
     transform: translateY(0);
     transition: none;
   }
 }
 
-/* #endregion 12. REDUCED-MOTION ACCESSIBILITY */
+/* #endregion 12 */
