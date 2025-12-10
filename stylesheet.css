@@ -515,8 +515,8 @@ button span {
 /*---------- Homepage slide (DOWN into view, OUT up) ----------*/
 
 .homeJs #transitionContainer {
-  transform: translateY(calc(var(--slide-distance) * -1)); /* start above */
-  transition: transform var(--slide-duration) ease-in-out;
+  transform: translateY(-100%); /* start above */
+  transition: transform 0.6s ease-in-out;
 }
 
 .homeJs #transitionContainer.ready {
@@ -524,14 +524,14 @@ button span {
 }
 
 .homeJs #transitionContainer.slide-out {
-  transform: translateY(calc(var(--slide-distance) * -1)); /* back up */
+  transform: translateY(-100%); /* back up */
 }
 
 /*---------- Other pages slide (UP into view, OUT down) ----------*/
 
 .otherJs #transitionContainer {
-  transform: translateY(var(--slide-distance)); /* start below */
-  transition: transform var(--slide-duration) ease-in-out;
+  transform: translateY(100vh); /* start below */
+  transition: transform 0.6s ease-in-out;
 }
 
 .otherJs #transitionContainer.ready {
@@ -539,6 +539,7 @@ button span {
 }
 
 .otherJs #transitionContainer.slide-out {
+  transition: transform var(--slide-duration) ease-in-out;
   transform: translateY(var(--slide-distance)); /* back down */
 }
 
