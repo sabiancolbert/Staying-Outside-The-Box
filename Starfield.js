@@ -226,52 +226,57 @@ function moveStars() {
     STAR.x += STAR.vx * (CLEANED_USER_SPEED + 1);
     STAR.y += STAR.vy * (CLEANED_USER_SPEED + 1);
 
-    // Pointer pull / push zone around the cursor
-    if (LAST_TIME !== 0 && CLEANED_USER_SPEED > 0.19) {
+    // Pointer pull / push zone around the cursor in a radial form
+    if (LAST_TIME !== 0) {
       const DX = LAST_X - STAR.x;
       const DY = LAST_Y - STAR.y;
       const DIST_SQ = DX * DX + DY * DY;
+
       const MAX_INFLUENCE = 10000 * (SCALE_FACTOR / 500);
+      const MIN_TARGET_RADIUS = 2; // px radius for the "dot" around your finger
 
-      if (DIST_SQ > 4 && DIST_SQ < MAX_INFLUENCE) {
-        // Base strength shared by attraction (always on) and repulsion (burst)
-        const BASE_PULL =
-          0.01 *
-          CLEANED_USER_SPEED *
-          ((MAX_INFLUENCE - DIST_SQ) / MAX_INFLUENCE);
+      // If the star is extremely close, snap it into the dot
+      if (DIST_SQ <= MIN_TARGET_RADIUS * MIN_TARGET_RADIUS) {
+        STAR.x = LAST_X;
+        STAR.y = LAST_Y;
 
-        // Attraction is now simply BASE_PULL (no separate multiplier)
-        const ATTR_PULL = BASE_PULL;
-
-        // Repulsion uses its own scalar
-        const REP_PULL = BASE_PULL * REPULSION_VALUE;
-
+        // Kill most of its drift so it stays put
+        STAR.vx *= 0.2;
+        STAR.vy *= 0.2;
+      } else if (DIST_SQ < MAX_INFLUENCE) {
         const DIST = Math.sqrt(DIST_SQ) || 1;
+
+        // Even if CLEANED_USER_SPEED decays to 0, keep a small pull
+        const SPEED_FACTOR = 0.4 + CLEANED_USER_SPEED; // base + your motion
+        const FALLOFF = (MAX_INFLUENCE - DIST_SQ) / MAX_INFLUENCE;
+
+        const BASE_PULL = 0.015 * SPEED_FACTOR * FALLOFF;
+
+        const ATTR_PULL = BASE_PULL;
+        const REP_PULL = BASE_PULL * REPULSION_VALUE;
 
         // Unit radial vector (toward the pointer)
         const RAD_X = DX / DIST;
         const RAD_Y = DY / DIST;
 
-        // Unit tangential vector (perpendicular to radial)
-        // This defines orbit direction; kept the same for both attraction and repulsion
+        // Unit tangential vector (perpendicular) for orbit
         const TAN_X = -RAD_Y;
         const TAN_Y = RAD_X;
 
-        // 0 = straight line toward/from pointer, 1 = pure circular orbit
-        const CURVE = 0.45; // tweak 0.2–0.7 for more/less curve
-
+        // 0 = pure radial, 1 = pure orbit
+        const CURVE = 0.45;
         const MIX_R = 1 - CURVE;
         const MIX_T = CURVE;
 
-        // Attraction: toward pointer + tangential orbit
+        // Attraction direction (toward pointer + orbit)
         const ATTR_DIR_X = RAD_X * MIX_R + TAN_X * MIX_T;
         const ATTR_DIR_Y = RAD_Y * MIX_R + TAN_Y * MIX_T;
 
-        // Repulsion: away from pointer + SAME tangential direction
+        // Repulsion direction (away from pointer + same orbit direction)
         const REP_DIR_X = -RAD_X * MIX_R + TAN_X * MIX_T;
         const REP_DIR_Y = -RAD_Y * MIX_R + TAN_Y * MIX_T;
 
-        // Combine attraction + repulsion into one displacement
+        // Combine attraction + repulsion, scaled by distance
         const PULL_X =
           (ATTR_DIR_X * ATTR_PULL + REP_DIR_X * REP_PULL) * DIST;
         const PULL_Y =
