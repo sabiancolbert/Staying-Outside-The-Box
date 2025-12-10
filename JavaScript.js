@@ -129,7 +129,7 @@ window.addEventListener('pageshow', (event) => {
     // Reset scroll inside the transition container
     page.scrollTop = 0;
     
-    applyLockedLayout();
+    //applyLockedLayout();
     
 
 // Allow transitions again
