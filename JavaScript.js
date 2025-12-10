@@ -533,8 +533,8 @@ function moveStars() {
 
   for (const STAR of STARS) {
     // Basic drift scaled by pointer speed
-    STAR.x += (WIDTH / 2 - STAR.x) * 0.002;
-    STAR.y += (HEIGHT / 2 - STAR.y) * 0.002;
+    STAR.x += STAR.vx * (CLEANED_USER_SPEED + 1);
+    STAR.y += STAR.vy * (CLEANED_USER_SPEED + 1);
     // Pointer pull / push zone around the cursor
     if (LAST_TIME !== 0 && CLEANED_USER_SPEED > 0.19) {
       const DX = LAST_X - STAR.x;
@@ -549,8 +549,33 @@ function moveStars() {
           ((MAX_INFLUENCE - DIST_SQ) / MAX_INFLUENCE) *
           (ATTRACTION_VALUE < 0 ? ATTRACTION_VALUE * 2.5 : ATTRACTION_VALUE);
 
-        STAR.x += DX * PULL;
-        STAR.y += DY * PULL;
+        // Distance and a safe non-zero version
+        const DIST = Math.sqrt(DIST_SQ) || 1;
+      
+        // Unit radial vector (toward the pointer)
+        const RAD_X = DX / DIST;
+        const RAD_Y = DY / DIST;
+      
+        // Unit tangential vector (perpendicular to radial)
+        const TAN_X = -RAD_Y;
+        const TAN_Y = RAD_X;
+      
+        // 0 = straight line toward pointer, 1 = pure circular orbit
+        const CURVE = 0.45; // tweak 0.2–0.7 for more/less curve
+      
+        const MIX_R = 1 - CURVE;
+        const MIX_T = CURVE;
+      
+        // Blended direction: part radial, part tangential
+        const DIR_X = RAD_X * MIX_R + TAN_X * MIX_T;
+        const DIR_Y = RAD_Y * MIX_R + TAN_Y * MIX_T;
+      
+        // Re-project back into an XY pull using your existing PULL strength
+        const PULL_X = DIR_X * PULL * DIST;
+        const PULL_Y = DIR_Y * PULL * DIST;
+      
+        STAR.x += PULL_X;
+        STAR.y += PULL_Y;
       }
     }
 
