@@ -19,6 +19,13 @@
  *  GLOBAL BACKGROUND & PAGE STRUCTURE
  *========================================*/
 
+html {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;                          /* Disable window-level scroll; use #transitionContainer instead */
+  background-color: #300060;                 /* Fallback solid background */
+}
+
 body::before {
   content: "";                               /* Required to render ::before element */
   position: fixed;                           /* Full-screen static background image */
@@ -33,21 +40,14 @@ body::before {
   pointer-events: none;                      /* Allow clicks to pass through */
 }
 
-html {
-  margin: 0;
-  padding: 0;
-  overflow:hidden;
-  background-color: #300060;
-}
-
 body {
-  display: flex;
+  display: flex;                             /* Vertical layout wrapper */
   flex-direction: column;
   align-items: stretch;
 
   min-height: 100dvh;
-  height: 100%;
-  overflow:visible;
+  height: 100dvh;
+  overflow: hidden;                          /* Prevent body-level scrolling */
   margin: 0;
   padding: 0;
   background: transparent;
@@ -56,10 +56,6 @@ body {
   font-family: 'New Rocker';
   font-size: 7dvmin;
   color: var(--no-link);
-
-  /* 🔴 remove these: no extra scroll container */
-  /* overflow-x: hidden; */
-  /* overflow-y: auto;   */
 }
 
 /*========================================*
@@ -423,10 +419,10 @@ button span {
 
 /* Scrollable content wrapper */
 #transitionContainer {
-  flex: 1;
-  min-height: 100dvh;                      /* always at least full viewport */
+  flex: 1;                                  /* Take remaining vertical space */
+  min-height: 100dvh;
   width: 100%;
-  overflow-y: auto;                        /* local vertical scroll */
+  overflow-y: auto;                         /* Local vertical scroll */
   overflow-x: hidden;
 }
 
