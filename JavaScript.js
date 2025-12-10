@@ -14,20 +14,6 @@ let isTransitioning = false;
 // Main content wrapper
 const getPage = () => document.getElementById('transitionContainer');
 
-// Pick a slide duration based on how tall the page is
-function computeSlideDuration(page = getPage()) {
-  if (!page) return 0.6;
-
-  const vh =
-    window.innerHeight ||
-    document.documentElement.clientHeight ||
-    1;
-
-  const ratio = (page.offsetHeight || vh) / vh;
-  const fullness = Math.min(Math.max(ratio, 1), 4); // 1–4× viewport height
-  const t = (fullness - 1) / 3;                     // normalized 0–1
-  return 0.5 + 1.5 * t * t;                         // 0.5–2.0s eased
-}
 
 // Use #transitionContainer as the only scroll area
 function lockScrollToContainer(page = getPage()) {
@@ -70,11 +56,10 @@ window.addEventListener('load', () => {
 
   // Configure slide-in timing and lock scroll after transition
   if (page) {
-    const slideDuration = computeSlideDuration(page);
 
     document.documentElement.style.setProperty(
-      '--slide-duration',
-      `${slideDuration}s`
+    '--slide-duration',
+    '0.6s'
     );
 
     requestAnimationFrame(() => {
