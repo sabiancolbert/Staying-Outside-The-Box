@@ -375,13 +375,16 @@ function saveStarsToStorage() {
     localStorage.setItem(
       'constellationMeta',
       JSON.stringify({
-        width: WIDTH,
-        height: HEIGHT,
-        scaleFactor: SCALE_FACTOR,
-        attractionValue: ATTRACTION_VALUE,
-        cleanedUserSpeed: CLEANED_USER_SPEED,
-        smoothSpeed: SMOOTH_SPEED,
-        pointerSpeed: POINTER_SPEED
+        width:        WIDTH,
+        height:       HEIGHT,
+        scaleFactor:  SCALE_FACTOR,
+        attractionValue:   ATTRACTION_VALUE,
+        cleanedUserSpeed:  CLEANED_USER_SPEED,
+        smoothSpeed:       SMOOTH_SPEED,
+        pointerSpeed:      POINTER_SPEED,
+        lastX:        LAST_X,
+        lastY:        LAST_Y,
+        lastTime:     LAST_TIME
       })
     );
   } catch (ERR) {
@@ -458,11 +461,25 @@ function initStars() {
             }
           }
 
-          // Restore motion state and attraction settings
-          ATTRACTION_VALUE = META.attractionValue ?? 1;
-          CLEANED_USER_SPEED = META.cleanedUserSpeed ?? 0;
-          SMOOTH_SPEED = META.smoothSpeed ?? 0;
-          POINTER_SPEED = META.pointerSpeed ?? 0;
+          // Restore motion state, attraction, and pointer info
+          ATTRACTION_VALUE   = META.attractionValue   ?? 1;
+          CLEANED_USER_SPEED = META.cleanedUserSpeed  ?? 0;
+          SMOOTH_SPEED       = META.smoothSpeed       ?? 0;
+          POINTER_SPEED      = META.pointerSpeed      ?? 0;
+          
+          // Pointer position / timing for the repulsion bubble
+          if (typeof META.lastX === 'number') LAST_X = META.lastX;
+          if (typeof META.lastY === 'number') LAST_Y = META.lastY;
+          
+          // We only use LAST_TIME as a "has pointer ever existed" flag in moveStars,
+          // so any non-zero is fine. Prefer restoring if present, otherwise set to now.
+          if (typeof META.lastTime === 'number' && META.lastTime > 0) {
+            LAST_TIME = META.lastTime;
+          } else {
+            LAST_TIME = (window.performance && performance.now)
+              ? performance.now()
+              : Date.now();
+          }
         } catch (ERR) {
           console.warn(
             'Could not parse constellationMeta, skipping scale.',
