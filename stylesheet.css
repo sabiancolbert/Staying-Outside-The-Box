@@ -36,8 +36,7 @@ body::before {
 html {
   margin: 0;
   padding: 0;
-  overflow-x: hidden;
-  overflow-y: auto;          /* window scrolls */
+  overflow:hidden;
   background-color: #300060;
 }
 
@@ -56,6 +55,8 @@ body {
   font-family: 'New Rocker';
   font-size: 7dvmin;
   color: var(--no-link);
+  
+  overflow-y: auto;
 
   /* 🔴 remove these: no extra scroll container */
   /* overflow-x: hidden; */
