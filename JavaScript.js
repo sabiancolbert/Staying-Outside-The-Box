@@ -13,24 +13,21 @@ let isTransitioning = false;       // prevents double navigation during transiti
  *==============================*/
 
 function resetPageHeights() {
-  const page = document.getElementById('transitionContainer');
-  if (!page) return;
-
-  // Full content height, but never less than the viewport
-  const fullHeight = Math.max(window.innerHeight, page.scrollHeight);
-
-  // Lock html + body to that height
+  
   const html = document.documentElement;
   const body = document.body;
+  const tc = document.getElementById('transitionContainer');
 
-  html.style.height = fullHeight + 'px';
-  body.style.height = fullHeight + 'px';
+  const vh = window.innerHeight + 'px'; // real 100dvh without iOS bugs
 
-  // Make sure the scroll container itself can't shrink
-  page.style.minHeight = fullHeight + 'px';
+  html.style.height = vh;
+  body.style.height = vh;
 
-  // Keep scroll behavior consistent
-  page.style.overflowY = 'auto';
+  if (tc) {
+    tc.style.height = vh;
+    tc.style.minHeight = vh;   // prevents shrinking
+    tc.style.maxHeight = vh;   // prevents expanding
+  }
 }
 
 window.addEventListener('load', () => {
