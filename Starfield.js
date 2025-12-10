@@ -310,7 +310,7 @@ function moveStars() {
   if (CLEANED_USER_SPEED < 0.05) CLEANED_USER_SPEED = 0;
 
   // Gently decay repulsion bursts so they don't last forever
-  REPULSION_VALUE *= 0.95;
+  REPULSION_VALUE *= 0.965;
   if (REPULSION_VALUE < 0.01) REPULSION_VALUE = 0;
 }
 
