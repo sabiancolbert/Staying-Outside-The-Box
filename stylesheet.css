@@ -1,54 +1,48 @@
+/*========================================*
+ *  DESIGN TOKENS & ROOT VARIABLES
+ *========================================*/
+
 :root {
-  /* Shared animation + visual tokens */
-  --slide-duration: 0.6s;                    /* Default slide animation duration */
-  --shadow: 0 0 20px rgba(150, 0, 255, 1);   /* Purple glow for hover/focus effects */
+  /* Animation timing */
+  --slide-duration: 0.6s;                 /* Default; JS overrides per-page */
+
+  /* Shared glow */
+  --shadow: 0 0 20px rgba(150, 0, 255, 1);
 
   /* Brand colors */
-  --link-light: #ee0000;                     /* Primary link color */
-  --link-dark: #880000;                      /* Hover/active link color */
-  --no-link: #bdbdbd;                        /* Neutral / inactive text color */
+  --link-light: #ee0000;
+  --link-dark: #880000;
+  --no-link: #bdbdbd;
 
-  /* Transitions */
+  /* Transition easings */
   --slow-transform: 0.3s ease-out;
   --slow-border: 0.3s ease-out;
   --slow-shadow: 0.7s ease-out;
   --slow-color: 0.5s ease-out;
 }
 
+
 /*========================================*
- *  GLOBAL BACKGROUND & PAGE STRUCTURE
+ *  LAYOUT, BACKGROUND & CANVAS LAYERS
  *========================================*/
+
+/*---------- Root page structure ----------*/
 
 html {
   margin: 0;
   padding: 0;
-  overflow-y:auto;                       
-  overflow-x:hidden;     /*Disable window-level scroll; use #transitionContainer instead */
-  background-color: #300060;                 /* Fallback solid background */
-}
-
-body::before {
-  content: "";                               /* Required to render ::before element */
-  position: fixed;                           /* Full-screen static background image */
-  inset: 0;
-  width: 100dvw;
-  height: 100dvh;
-  background-image: url("/Resources/Background.webp");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  z-index: -2;                               /* Behind canvas + content */
-  pointer-events: none;                      /* Allow clicks to pass through */
+  overflow: auto;                         /* JS swaps body/html scroll control */
+  background-color: #300060;              /* Fallback behind everything */
 }
 
 body {
-  display: flex;                             /* Vertical layout wrapper */
+  display: flex;                          /* Vertical layout wrapper */
   flex-direction: column;
   align-items: stretch;
 
   min-height: 100dvh;
   height: auto;
-  overflow:hidden;                     /* Prevent body-level scrolling */
+  overflow: hidden;                       /* Default: no body scroll */
   margin: 0;
   padding: 0;
   background: transparent;
@@ -59,22 +53,37 @@ body {
   color: var(--no-link);
 }
 
-/*========================================*
- *  CANVAS LAYER
- *========================================*/
+/* Fixed background image behind everything */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  width: 100dvw;
+  height: 100dvh;
+  background-image: url("/Resources/Background.webp");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: -2;                            /* Behind canvas + content */
+  pointer-events: none;                   /* Never block clicks */
+}
 
+/* Full-screen animated constellations canvas */
 #constellations {
-  position: fixed;                           /* Full-screen animated canvas overlay */
+  position: fixed;
   inset: 0;
   width: 100%;
   height: 100%;
-  z-index: -1;                               /* Above background, behind content */
-  pointer-events: none;                      /* Don't block clicks */
+  z-index: -1;                            /* Above bg, below content */
+  pointer-events: none;
 }
 
+
 /*========================================*
- *  MAIN CONTENT & FOOTER
+ *  MAIN CONTENT + TYPOGRAPHY
  *========================================*/
+
+/*---------- Main layout + footer ----------*/
 
 main {
   padding: 2dvmin;
@@ -85,27 +94,11 @@ footer p {
   padding: 2dvmin;
 }
 
-/*========================================*
- *  GENERAL CONTENT ELEMENTS
- *========================================*/
+/*---------- Headings & text ----------*/
 
 h2 {
-  margin-top: -7dvmin;                       /* Pull headings upward for styling */
+  margin-top: -7dvmin;                    /* Stylized “pulled up” heading */
   font-size: 4dvmin;
-}
-
-hr {
-  width: 75dvw;
-  height: 4px;
-  border: none;
-  background-image: url("/Resources/Hr.webp"); /* Custom horizontal rule */
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
-}
-
-.divider {
-  width: 45dvw;                              /* Smaller custom divider variant */
 }
 
 p {
@@ -113,7 +106,28 @@ p {
   font-size: 6dvmin;
 }
 
-/* Articles used for grouped link / image blocks */
+/*---------- Horizontal rules & dividers ----------*/
+
+hr {
+  width: 75dvw;
+  height: 4px;
+  border: none;
+  background-image: url("/Resources/Hr.webp");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.divider {
+  width: 45dvw;                           /* Smaller version of hr */
+}
+
+
+/*========================================*
+ *  ARTICLES & LINK BASICS
+ *========================================*/
+
+/* Article blocks used for grouped image/link sections */
 article {
   display: flex;
   flex-direction: column;
@@ -122,7 +136,7 @@ article {
   margin: 0 auto 3dvmin;
 }
 
-/* Hide chapter parts via [hidden] attribute */
+/* Hide sections with [hidden] (used for chapters, etc.) */
 article[hidden] {
   display: none !important;
 }
@@ -140,9 +154,12 @@ a {
     text-shadow var(--slow-shadow);
 }
 
+
 /*========================================*
- *  BASE IMAGE STYLING
+ *  IMAGE STYLES & IMAGE BUTTONS
  *========================================*/
+
+/*---------- Base circular images ----------*/
 
 img {
   width: 40dvmin;
@@ -152,42 +169,43 @@ img {
   overflow: hidden;
 }
 
-/* Wrapper that auto-sizes to the img and adds a decorative circular border */
+/* Wrapper that adds a decorative circular border image */
 .imgBorder {
-  display: inline-block;                     /* Shrink-wrap to image size */
-  position: relative;                        /* For ::before positioning */
-  border-radius: 50%;                        /* Keeps wrapper circular */
-  line-height: 0;
+  display: inline-block;
+  position: relative;
+  border-radius: 50%;
+  line-height: 0;                         /* Remove inline gap */
 }
 
+/* Border image around circular avatar */
 .imgBorder::before {
   content: "";
   position: absolute;
-  inset: -2dvmin;                            /* Thickness of the border image */
+  inset: -2dvmin;                         /* Thickness of border frame */
   background-image: url("/Resources/Image Border.webp");
   background-size: 100% 100%;
   background-repeat: no-repeat;
   background-position: center;
-  border-radius: 50%;                        /* Circular border */
-  z-index: -1;                               /* Behind the image */
+  border-radius: 50%;
+  z-index: -1;
 }
 
 .imgBorder img {
-  display: block;                            /* Remove inline-gap under images */
+  display: block;                         /* Kill baseline gap under img */
 }
 
-/* Homepage circular image buttons */
+/*---------- Homepage circular image buttons ----------*/
+
 .imgButton {
   display: block;
-  height: 20dvmin;
   width: auto;
+  height: 20dvmin;
   margin-top: 3dvmin;
   padding: 5dvmin;
 
   background-color: black;
-  font: 1dvmin Arial;                        /* Fallback text if image fails */
-
-  object-fit: contain;                       /* Show full badge without cropping */
+  font: 1dvmin Arial;                     /* Fallback text if image fails */
+  object-fit: contain;                    /* Show full badge */
   border-radius: 10dvmin;
   border: 3px solid var(--no-link);
 
@@ -197,15 +215,19 @@ img {
     border-color var(--slow-border);
 }
 
+
 /*========================================*
- *  INTERACTION STATES (HOVER + TOUCH)
+ *  INTERACTION STATES (HOVER, FOCUS, TOUCH)
  *========================================*/
 
+/* Basic link hover scaling */
 a:hover {
   transform: scale(1.05);
+  text-shadow: var(--shadow);
+  color: var(--link-dark);
 }
 
-/* When the article is hovered or focused, style BOTH the image and links (desktop hover) */
+/* Hover or focus on a group boosts its image button + links */
 .hoverTogether:hover .imgButton,
 .hoverTogether:focus-within .imgButton {
   box-shadow: var(--shadow);
@@ -213,19 +235,18 @@ a:hover {
 }
 
 .hoverTogether:hover a,
-.hoverTogether:focus-within a,
-a:hover {
+.hoverTogether:focus-within a {
   text-shadow: var(--shadow);
   color: var(--link-dark);
 }
 
-/* On touch, the pressed link still gets the glow/text color */
+/* Active state on touch still gets glow/color */
 .hoverTogether a:active {
   text-shadow: var(--shadow);
   color: var(--link-dark);
 }
 
-/* Nav icon glow */
+/* Nav icon glow & scale */
 .navButtons a:hover img,
 .navButtons a:active img {
   transform: scale(1.05);
@@ -233,42 +254,43 @@ a:hover {
   box-shadow: var(--shadow);
 }
 
-/* Button + fancy text effect */
+/* Button hover/active glow + slight scale */
 button:hover,
 button:active {
   text-shadow: var(--shadow);
   color: var(--link-dark);
   box-shadow: var(--shadow);
-  
   transform: scale(1.05);
 }
 
+/* Button text loses image-fill and becomes bright red when active */
 button:hover span,
 button:active span {
   background-image: none;
   -webkit-background-clip: border-box;
   background-clip: border-box;
-  
+
   color: var(--link-light);
   -webkit-text-fill-color: var(--link-light);
   text-shadow: var(--shadow);
 }
 
+
 /*========================================*
- *  LINK VARIANTS
+ *  LINK VARIANTS & UTILITY CLASSES
  *========================================*/
 
-/* Light-colored homepage links */
+/* Light colored homepage links */
 .clean {
   color: var(--no-link);
 }
 
-/* A bit extra size for homepage links */
+/* Slightly stronger scale for “clean” links */
 .clean:hover {
   transform: scale(1.1);
 }
 
-/* Placeholder / “dead” links that always look slightly dimmed */
+/* “Dead” or placeholder links: always dim, no scale */
 .dead,
 .dead:hover {
   transform: scale(1);
@@ -280,8 +302,9 @@ button:active span {
   text-shadow: var(--shadow);
 }
 
+
 /*========================================*
- *  NAVIGATION ICON BUTTONS
+ *  NAVIGATION ICON BUTTON STRIP
  *========================================*/
 
 .navButtons {
@@ -310,6 +333,7 @@ button:active span {
     border-color var(--slow-border);
 }
 
+
 /*========================================*
  *  GENERIC BUTTON STYLING
  *========================================*/
@@ -329,7 +353,7 @@ button {
   font-family: 'New Rocker';
   font-size: 5dvmin;
 
-  /* Background frame image, content stays “hollow” */
+  /* Outer frame image (pill border) */
   background-image: url("/Resources/Button Border.webp");
   background-size: 110% 110%;
   background-position: center;
@@ -340,7 +364,7 @@ button {
     box-shadow var(--slow-shadow);
 }
 
-/* Text inside button uses image as a fill */
+/* Span text uses image as fill for “metallic ink” look */
 button span {
   display: inline-block;
 
@@ -353,81 +377,84 @@ button span {
   -webkit-text-fill-color: transparent;
   -webkit-background-clip: text;
   background-clip: text;
-  
+
   transition:
     color 0.3s ease-out,
     text-shadow var(--slow-shadow),
     -webkit-text-fill-color 0.9s ease-out;
 }
 
+
 /*========================================*
  *  CHARACTER NAME COLORS (SCRIPT PAGES)
  *========================================*/
 
+/* Shared character name text treatment */
 .roman,
-.sage {
-  color: red;
+.sage,
+.elena,
+.iris,
+.darian,
+.walter,
+.trent,
+.dave,
+.fireRider,
+.sidecharacter {
   margin-top: 1em;
   font-weight: bold;
 }
 
+/* Individual character colors */
+.roman,
+.sage {
+  color: red;
+}
+
 .elena {
   color: yellow;
-  margin-top: 1em;
-  font-weight: bold;
 }
 
 .iris,
 .darian {
   color: blue;
-  margin-top: 1em;
-  font-weight: bold;
 }
 
 .walter {
   color: brown;
-  margin-top: 1em;
-  font-weight: bold;
 }
 
 .trent {
   color: orange;
-  margin-top: 1em;
-  font-weight: bold;
 }
 
 .dave {
   color: pink;
-  margin-top: 1em;
-  font-weight: bold;
 }
 
 .fireRider {
   color: firebrick;
-  margin-top: 1em;
-  font-weight: bold;
 }
 
 .sidecharacter {
   color: inherit;
-  margin-top: 1em;
-  font-weight: bold;
 }
+
 
 /*========================================*
  *  SLIDE-IN PAGE TRANSITION SYSTEM
  *========================================*/
 
-/* Scrollable content wrapper */
+/*---------- Scrollable content wrapper ----------*/
+
 #transitionContainer {
-  flex: 1;                                  /* Take remaining vertical space */
+  flex: 1;                                /* Fill remaining vertical space */
   min-height: 100dvh;
   width: 100%;
-  overflow-x:hidden;
-  overflow-y: visible;
+  overflow: visible;                      /* JS swaps scroll responsibility */
 }
 
-/*--- Homepage animation (slides downward into view) ---*/
+/*---------- Homepage slide (DOWN into view) ----------*/
+
 .homeJs #transitionContainer {
   transform: translateY(-100%);
   transition: transform var(--slide-duration) ease-in-out;
@@ -441,7 +468,8 @@ button span {
   transform: translateY(-100%);
 }
 
-/*--- Other pages animation (slides upward into view) ---*/
+/*---------- Other pages slide (UP into view) ----------*/
+
 .otherJs #transitionContainer {
   transform: translateY(100%);
   transition: transform var(--slide-duration) ease-in-out;
@@ -455,19 +483,20 @@ button span {
   transform: translateY(100%);
 }
 
-/* No-JavaScript fallback: disable animation entirely */
+/* No-JS fallback: no transform / no animation */
 .noJs #transitionContainer {
   transform: none !important;
   transition: none !important;
 }
 
+
 /*========================================*
- *  REDUCED-MOTION ACCESSIBILITY SUPPORT
+ *  REDUCED-MOTION ACCESSIBILITY
  *========================================*/
 
 @media (prefers-reduced-motion: reduce) {
   #constellations {
-    display: none;                           /* Disable animated starfield */
+    display: none;                        /* Disable animated starfield */
   }
 
   #transitionContainer {
