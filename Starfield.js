@@ -310,7 +310,7 @@ function moveStars() {
   if (CLEANED_USER_SPEED < 0.05) CLEANED_USER_SPEED = 0;
 
   // Gently decay repulsion bursts so they don't last forever
-  REPULSION_VALUE *= 0.92;
+  REPULSION_VALUE *= 0.98;
   if (REPULSION_VALUE < 0.01) REPULSION_VALUE = 0;
 }
 
@@ -449,7 +449,7 @@ function updateSpeed(X, Y, TIME) {
 
 // Shared start handler for mouse/touch pointer interactions
 function startPointerInteraction(X, Y, TIME) {
-  REPULSION_VALUE = 6; // Repel on click/touch
+  REPULSION_VALUE = 3; // Repel on click/touch
   updateSpeed(X, Y, TIME);
   CLEANED_USER_SPEED = CLEANED_USER_SPEED + 0.8;
 }
