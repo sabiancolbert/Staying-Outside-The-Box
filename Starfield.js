@@ -273,6 +273,22 @@ function moveStars() {
       const REP_DIR_X = -RAD_X * MIX_R + TAN_X * MIX_T;
       const REP_DIR_Y = -RAD_Y * MIX_R + TAN_Y * MIX_T;
 
+      // Add a bit of the star's own velocity direction to wobble the orbit
+      const velLen = Math.hypot(STAR.vx, STAR.vy) || 1;
+      const velDirX = STAR.vx / velLen;
+      const velDirY = STAR.vy / velLen;
+      
+      const WOBBLE = 0.3; // 0 = perfect orbit, 1 = follow velocity
+      
+      // Blend pointer-defined direction with star's inherent drift direction
+      const INV_WOBBLE = 1 - WOBBLE;
+      
+      const ATTR_DIR_X_WOBBLE = ATTR_DIR_X * INV_WOBBLE + velDirX * WOBBLE;
+      const ATTR_DIR_Y_WOBBLE = ATTR_DIR_Y * INV_WOBBLE + velDirY * WOBBLE;
+      
+      const REP_DIR_X_WOBBLE = REP_DIR_X * INV_WOBBLE + velDirX * WOBBLE;
+      const REP_DIR_Y_WOBBLE = REP_DIR_Y * INV_WOBBLE + velDirY * WOBBLE;
+
       const ATTR_PULL = BASE_PULL;
       const REP_PULL  = BASE_PULL * REPULSION_VALUE;
 
