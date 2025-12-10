@@ -508,8 +508,8 @@ function createStars() {
 
   for (let I = 0; I < MAX_STAR_COUNT; I++) {
     STARS.push({
-      x: Math.random() * WIDTH,
-      y: Math.random() * HEIGHT,
+      x: WIDTH/2 + Math.cos(Math.random() * Math.PI * 2) * Math.sqrt(Math.random()) * (Math.min(WIDTH, HEIGHT)/2),
+      y: HEIGHT/2 + Math.sin(Math.random() * Math.PI * 2) * Math.sqrt(Math.random()) * (Math.min(WIDTH, HEIGHT)/2),
       vx: randomBetween(-0.25, 0.25),
       vy: randomBetween(-0.25, 0.25),
       size: randomBetween(
