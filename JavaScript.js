@@ -85,7 +85,7 @@ window.addEventListener('pageshow', (event) => {
   
   const page = document.getElementById('transitionContainer');
   if (!page) return;
-
+applyFreeLayout();
   // Safely read navigation type (if supported)
   const navEntries = performance.getEntriesByType
     ? performance.getEntriesByType('navigation')
@@ -108,6 +108,7 @@ window.addEventListener('pageshow', (event) => {
 
 // Allow transitions again
     isTransitioning = false;
+    applyLockedLayout();
   }
 });
 
@@ -492,11 +493,38 @@ window.addEventListener('touchmove', (e) => {
  *  PAGE TRANSITIONS & STORAGE
  *==============================*/
 
+function applyLockedLayout() {
+  const html = document.documentElement;
+  const body = document.body;
+  const tc = document.getElementById('transitionContainer');
+
+  
+  html.style.overflowY = 'hidden';
+
+  body.style.height = '100dvmin';
+
+  tc.style.overflowY = 'auto';
+}
+
+function applyFreeLayout() {
+  const html = document.documentElement;
+  const body = document.body;
+  const tc = document.getElementById('transitionContainer');
+
+  
+  html.style.overflowY = 'auto';
+
+  body.style.height = 'auto';
+
+  tc.style.overflowY = 'visible';
+}
+
 // Navigate with slide-out and stored constellation state
 function transitionTo(url, isMenu = false) {
   if (isTransitioning) return;
   isTransitioning = true;
 
+applyFreeLayout();
   if (isMenu) {
     sessionStorage.setItem('suppressHomeBack', '1');
   } else {
