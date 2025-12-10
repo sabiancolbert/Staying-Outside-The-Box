@@ -60,8 +60,11 @@
  *========================================*/
 
 :root {
-  /* Animation timing */
-  --slide-distance: 100%;
+  /* Slide offset (used positive & negative via calc()) */
+  --slide-distance: 100vh;          /* JS can overwrite this */
+
+  /* Slide timing (JS overwrites this too) */
+  --slide-duration: 0.6s;
 
   /* Shared glow */
   --shadow: 0 0 20px rgba(150, 0, 255, 1);
@@ -501,43 +504,42 @@ button span {
  *  SLIDE-IN PAGE TRANSITION SYSTEM
  *========================================*/
 
-/*---------- Scrollable content wrapper ----------*/
-
+/* Scrollable content wrapper */
 #transitionContainer {
-  flex: 1;                                /* Fill remaining vertical space */
+  flex: 1;
   min-height: 100dvh;
   width: 100%;
-  overflow: visible;                      /* JS swaps scroll responsibility */
+  overflow: visible; /* JS swaps scroll responsibility */
 }
 
-/*---------- Homepage slide (DOWN into view) ----------*/
+/*---------- Homepage slide (DOWN into view, OUT up) ----------*/
 
 .homeJs #transitionContainer {
-  transform: translateY(calc(var(--slide-distance) * -1));
-  transition: transform 0.6a ease-in-out;
+  transform: translateY(calc(var(--slide-distance) * -1)); /* start above */
+  transition: transform var(--slide-duration) ease-in-out;
 }
 
 .homeJs #transitionContainer.ready {
-  transform: translateY(0);
+  transform: translateY(0); /* fully in view */
 }
 
 .homeJs #transitionContainer.slide-out {
-  transform: translateY(calc(var(--slide-distance) * -1));
+  transform: translateY(calc(var(--slide-distance) * -1)); /* back up */
 }
 
-/*---------- Other pages slide (UP into view) ----------*/
+/*---------- Other pages slide (UP into view, OUT down) ----------*/
 
 .otherJs #transitionContainer {
-  transform: translateY(var(--slide-distance));
-  transition: transform 0.6s ease-in-out;
+  transform: translateY(var(--slide-distance)); /* start below */
+  transition: transform var(--slide-duration) ease-in-out;
 }
 
 .otherJs #transitionContainer.ready {
-  transform: translateY(0);
+  transform: translateY(0); /* fully in view */
 }
 
 .otherJs #transitionContainer.slide-out {
-  transform: translateY(var(--slide-distance));
+  transform: translateY(var(--slide-distance)); /* back down */
 }
 
 /* No-JS fallback: no transform / no animation */
