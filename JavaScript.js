@@ -732,6 +732,72 @@ window.addEventListener('touchmove', (e) => {
   updateSpeed(T.clientX, T.clientY, e.timeStamp);
 });
 
+//  Fix "hover but no click during scroll" on mobile
+function wireTouchEvent(selector = 'a') {
+  const elements = document.querySelectorAll(selector);
+  if (!elements.length) return;
+
+  elements.forEach((el) => {
+    let startX = 0;
+    let startY = 0;
+    let moved = false;
+
+    // start: remember where the finger went down
+    el.addEventListener(
+      'touchstart',
+      (e) => {
+        const touch = e.touches[0];
+        if (!touch) return;
+        startX = touch.clientX;
+        startY = touch.clientY;
+        moved = false;
+      },
+      { passive: true }
+    );
+
+    // move: if we move more than a few px, treat it as scroll, not tap
+    el.addEventListener(
+      'touchmove',
+      (e) => {
+        const touch = e.touches[0];
+        if (!touch) return;
+        const dx = touch.clientX - startX;
+        const dy = touch.clientY - startY;
+        const distance = Math.hypot(dx, dy);
+        if (distance > 10) {
+          moved = true;
+        }
+      },
+      { passive: true }
+    );
+
+    // end: if we didn't move much, treat this as a click
+    el.addEventListener(
+      'touchend',
+      (e) => {
+        if (moved) {
+          // big move = scroll; let browser handle it
+          return;
+        }
+
+        // This is a "light tap" → we take over
+        e.preventDefault();
+
+        // Use href as the URL fallback
+        const url = el.getAttribute('href');
+        if (!url) return;
+
+        // Optional: infer isMenu from data attribute instead of hardcoding
+        const isMenu = el.dataset.menu === '1';
+
+        // Call your existing navigation logic
+        transitionTo(url, isMenu);
+      },
+      { passive: false } // MUST be false so preventDefault() is allowed
+    );
+  });
+}
+
 
 /*========================================*
  *  6 SIMPLE HTML UTILITIES
@@ -777,3 +843,8 @@ try {
 } catch (ERR) {
   console.error('Initialization error in starfield/transition script:', ERR);
 }
+
+// Begin the fix for "hover but no click during scroll" on mobile
+document.addEventListener('DOMContentLoaded', () => {
+  wireTouchEvent('a');
+});
