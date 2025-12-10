@@ -477,7 +477,6 @@ function transitionTo(url, isMenu = false) {
   isTransitioning = true;
 
   const page = getPage();
-  freeScrollLayout(page);
 
   if (isMenu) {
     sessionStorage.setItem('suppressHomeBack', '1');
@@ -505,6 +504,7 @@ function transitionTo(url, isMenu = false) {
   page.classList.add('slide-out');
 
   setTimeout(() => {
+    freeScrollLayout(page);
     window.location.href = url;
   }, 600);
 }
