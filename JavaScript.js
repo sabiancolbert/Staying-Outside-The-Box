@@ -57,13 +57,15 @@ window.addEventListener('load', () => {
     requestAnimationFrame(() => {
       page.classList.add('ready');
       
-      // After the first slide-in finishes, flip who scrolls
       page.addEventListener('transitionend', () => {
-        html.style.overflowY = 'hidden';
-        body.style.overflowY = 'hidden';
-        page.style.overflowY = 'auto';
-        page.style.webkitOverflowScrolling = 'touch';
-      }, { once: true }); // run only once
+  const html = document.documentElement;
+  const body = document.body;
+
+  // Match your known-good CSS at runtime:
+  html.style.overflowY = 'hidden';   // html { overflow: hidden; }
+  body.style.height = '100dvmin';    // body { height: 100dvmin; }
+  page.style.overflowY = 'auto';     // #transitionContainer { overflow-y: auto; }
+}, { once: true });
     });
   }
 
