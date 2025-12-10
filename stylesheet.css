@@ -46,7 +46,7 @@ body {
   align-items: stretch;
 
   min-height: 100dvh;
-  height: fit-content;
+  height: 100%;
   overflow:auto;
   margin: 0;
   padding: 0;
