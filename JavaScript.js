@@ -186,11 +186,11 @@ window.addEventListener('load', () => {
   if (PAGE) {
     try {
       document.documentElement.style.setProperty(
-        '----SLIDE_DURATION',
+        '--SLIDE_DURATION',
         `${getSlideDurationSeconds()}s`
       );
     } catch (ERR) {
-      console.warn('Could not set ----SLIDE_DURATION:', ERR);
+      console.warn('Could not set --SLIDE_DURATION:', ERR);
     }
 
     // Wait one frame to avoid flashing before animation
@@ -339,11 +339,11 @@ function transitionTo(URL, IS_MENU = false) {
 
   try {
     document.documentElement.style.setProperty(
-      '----SLIDE_DISTANCE',
+      '--SLIDE_DISTANCE',
       `${DIST}px`
     );
   } catch (ERR) {
-    console.warn('Could not set ----SLIDE_DISTANCE:', ERR);
+    console.warn('Could not set --SLIDE_DISTANCE:', ERR);
   }
 
   // Let body/window handle scroll during the slide-out
