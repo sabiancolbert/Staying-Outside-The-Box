@@ -16,10 +16,7 @@ window.addEventListener('load', () => {
   const html = document.documentElement;
   const body = document.body;
 
-  // Stop rubber-band overscroll on the root scroll container
-  //html.style.overscrollBehavior = 'none';
-  //body.style.overscrollBehavior = 'none';
-
+  
   // Read and clear the "came from menu" flag
   const suppressHomeBack = sessionStorage.getItem('suppressHomeBack') === '1';
   sessionStorage.removeItem('suppressHomeBack');
