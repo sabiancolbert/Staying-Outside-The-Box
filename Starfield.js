@@ -222,11 +222,16 @@ function moveStars() {
   if (!HAS_CANVAS || !STARS.length) return;
 
   for (const STAR of STARS) {
-    // Basic drift scaled by pointer speed
-    STAR.x += STAR.vx * (CLEANED_USER_SPEED + 1);
-    STAR.y += STAR.vy * (CLEANED_USER_SPEED + 1);
+        // --- 1. Compute passive drift for this frame ---
+    const passiveDX = STAR.vx * (CLEANED_USER_SPEED + 1);
+    const passiveDY = STAR.vy * (CLEANED_USER_SPEED + 1);
+    const passiveMag = Math.hypot(passiveDX, passiveDY);
 
-    // Pointer pull / push zone around the cursor in a radial form
+    // We'll fill these with the final movement this frame
+    let moveDX = passiveDX;
+    let moveDY = passiveDY;
+
+    // --- 2. Pointer pull / push zone around the cursor in a radial form ---
     if (LAST_TIME !== 0) {
       const DX = LAST_X - STAR.x;
       const DY = LAST_Y - STAR.y;
@@ -235,21 +240,22 @@ function moveStars() {
       const MAX_INFLUENCE = 10000 * (SCALE_FACTOR / 500);
       const MIN_TARGET_RADIUS = 2; // px radius for the "dot" around your finger
 
-      // If the star is extremely close, snap it into the dot
       if (DIST_SQ <= MIN_TARGET_RADIUS * MIN_TARGET_RADIUS) {
+        // Very close: snap to the pointer & heavily damp drift
         STAR.x = LAST_X;
         STAR.y = LAST_Y;
-
-        // Kill most of its drift so it stays put
         STAR.vx *= 0.2;
         STAR.vy *= 0.2;
+
+        // No extra motion needed this frame
+        moveDX = 0;
+        moveDY = 0;
       } else if (DIST_SQ < MAX_INFLUENCE) {
         const DIST = Math.sqrt(DIST_SQ) || 1;
 
-        // Even if CLEANED_USER_SPEED decays to 0, keep a small pull
-        const SPEED_FACTOR = 0.4 + CLEANED_USER_SPEED; // base + your motion
+        // Base strength: depends on your motion, but never fully dies
+        const SPEED_FACTOR = 0.4 + CLEANED_USER_SPEED;
         const FALLOFF = (MAX_INFLUENCE - DIST_SQ) / MAX_INFLUENCE;
-
         const BASE_PULL = 0.015 * SPEED_FACTOR * FALLOFF;
 
         const ATTR_PULL = BASE_PULL;
@@ -276,16 +282,33 @@ function moveStars() {
         const REP_DIR_X = -RAD_X * MIX_R + TAN_X * MIX_T;
         const REP_DIR_Y = -RAD_Y * MIX_R + TAN_Y * MIX_T;
 
-        // Combine attraction + repulsion, scaled by distance
-        const PULL_X =
-          (ATTR_DIR_X * ATTR_PULL + REP_DIR_X * REP_PULL) * DIST;
-        const PULL_Y =
-          (ATTR_DIR_Y * ATTR_PULL + REP_DIR_Y * REP_PULL) * DIST;
+        // Raw combined influence direction (before scaling)
+        let dirX =
+          ATTR_DIR_X * ATTR_PULL + REP_DIR_X * REP_PULL;
+        let dirY =
+          ATTR_DIR_Y * ATTR_PULL + REP_DIR_Y * REP_PULL;
 
-        STAR.x += PULL_X;
-        STAR.y += PULL_Y;
+        // Normalize to get a clean direction vector
+        const DIR_LEN = Math.hypot(dirX, dirY) || 1;
+        dirX /= DIR_LEN;
+        dirY /= DIR_LEN;
+
+        // --- 3. Combine passive + pointer:
+        // radial/orbital step must be at least as large as passive drift ---
+        // "pointerStep" is how far we move *along this direction* this frame
+        let pointerStep = BASE_PULL * DIST;
+
+        // Make sure we move at least as much as passive drift magnitude
+        pointerStep = Math.max(pointerStep, passiveMag);
+
+        moveDX = dirX * pointerStep;
+        moveDY = dirY * pointerStep;
       }
     }
+
+    // --- 4. Apply the final movement for this frame ---
+    STAR.x += moveDX;
+    STAR.y += moveDY;
 
     // White flash decay for "spark" effect
     if (STAR.whiteValue > 0) {
