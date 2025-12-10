@@ -47,7 +47,7 @@ body {
   align-items: stretch;
 
   min-height: 100dvh;
-  height: 100dvh;
+  height: auto;
   overflow-x: hidden;
   overflow-y: auto;                       /* Prevent body-level scrolling */
   margin: 0;
