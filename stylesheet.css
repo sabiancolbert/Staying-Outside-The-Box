@@ -22,7 +22,8 @@
 html {
   margin: 0;
   padding: 0;
-  overflow:hidden;                       /* Disable window-level scroll; use #transitionContainer instead */
+  overflow-y:hidden;                       
+  overflow-x:hidden;     /*Disable window-level scroll; use #transitionContainer instead */
   background-color: #300060;                 /* Fallback solid background */
 }
 
