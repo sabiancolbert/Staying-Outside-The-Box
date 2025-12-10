@@ -38,7 +38,7 @@ let POINTER_SPEED = 0;
 let SMOOTH_SPEED = 0;
 let CLEANED_USER_SPEED = 0;
 
-// Repulsion strength (0 = none, 1 = full burst)
+// Repulsion strength
 let REPULSION_VALUE = 0;
 
 // Canvas size and star scaling
@@ -449,7 +449,7 @@ function updateSpeed(X, Y, TIME) {
 
 // Shared start handler for mouse/touch pointer interactions
 function startPointerInteraction(X, Y, TIME) {
-  REPULSION_VALUE = 1; // Repel on click/touch
+  REPULSION_VALUE = 3; // Repel on click/touch
   updateSpeed(X, Y, TIME);
   CLEANED_USER_SPEED = CLEANED_USER_SPEED + 0.8;
 }
