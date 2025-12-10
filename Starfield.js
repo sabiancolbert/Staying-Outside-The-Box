@@ -307,6 +307,7 @@ function moveStars() {
   // Slowly decay pointer speed influence
   CLEANED_USER_SPEED *= 0.95;
   if (CLEANED_USER_SPEED < 0.05) CLEANED_USER_SPEED = 0;
+}
 
 /*---------- Star rendering ----------*/
 
