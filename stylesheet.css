@@ -60,7 +60,7 @@
  *========================================*/
 
 :root {
-  /* Slide offset (used positive & negative via calc()) */
+  /* Slide offset */
   --slide-distance: 100vh;          /* JS can overwrite this */
 
   /* Slide timing (JS overwrites this too) */
