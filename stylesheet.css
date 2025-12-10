@@ -47,7 +47,9 @@ body {
 
   min-height: 100dvh;
   height: 100dvh;
-  overflow: hidden;                          /* Prevent body-level scrolling */
+  /*overflow: hidden;                          /* Prevent body-level scrolling */
+  overflow-x:hidden;
+  overflow-y:auto;
   margin: 0;
   padding: 0;
   background: transparent;
