@@ -19,13 +19,6 @@
  *  GLOBAL BACKGROUND & PAGE STRUCTURE
  *========================================*/
 
-html {
-  margin: 0;
-  padding: 0;
-  overflow:hidden;
-  background-color: #300060;                 /* Fallback solid background */
-}
-
 body::before {
   content: "";                               /* Required to render ::before element */
   position: fixed;                           /* Full-screen static background image */
@@ -40,14 +33,21 @@ body::before {
   pointer-events: none;                      /* Allow clicks to pass through */
 }
 
+html {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  overflow-y: auto;          /* window scrolls */
+  background-color: #300060;
+}
+
 body {
   display: flex;
   flex-direction: column;
   align-items: stretch;
 
   min-height: 100dvh;
-  height: 100dvh;
-                  /* no body scroll either */
+  height: auto;
   margin: 0;
   padding: 0;
   background: transparent;
@@ -56,6 +56,10 @@ body {
   font-family: 'New Rocker';
   font-size: 7dvmin;
   color: var(--no-link);
+
+  /* 🔴 remove these: no extra scroll container */
+  /* overflow-x: hidden; */
+  /* overflow-y: auto;   */
 }
 
 /*========================================*
