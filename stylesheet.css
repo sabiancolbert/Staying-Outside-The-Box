@@ -424,7 +424,7 @@ button span {
   flex: 1;                                  /* Take remaining vertical space */
   min-height: 100dvh;
   width: 100%;
-  overflow:visible;
+  overflow:auto;
 }
 
 /*--- Homepage animation (slides downward into view) ---*/
