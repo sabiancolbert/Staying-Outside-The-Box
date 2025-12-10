@@ -56,7 +56,7 @@
 
  *==============================================================*/
 /*========================================*
- *  DESIGN TOKENS & ROOT VARIABLES
+ *  1 DESIGN TOKENS & ROOT VARIABLES
  *========================================*/
 
 :root {
@@ -83,7 +83,7 @@
 
 
 /*========================================*
- *  LAYOUT, BACKGROUND & CANVAS LAYERS
+ *  2 LAYOUT, BACKGROUND & CANVAS LAYERS
  *========================================*/
 
 /*---------- Root page structure ----------*/
@@ -146,7 +146,7 @@ body::before {
 
 
 /*========================================*
- *  MAIN CONTENT + TYPOGRAPHY
+ *  3 MAIN CONTENT + TYPOGRAPHY
  *========================================*/
 
 /*---------- Main layout + footer ----------*/
@@ -190,7 +190,7 @@ hr {
 
 
 /*========================================*
- *  ARTICLES & LINK BASICS
+ *  4 ARTICLES & LINK BASICS
  *========================================*/
 
 /* Article blocks used for grouped image/link sections */
@@ -222,7 +222,7 @@ a {
 
 
 /*========================================*
- *  IMAGE STYLES & IMAGE BUTTONS
+ *  5 IMAGE STYLES & IMAGE BUTTONS
  *========================================*/
 
 /*---------- Base circular images ----------*/
@@ -283,7 +283,7 @@ img {
 
 
 /*========================================*
- *  INTERACTION STATES (HOVER, FOCUS, TOUCH)
+ *  6 INTERACTION STATES (HOVER, FOCUS, TOUCH)
  *========================================*/
 
 /* Basic link hover scaling */
@@ -341,9 +341,8 @@ button:active span {
   text-shadow: var(--shadow);
 }
 
-
 /*========================================*
- *  LINK VARIANTS & UTILITY CLASSES
+ *  7 LINK VARIANTS & UTILITY CLASSES
  *========================================*/
 
 /* Light colored homepage links */
@@ -370,7 +369,7 @@ button:active span {
 
 
 /*========================================*
- *  NAVIGATION ICON BUTTON STRIP
+ *  8 NAVIGATION ICON BUTTON STRIP
  *========================================*/
 
 .navButtons {
@@ -401,7 +400,7 @@ button:active span {
 
 
 /*========================================*
- *  GENERIC BUTTON STYLING
+ *  9 GENERIC BUTTON STYLING
  *========================================*/
 
 button {
@@ -452,7 +451,7 @@ button span {
 
 
 /*========================================*
- *  CHARACTER NAME COLORS (SCRIPT PAGES)
+ *  10 CHARACTER NAME COLORS (SCRIPT PAGES)
  *========================================*/
 
 /* Shared character name text treatment */
@@ -507,7 +506,7 @@ button span {
 
 
 /*========================================*
- *  SLIDE-IN PAGE TRANSITION SYSTEM
+ *  11 SLIDE-IN PAGE TRANSITION SYSTEM
  *========================================*/
 
 /* Scrollable content wrapper */
@@ -564,7 +563,7 @@ button span {
 
 
 /*========================================*
- *  REDUCED-MOTION ACCESSIBILITY
+ *  12 REDUCED-MOTION ACCESSIBILITY
  *========================================*/
 
 @media (prefers-reduced-motion: reduce) {
