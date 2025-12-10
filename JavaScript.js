@@ -5,7 +5,6 @@
  *==============================*/
 
 let isInternalReferrer = false;    // true if we came from another page on this site
-let slideDurationMs = 600;         // fallback slide-out duration (ms) if calc fails
 let isTransitioning = false;       // prevents double navigation during transitions
 
 /*==============================*
@@ -35,37 +34,25 @@ window.addEventListener('load', () => {
   }
 
   // Set slide duration relative to content height (clamped 1–3×)
+  // Set a fixed slide duration (one viewport-height worth of travel)
   if (page) {
-    const viewportHeight =
-      window.innerHeight || document.documentElement.clientHeight;
-
-    const pageSize =
-      0.5 *
-      Math.max(
-        1,
-        Math.min(page.offsetHeight / viewportHeight, 3)
-      );
-
     document.documentElement.style.setProperty(
       '--slide-duration',
-      `${pageSize}s`
+      '0.6s'
     );
-    slideDurationMs = pageSize * 1000;
 
-    // Mark page as ready so CSS can run entrance animations,
-    // then lock layout to viewport height.
     requestAnimationFrame(() => {
       page.classList.add('ready');
-      
-      page.addEventListener('transitionend', () => {
-  const html = document.documentElement;
-  const body = document.body;
 
-  // Match your known-good CSS at runtime:
-  html.style.overflowY = 'hidden';   // html { overflow: hidden; }
-  body.style.height = '100dvmin';    // body { height: 100dvmin; }
-  page.style.overflowY = 'auto';     // #transitionContainer { overflow-y: auto; }
-}, { once: true });
+      page.addEventListener('transitionend', () => {
+        const html = document.documentElement;
+        const body = document.body;
+
+        // Match your known-good CSS at runtime:
+        html.style.overflowY = 'hidden';   // html { overflow: hidden; }
+        body.style.height = '100dvmin';    // body { height: 100dvmin; }
+        page.style.overflowY = 'auto';     // #transitionContainer { overflow-y: auto; }
+      }, { once: true });
     });
   }
 
