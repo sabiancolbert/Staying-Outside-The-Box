@@ -506,7 +506,7 @@ function transitionTo(url, isMenu = false) {
 
   setTimeout(() => {
     window.location.href = url;
-  }, 600 * 1000 + 50);
+  }, 600);
 }
 
 // Save current starfield to localStorage
