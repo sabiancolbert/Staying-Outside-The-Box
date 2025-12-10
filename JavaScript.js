@@ -85,7 +85,7 @@ window.addEventListener('pageshow', (event) => {
   
   const page = document.getElementById('transitionContainer');
   if (!page) return;
-applyFreeLayout();
+  //applyFreeLayout();
   // Safely read navigation type (if supported)
   const navEntries = performance.getEntriesByType
     ? performance.getEntriesByType('navigation')
