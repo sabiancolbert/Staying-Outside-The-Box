@@ -528,7 +528,7 @@ button span {
 /*---------- Other pages slide (UP into view) ----------*/
 
 .otherJs #transitionContainer {
-  transform: translateY(100%);
+  transform: translateY(100vh);
   transition: transform var(--slide-duration) ease-in-out;
 }
 
@@ -537,7 +537,7 @@ button span {
 }
 
 .otherJs #transitionContainer.slide-out {
-  transform: translateY(100%);
+  transform: translateY(100vh);
 }
 
 /* No-JS fallback: no transform / no animation */
