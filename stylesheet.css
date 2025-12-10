@@ -55,8 +55,6 @@ body {
   font-family: 'New Rocker';
   font-size: 7dvmin;
   color: var(--no-link);
-  
-  overflow-y: auto;
 
   /* 🔴 remove these: no extra scroll container */
   /* overflow-x: hidden; */
