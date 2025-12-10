@@ -231,7 +231,7 @@ function moveStars() {
     let moveDX = passiveDX;
     let moveDY = passiveDY;
 
-    // --- 2. Pointer pull / push zone around the cursor in a radial form ---
+        // --- 2. Pointer pull / push zone around the cursor in a radial form ---
     // Use the speed threshold again so the effect fades out like before
     if (LAST_TIME !== 0 && CLEANED_USER_SPEED > 0.19) {
       const DX = LAST_X - STAR.x;
@@ -239,21 +239,21 @@ function moveStars() {
       const DIST_SQ = DX * DX + DY * DY;
 
       const MAX_INFLUENCE = 10000 * (SCALE_FACTOR / 500);
-      const MIN_TARGET_RADIUS = 2; // px radius for the "dot" around your finger
 
-      if (DIST_SQ <= MIN_TARGET_RADIUS * MIN_TARGET_RADIUS) {
-        // Very close: lightly lock to the pointer *for this frame*,
-        // but DO NOT touch vx/vy so drift recovers later.
-        STAR.x = LAST_X;
-        STAR.y = LAST_Y;
-
-        moveDX = 0;
-        moveDY = 0;
-      } else if (DIST_SQ < MAX_INFLUENCE) {
+      if (DIST_SQ < MAX_INFLUENCE) {
         const DIST = Math.sqrt(DIST_SQ) || 1;
+        const MAX_RADIUS = Math.sqrt(MAX_INFLUENCE);
 
-        // Strength fades with distance and your motion
-        const FALLOFF = (MAX_INFLUENCE - DIST_SQ) / MAX_INFLUENCE;
+        // Normalized distance 0..1
+        const NORM = Math.min(DIST / MAX_RADIUS, 1);
+
+        // Exponent controls how sharply movement grows with distance
+        const EXPONENT = 1.7; // try 1.4–2.2 for different feels
+
+        // Falloff so strength still dies toward the outer edge
+        const FALLOFF = 1 - NORM * NORM; // like before but in radius domain
+
+        // Base pull from your motion, modulated by distance falloff
         const BASE_PULL = 0.015 * CLEANED_USER_SPEED * FALLOFF;
 
         const ATTR_PULL = BASE_PULL;
@@ -286,17 +286,21 @@ function moveStars() {
         let dirY =
           ATTR_DIR_Y * ATTR_PULL + REP_DIR_Y * REP_PULL;
 
-        // If pointer influence is basically zero, just keep passive drift
         const dirLen = Math.hypot(dirX, dirY);
         if (dirLen > 1e-5) {
-          // Normalize to direction only
+          // Normalize to pure direction
           dirX /= dirLen;
           dirY /= dirLen;
 
-          // Pointer "wants" this many pixels of movement
-          const pointerMag = BASE_PULL * DIST;
+          // --- Exponential distance scaling ---
+          // Near the finger: NORM ~ 0 → factor ~ 0 (barely move)
+          // Farther out: NORM → 1 → factor ramps up nonlinearly
+          const distanceFactor = Math.pow(NORM, EXPONENT);
 
-          // Final step magnitude: at least passiveMag, plus pointer if stronger
+          // Pointer wants this many pixels of movement
+          const pointerMag = BASE_PULL * distanceFactor * DIST;
+
+          // Final step: at least passive magnitude, plus radial bias
           const step = Math.max(pointerMag, passiveMag);
 
           moveDX = dirX * step;
