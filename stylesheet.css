@@ -2,7 +2,7 @@
  *                           CSS MAP
  *==============================================================*
  *
- *  1. DESIGN TOKENS & ROOT VARIABLES
+ *  1. DESIGN TOKENS / ROOT VARIABLES
  *     - Colors, shadows, animation timing, transitions
  *
  *  2. LAYOUT, BACKGROUND & CANVAS LAYERS
@@ -12,13 +12,13 @@
  *
  *  3. MAIN CONTENT & TYPOGRAPHY
  *     - main, footer
- *     - headings & paragraphs
+ *     - h2, p
  *     - dividers + hr
  *
  *  4. ARTICLES & LINK BASICS
  *     - article layout
- *     - base link styling
- *     - [hidden] handling
+ *     - link base styling
+ *     - hidden state handling
  *
  *  5. IMAGE STYLES & IMAGE BUTTONS
  *     - circular avatars
@@ -35,81 +35,88 @@
  *
  *  8. NAVIGATION ICON BUTTON STRIP
  *     - .navButtons row layout
- *     - icon button styling
+ *     - per-icon styling
  *
  *  9. GENERIC BUTTONS
  *     - pill-button shape
- *     - border-image background
+ *     - background border image
  *     - image-filled text span
  *
  * 10. CHARACTER NAME COLORS (SCRIPT PAGES)
- *     - shared name styling
- *     - per-character colors
+ *     - base text styling
+ *     - per-character color overrides
  *
  * 11. SLIDE-IN PAGE TRANSITION SYSTEM
  *     - #transitionContainer
  *     - homepage vs other page motions
- *     - .homeJs / .otherJs / .noJs
+ *     - JS-controlled classes (.homeJs, .otherJs, .noJs)
  *
  * 12. REDUCED-MOTION ACCESSIBILITY
- *     - disables starfield and transitions
+ *     - disables starfield + animations
  *
- *  NOTE: Each major block is marked with /* #region ... *\/
- *        so editors can fold and jump between sections.
- *==============================================================*
+ *  NOTE: Sections are wrapped with /* #region ... *\/ so editors
+ *        can fold each block cleanly.
+ *==============================================================*/
 
 
-/* #region 1. DESIGN TOKENS & ROOT VARIABLES */
+/* #region 1 DESIGN TOKENS & ROOT VARIABLES */
 /*========================================*
  *  1 DESIGN TOKENS & ROOT VARIABLES
  *========================================*/
 
 :root {
-  /* Slide offset */
+  /* Slide offset (JS can overwrite this) */
   --SLIDE_DISTANCE: 100vh;
 
-  /* Slide timing */
+  /* Slide timing (JS overwrites this too) */
   --SLIDE_DURATION: 0.6s;
 
-  /* Glow */
+  /* Shared glow */
   --SHADOW: 0 0 20px rgba(150, 0, 255, 1);
 
   /* Brand colors */
   --LINK_LIGHT: #ee0000;
-  --LINK_DARK:  #880000;
-  --NO_LINK:    #bdbdbd;
+  --LINK_DARK: #880000;
+  --NO_LINK:   #bdbdbd;
 
-  /* Transitions */
+  /* Transition easings */
   --SLOW_TRANSFORM: 0.3s ease-out;
   --SLOW_BORDER:    0.3s ease-out;
   --SLOW_SHADOW:    0.7s ease-out;
   --SLOW_COLOR:     0.5s ease-out;
 }
 
-/* #endregion 1 */
+/* #endregion 1 DESIGN TOKENS & ROOT VARIABLES */
 
 
 
-/* #region 2. LAYOUT, BACKGROUND & CANVAS LAYERS */
+/* #region 2 LAYOUT, BACKGROUND & CANVAS LAYERS */
 /*========================================*
  *  2 LAYOUT, BACKGROUND & CANVAS LAYERS
  *========================================*/
 
+/* Root page structure */
 html {
   margin: 0;
   padding: 0;
-  overflow: auto;
-  background-color: #300060;
+  
+  /* DONT TOUCH - important for proper scroll transition */
+  overflow: auto;                         /* JS swaps body/html scroll control */
+  
+  background-color: #300060;              /* Fallback behind everything */
 }
 
 body {
-  display: flex;
+  display: flex;                          /* Vertical layout wrapper */
   flex-direction: column;
   align-items: stretch;
-  min-height: 100dvh;
-  height: auto;
-  overflow: hidden;
 
+  min-height: 100dvh;
+  
+  /* DONT TOUCH - important for proper scroll transition */
+  height: auto;
+  overflow: hidden;                       /* Default: no body scroll */
+  
   margin: 0;
   padding: 0;
   background: transparent;
@@ -120,6 +127,7 @@ body {
   color: var(--NO_LINK);
 }
 
+/* Fixed background image behind everything */
 body::before {
   content: "";
   position: fixed;
@@ -129,28 +137,31 @@ body::before {
   background-image: url("/Resources/Background.webp");
   background-size: cover;
   background-position: center;
-  z-index: -2;
-  pointer-events: none;
+  background-repeat: no-repeat;
+  z-index: -2;                            /* Behind canvas + content */
+  pointer-events: none;                   /* Never block clicks */
 }
 
+/* Full-screen animated constellations canvas */
 #constellations {
   position: fixed;
   inset: 0;
   width: 100%;
   height: 100%;
+  z-index: -1;                            /* Above bg, below content */
   pointer-events: none;
-  z-index: -1;
 }
 
-/* #endregion 2 */
+/* #endregion 2 LAYOUT, BACKGROUND & CANVAS LAYERS */
 
 
 
-/* #region 3. MAIN CONTENT & TYPOGRAPHY */
+/* #region 3 MAIN CONTENT & TYPOGRAPHY */
 /*========================================*
  *  3 MAIN CONTENT + TYPOGRAPHY
  *========================================*/
 
+/* Main layout + footer */
 main {
   padding: 2dvmin;
 }
@@ -160,8 +171,9 @@ footer p {
   padding: 2dvmin;
 }
 
+/* Headings & text */
 h2 {
-  margin-top: -7dvmin;
+  margin-top: -7dvmin;                    /* Stylized “pulled up” heading */
   font-size: 4dvmin;
 }
 
@@ -170,27 +182,31 @@ p {
   font-size: 6dvmin;
 }
 
+/* Horizontal rules & dividers */
 hr {
   width: 75dvw;
   height: 4px;
   border: none;
   background-image: url("/Resources/Hr.webp");
   background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
 .divider {
-  width: 45dvw;
+  width: 45dvw;                           /* Smaller version of hr */
 }
 
-/* #endregion 3 */
+/* #endregion 3 MAIN CONTENT & TYPOGRAPHY */
 
 
 
-/* #region 4. ARTICLES & LINK BASICS */
+/* #region 4 ARTICLES & LINK BASICS */
 /*========================================*
  *  4 ARTICLES & LINK BASICS
  *========================================*/
 
+/* Article blocks used for grouped image/link sections */
 article {
   display: flex;
   flex-direction: column;
@@ -199,64 +215,78 @@ article {
   margin: 0 auto 3dvmin;
 }
 
+/* Hide sections with [hidden] (used for chapters, etc.) */
 article[hidden] {
   display: none !important;
 }
 
+/* Base link styling */
 a {
   display: inline-block;
-  padding-bottom: 1dvmin;
   margin: 0 auto;
+  padding-bottom: 1dvmin;
   color: var(--LINK_LIGHT);
+  text-decoration: none;
   transition:
     transform var(--SLOW_TRANSFORM),
     color var(--SLOW_COLOR),
     text-shadow var(--SLOW_SHADOW);
 }
 
-/* #endregion 4 */
+/* #endregion 4 ARTICLES & LINK BASICS */
 
 
 
-/* #region 5. IMAGE STYLES & IMAGE BUTTONS */
+/* #region 5 IMAGE STYLES & IMAGE BUTTONS */
 /*========================================*
  *  5 IMAGE STYLES & IMAGE BUTTONS
  *========================================*/
 
+/* Base circular images */
 img {
   width: 40dvmin;
   height: 40dvmin;
   border-radius: 50%;
   object-fit: cover;
+  overflow: hidden;
 }
 
+/* Wrapper that adds a decorative circular border image */
 .imgBorder {
   display: inline-block;
   position: relative;
   border-radius: 50%;
+  line-height: 0;                         /* Remove inline gap */
 }
 
+/* Border image around circular avatar */
 .imgBorder::before {
   content: "";
   position: absolute;
-  inset: -2dvmin;
+  inset: -2dvmin;                         /* Thickness of border frame */
   background-image: url("/Resources/Image Border.webp");
   background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-position: center;
   border-radius: 50%;
   z-index: -1;
 }
 
+.imgBorder img {
+  display: block;                         /* Kill baseline gap under img */
+}
+
+/* Homepage circular image buttons */
 .imgButton {
   display: block;
   width: auto;
   height: 20dvmin;
-  padding: 5dvmin;
   margin-top: 3dvmin;
+  padding: 5dvmin;
 
   background-color: black;
-  font: 1dvmin Arial;
-  object-fit: contain;
-
+  font: 1dvmin Arial;                     /* Fallback text if image fails */
+  object-fit: contain;                    /* Show full badge */
   border-radius: 10dvmin;
   border: 3px solid var(--NO_LINK);
 
@@ -266,33 +296,50 @@ img {
     border-color var(--SLOW_BORDER);
 }
 
-/* #endregion 5 */
+/* #endregion 5 IMAGE STYLES & IMAGE BUTTONS */
 
 
 
-/* #region 6. INTERACTION STATES */
+/* #region 6 INTERACTION STATES */
 /*========================================*
- *  6 INTERACTION STATES
+ *  6 INTERACTION STATES (HOVER, FOCUS, TOUCH)
  *========================================*/
 
+/* Basic link hover scaling */
 a:hover {
   transform: scale(1.05);
   text-shadow: var(--SHADOW);
   color: var(--LINK_DARK);
 }
 
+/* Hover or focus on a group boosts its image button + links */
 .hoverTogether:hover .imgButton,
 .hoverTogether:focus-within .imgButton {
-  border-color: var(--LINK_DARK);
   box-shadow: var(--SHADOW);
+  border-color: var(--LINK_DARK);
 }
 
 .hoverTogether:hover a,
 .hoverTogether:focus-within a {
-  color: var(--LINK_DARK);
   text-shadow: var(--SHADOW);
+  color: var(--LINK_DARK);
 }
 
+/* Active state on touch still gets glow/color */
+.hoverTogether a:active {
+  text-shadow: var(--SHADOW);
+  color: var(--LINK_DARK);
+}
+
+/* Nav icon glow & scale */
+.navButtons a:hover img,
+.navButtons a:active img {
+  transform: scale(1.05);
+  border-color: var(--LINK_DARK);
+  box-shadow: var(--SHADOW);
+}
+
+/* Button hover/active glow + slight scale */
 button:hover,
 button:active {
   text-shadow: var(--SHADOW);
@@ -301,64 +348,77 @@ button:active {
   transform: scale(1.05);
 }
 
+/* Button text loses image-fill and becomes bright red when active */
 button:hover span,
 button:active span {
   background-image: none;
+  -webkit-background-clip: border-box;
+  background-clip: border-box;
+
   color: var(--LINK_LIGHT);
   -webkit-text-fill-color: var(--LINK_LIGHT);
   text-shadow: var(--SHADOW);
 }
 
-/* #endregion 6 */
+/* #endregion 6 INTERACTION STATES */
 
 
 
-/* #region 7. LINK VARIANTS */
+/* #region 7 LINK VARIANTS & UTILITIES */
 /*========================================*
- *  7 LINK VARIANTS
+ *  7 LINK VARIANTS & UTILITY CLASSES
  *========================================*/
 
+/* Light colored homepage links */
 .clean {
   color: var(--NO_LINK);
 }
 
+/* Slightly stronger scale for “clean” links */
 .clean:hover {
   transform: scale(1.1);
 }
 
+/* “Dead” or placeholder links: always dim, no scale */
 .dead,
 .dead:hover {
   transform: scale(1);
   color: var(--LINK_DARK);
 }
 
+/* Highlighted premium text */
 .premium {
   text-shadow: var(--SHADOW);
 }
 
-/* #endregion 7 */
+/* #endregion 7 LINK VARIANTS & UTILITIES */
 
 
 
-/* #region 8. NAV BUTTON STRIP */
+/* #region 8 NAVIGATION ICON BUTTON STRIP */
 /*========================================*
  *  8 NAVIGATION ICON BUTTON STRIP
  *========================================*/
 
 .navButtons {
   display: flex;
+  flex-direction: row;
+  align-items: center;
   justify-content: center;
+  width: fit-content;
   margin: 0 auto;
 }
 
 .navButtons img {
   width: 12dvmin;
   height: 12dvmin;
-  border-radius: 50%;
   padding: 1dvmin;
   margin: 0 10dvw;
 
+  font: 1dvmin Arial;
+  border-radius: 50%;
   border: 3px solid var(--NO_LINK);
+  object-fit: cover;
 
   transition:
     transform var(--SLOW_TRANSFORM),
@@ -366,47 +426,54 @@ button:active span {
     border-color var(--SLOW_BORDER);
 }
 
-/* #endregion 8 */
+/* #endregion 8 NAVIGATION ICON BUTTON STRIP */
 
 
 
-/* #region 9. GENERIC BUTTONS */
+/* #region 9 GENERIC BUTTON STYLING */
 /*========================================*
- *  9 GENERIC BUTTONS
+ *  9 GENERIC BUTTON STYLING
  *========================================*/
 
 button {
+  -webkit-appearance: none;
   appearance: none;
+
   display: block;
   margin: 1dvmin auto;
   padding: 0.5em 1.5em;
 
   border: none;
   border-radius: 9999px;
-
   background: transparent;
 
   font-family: 'New Rocker';
   font-size: 5dvmin;
 
+  /* Outer frame image (pill border) */
   background-image: url("/Resources/Button Border.webp");
   background-size: 110% 110%;
-  background-repeat: no-repeat;
   background-position: center;
+  background-repeat: no-repeat;
 
   transition:
     transform var(--SLOW_TRANSFORM),
     box-shadow var(--SLOW_SHADOW);
 }
 
+/* Span text uses image as fill for “metallic ink” look */
 button span {
   display: inline-block;
+
   background-image: url("/Resources/Button Text.webp");
   background-size: cover;
   background-position: center;
+  background-repeat: no-repeat;
+
   color: transparent;
   -webkit-text-fill-color: transparent;
   -webkit-background-clip: text;
+  background-clip: text;
 
   transition:
     color 0.3s ease-out,
@@ -414,15 +481,16 @@ button span {
     -webkit-text-fill-color 0.9s ease-out;
 }
 
-/* #endregion 9 */
+/* #endregion 9 GENERIC BUTTON STYLING */
 
 
 
-/* #region 10. CHARACTER COLORS */
+/* #region 10 CHARACTER NAME COLORS */
 /*========================================*
- *  10 CHARACTER NAME COLORS
+ *  10 CHARACTER NAME COLORS (SCRIPT PAGES)
  *========================================*/
 
+/* Shared character name text treatment */
 .roman,
 .sage,
 .elena,
@@ -437,91 +505,118 @@ button span {
   font-weight: bold;
 }
 
+/* Individual character colors */
 .roman,
-.sage { color: red; }
+.sage {
+  color: red;
+}
 
-.elena { color: yellow; }
+.elena {
+  color: yellow;
+}
 
 .iris,
-.darian { color: blue; }
+.darian {
+  color: blue;
+}
 
-.walter { color: brown; }
+.walter {
+  color: brown;
+}
 
-.trent { color: orange; }
+.trent {
+  color: orange;
+}
 
-.dave { color: pink; }
+.dave {
+  color: pink;
+}
 
-.fireRider { color: firebrick; }
+.fireRider {
+  color: firebrick;
+}
 
-.sidecharacter { color: inherit; }
+.sidecharacter {
+  color: inherit;
+}
 
-/* #endregion 10 */
+/* #endregion 10 CHARACTER NAME COLORS */
 
 
 
-/* #region 11. SLIDE-IN PAGE TRANSITIONS */
+/* #region 11 SLIDE-IN PAGE TRANSITION SYSTEM */
 /*========================================*
  *  11 SLIDE-IN PAGE TRANSITION SYSTEM
  *========================================*/
 
+/* Scrollable content wrapper */
 #transitionContainer {
   flex: 1;
   min-height: 100dvh;
   width: 100%;
-  overflow: visible;
+  
+  /* DONT TOUCH - important for proper scroll transition */
+  overflow: visible;                      /* JS swaps scroll responsibility */
 }
 
+/* Homepage slide (DOWN into view, OUT up) */
 .homeJs #transitionContainer {
-  transform: translateY(-100%);
+  transform: translateY(-100%);           /* start above */
   transition: transform 1s ease-in-out;
 }
 
 .homeJs #transitionContainer.ready {
-  transform: translateY(0);
+  transform: translateY(0);               /* fully in view */
 }
 
 .homeJs #transitionContainer.slide-out {
-  transform: translateY(-100%);
+  transform: translateY(-100%);           /* back up */
 }
 
+/* Other pages slide (UP into view, OUT down) */
 .otherJs #transitionContainer {
-  transform: translateY(100vh);
+  transform: translateY(100vh);           /* start below */
   transition: transform 0.6s ease-in-out;
 }
 
 .otherJs #transitionContainer.ready {
-  transform: translateY(0);
+  transform: translateY(0);               /* fully in view */
 }
 
 .otherJs #transitionContainer.slide-out {
   transition: transform var(--SLIDE_DURATION) ease-in-out;
-  transform: translateY(var(--SLIDE_DISTANCE));
+  transform: translateY(var(--SLIDE_DISTANCE)); /* back down */
 }
 
+/* No-JS fallback: no transform / no animation */
 .noJs #transitionContainer {
   transform: none !important;
   transition: none !important;
 }
 
+/* No-JS fallback: normal scroll, no animations */
 .noJs body {
   overflow: auto;
 }
 
-/* #endregion 11 */
+/* #endregion 11 SLIDE-IN PAGE TRANSITION SYSTEM */
 
 
 
-/* #region 12. REDUCED MOTION */
+/* #region 12 REDUCED-MOTION ACCESSIBILITY */
 /*========================================*
- *  12 REDUCED MOTION
+ *  12 REDUCED-MOTION ACCESSIBILITY
  *========================================*/
 
 @media (prefers-reduced-motion: reduce) {
-  #constellations { display: none; }
+  #constellations {
+    display: none;                        /* Disable animated starfield */
+  }
+
   #transitionContainer {
     transform: translateY(0);
     transition: none;
   }
 }
 
-/* #endregion 12 */
+/* #endregion 12 REDUCED-MOTION ACCESSIBILITY */
