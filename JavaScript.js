@@ -30,24 +30,9 @@ window.addEventListener('load', () => {
 
   // Set slide duration relative to content height (clamped 1–3×)
   if (page) {
-    const viewportHeight =
-      window.innerHeight || document.documentElement.clientHeight;
-    const contentHeight = page.offsetHeight;
-
-    let ratio = contentHeight / viewportHeight;
-    ratio = Math.max(1, Math.min(ratio, 3)); // clamp ratio to [1, 3]
-
-    const baseDuration = 0.5;               // base seconds for a 1× page
-    const durationSeconds = baseDuration * ratio;
-
-    // Save to CSS custom property for the transition timing
-    document.documentElement.style.setProperty(
-      '--slide-duration',
-      `${durationSeconds}s`
-    );
-
-    // Mirror in JS so transitionTo() can time navigation
-    slideDurationMs = durationSeconds * 1000;
+    const pageSize = .5 * Math.max(1, Math.min(page.offsetHeight / (window.innerHeight || document.documentElement.clientHeight), 3));
+document.documentElement.style.setProperty('--slide-duration', `${pageSize}s`);
+slideDurationMs = pageSize * 1000;
 
     // Mark page as ready so CSS can run entrance animations
     requestAnimationFrame(() => {
