@@ -70,8 +70,7 @@ const getPage = () => document.getElementById('transitionContainer');
 const isHomepage = () => !!document.querySelector('#menuButton');
 
 // Shared helper for slide animation duration (seconds)
-const getSlideDurationSeconds = () => (isHomepage() ? 1.2 : 0.6);
-
+const getSlideDurationSeconds = () => (isHomepage() ? 1.2 : 0.6) + window.scrollY * 0.001;
 
 /*---------- Constellation canvas & starfield ----------*/
 
@@ -118,12 +117,12 @@ function lockScrollToContainer(PAGE = getPage()) {
   if (PAGE) PAGE.style.overflowY = 'auto'; // page wrapper scrolls
 }
 
-// Restore normal page scroll to window/body
+// Restore normal page scroll to window/body for proper animation 
 function freeScrollLayout(PAGE = getPage()) {
   const HTML = document.documentElement;
   const BODY = document.body;
 
-  // Capture scroll BEFORE layout changes
+  // Capture scroll before layout changes
   const CURRENT_SCROLL = PAGE ? PAGE.scrollTop : window.scrollY;
 
   // Switch to window/body scrolling
@@ -131,7 +130,7 @@ function freeScrollLayout(PAGE = getPage()) {
   BODY.style.height = 'auto';
   if (PAGE) PAGE.style.overflowY = 'visible';
 
-  // Re-apply scroll once layout settles
+  // Re-apply scroll position once layout resets scroll to top
   requestAnimationFrame(() => {
     window.scrollTo(0, CURRENT_SCROLL);
   });
