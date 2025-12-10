@@ -14,6 +14,11 @@ let isTransitioning = false;
 // Main content wrapper
 const getPage = () => document.getElementById('transitionContainer');
 
+// Detect if this is the homepage (has the main menu button)
+function isHomepage() {
+  return !!document.querySelector('#menuButton');
+}
+
 
 // Use #transitionContainer as the only scroll area
 function lockScrollToContainer(page = getPage()) {
@@ -67,9 +72,12 @@ window.addEventListener('load', () => {
   // Configure slide-in timing and lock scroll after transition
   if (page) {
 
+    // Slower on homepage, faster on other pages
+    const slideSeconds = isHomepage() ? 1.2 : 0.6;
+
     document.documentElement.style.setProperty(
-    '--slide-duration',
-    '0.6s'
+      '--slide-duration',
+      `${slideSeconds}s`
     );
 
     requestAnimationFrame(() => {
@@ -512,11 +520,13 @@ function transitionTo(url, isMenu = false) {
   saveStarsToStorage();
 
 freeScrollLayout(page);
-  page.classList.add('slide-out');
+page.classList.add('slide-out');
 
-  setTimeout(() => {
-    window.location.href = url;
-  }, 600);
+const slideSeconds = isHomepage() ? 1.2 : 0.6;
+
+setTimeout(() => {
+  window.location.href = url;
+}, slideSeconds * 1000);
 }
 
 // Save current starfield to localStorage
