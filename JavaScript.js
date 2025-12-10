@@ -251,14 +251,12 @@ function transitionTo(url, isMenu = false) {
 
   const PAGE = getPage();
 
-  // Menu links hide the back-link on arrival
   if (isMenu) {
     sessionStorage.setItem('suppressHomeBack', '1');
   } else {
     sessionStorage.removeItem('suppressHomeBack');
   }
 
-  // Special "back" keyword uses stored homepageBackUrl
   if (url === 'back') {
     const STORED = localStorage.getItem('homepageBackUrl');
     if (!STORED) {
@@ -268,21 +266,19 @@ function transitionTo(url, isMenu = false) {
     url = STORED;
   }
 
-  // If page wrapper is missing, just bail straight to the URL
   if (!PAGE) {
     window.location.href = url;
     return;
   }
 
-  // Pause star motion and persist their current state
   FREEZE_CONSTELLATION = true;
   saveStarsToStorage();
 
-  // Give body the scroll responsibility again
+  // Let body/window handle scroll during the slide-out
   freeScrollLayout(PAGE);
 
-  // Tell css how far to scroll
-  const DIST = window.innerHeight + window.scrollY;
+  // Use full page height for the slide distance
+  const DIST = PAGE ? PAGE.offsetHeight : window.innerHeight;
   document.documentElement.style.setProperty(
     '--slide-distance',
     `${DIST}px`
@@ -291,7 +287,6 @@ function transitionTo(url, isMenu = false) {
   // Kick off slide-out animation
   PAGE.classList.add('slide-out');
 
-  // Navigate after slide-out completes
   setTimeout(() => {
     window.location.href = url;
   }, getSlideDurationSeconds() * 1000);
