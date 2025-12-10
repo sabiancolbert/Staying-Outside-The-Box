@@ -13,6 +13,7 @@ let isTransitioning = false;       // prevents double navigation during transiti
  *==============================*/
 
 window.addEventListener('load', () => {
+  applyFreeLayout();
   const page = document.getElementById('transitionContainer');
 
   // Read and clear the "came from menu" flag
@@ -75,6 +76,7 @@ slideDurationMs = pageSize * 1000;
     localStorage.removeItem('constellationStars');
     localStorage.removeItem('constellationMeta');
   }
+  applyLockedLayout();
 });
 
 /*==============================*
@@ -85,7 +87,6 @@ window.addEventListener('pageshow', (event) => {
   
   const page = document.getElementById('transitionContainer');
   if (!page) return;
-  applyFreeLayout();
   // Safely read navigation type (if supported)
   const navEntries = performance.getEntriesByType
     ? performance.getEntriesByType('navigation')
@@ -108,7 +109,7 @@ window.addEventListener('pageshow', (event) => {
 
 // Allow transitions again
     isTransitioning = false;
-    applyLockedLayout();
+  
   }
 });
 
