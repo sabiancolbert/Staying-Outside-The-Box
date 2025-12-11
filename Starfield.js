@@ -260,8 +260,8 @@ if (CLEANED_USER_SPEED > 0.05) {
     if (ORBIT_FORCE < .3) ORBIT_FORCE = .3;
 
     // combine radial + orbit
-    PULL_X += -DY / USER_DISTANCE * ORBIT_FORCE;
-    PULL_Y += DX / USER_DISTANCE * ORBIT_FORCE;
+    PULL_X += -DY / USER_DISTANCE * ORBIT_FORCE * CLEANED_USER_SPEED / 10;
+    PULL_Y += DX / USER_DISTANCE * ORBIT_FORCE * CLEANED_USER_SPEED / 10;
 
     // clamp
     if (Math.abs(PULL_X) > 3) PULL_X = 3 * Math.sign(PULL_X);
