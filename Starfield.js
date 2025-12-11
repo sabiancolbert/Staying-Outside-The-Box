@@ -253,7 +253,7 @@ function moveStars() {
 
 
     // Finger influence only matters when you've moved recently, and if in bounds
-if (CLEANED_USER_SPEED > 0.05 && USER_DISTANCE < MAX_INFLUENCE) {
+if (CLEANED_USER_SPEED > 0.01 && USER_DISTANCE < MAX_INFLUENCE) {
 
     // Ring-shaped attractor around your finger (closer to ring = faster, inside ring = repel)
     const R = Math.min(USER_DISTANCE / MAX_INFLUENCE, 1);
@@ -263,7 +263,11 @@ if (CLEANED_USER_SPEED > 0.05 && USER_DISTANCE < MAX_INFLUENCE) {
     PULL_X += OFFSET_USER_SPEED * RADIAL_INFLUENCE * DX * INV_DIST;
     PULL_Y += OFFSET_USER_SPEED * RADIAL_INFLUENCE * DY * INV_DIST;
 
+    // Decay PULL strength (CUS var is mever 0 in this bracket)
+    PULL_X *= CLEANED_USER_SPEED / 10;
+    PULL_Y *= CLEANED_USER_SPEED / 10;
 
+    //HEEEEERRRRREEEEEEEEEEEEEEEEEE
     STAR.momentumX += 0;
     STAR.momentumY += 0;
 }
@@ -280,17 +284,13 @@ if (CLEANED_USER_SPEED > 0.05 && USER_DISTANCE < MAX_INFLUENCE) {
     PULL_X -= 3 * DX * INV_DIST * REPULSION_TIME;
     PULL_Y -= 3 * DY * INV_DIST * REPULSION_TIME;
     
-    // Always add baseline star drift
-    PULL_X += STAR.vx * OFFSET_USER_SPEED;
-    PULL_Y += STAR.vy * OFFSET_USER_SPEED;
-    
     // Clamp combined user influence so it never explodes
     if (Math.abs(PULL_X) > 3) PULL_X = 3 * Math.sign(PULL_X);
     if (Math.abs(PULL_Y) > 3) PULL_Y = 3 * Math.sign(PULL_Y);
 
-    // Apply final movement, while easing back to passive movement
-    STAR.x += PULL_X / 10 * OFFSET_USER_SPEED;
-    STAR.y += PULL_Y / 10 * OFFSET_USER_SPEED;
+    // Apply final movement, while easing back to passive movement and adding passive drift
+    STAR.x += PULL_X + STAR.vx;
+    STAR.y += PULL_Y + STAR.vx;
 
 
 
@@ -327,7 +327,7 @@ if (CLEANED_USER_SPEED > 0.05 && USER_DISTANCE < MAX_INFLUENCE) {
 
   // Let the "finger motion" effect slowly die out
   CLEANED_USER_SPEED *= 0.94;
-  if (CLEANED_USER_SPEED < 0.05) CLEANED_USER_SPEED = 0;
+  if (CLEANED_USER_SPEED < 0.01) CLEANED_USER_SPEED = 0;
 
   // Repulsion bursts decay too
   REPULSION_TIME *= 0.98;
