@@ -257,8 +257,8 @@ if (USER_TIME !== 0) {
     const DIR_Y = DY / DISTANCE;
 
     // Build pulls ALREADY scaled by direction
-    let PULL_X = 0.04 * DIR_X * (1 + CLEANED_USER_SPEED) / DISTANCE;
-    let PULL_Y = 0.04 * DIR_Y * (1 + CLEANED_USER_SPEED) / DISTANCE;
+    let PULL_X = 0.6 * DIR_X * (1 + CLEANED_USER_SPEED) / DISTANCE;
+    let PULL_Y = 0.6 * DIR_Y * (1 + CLEANED_USER_SPEED) / DISTANCE;
 
     // Clamp magnitude (but preserve direction)
     if (Math.abs(PULL_X) > 0.25) PULL_X = 0.25 * Math.sign(PULL_X);
