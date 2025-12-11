@@ -291,9 +291,20 @@ if (CLEANED_USER_SPEED > 0.01 && USER_DISTANCE < MAX_INFLUENCE) {
     PULL_X *= CLEANED_USER_SPEED / 10;
     PULL_Y *= CLEANED_USER_SPEED / 10;
 
+
+
+
+//this shit new
   const NEAR = (1 - R) * (RING_RADIUS - R);                 // bell-ish: + inside ring, − outside
 STAR.momentumX = (STAR.momentumX + DX * INV_DIST * NEAR * RING_STRENGTH) * 0.94;
 STAR.momentumY = (STAR.momentumY + DY * INV_DIST * NEAR * RING_STRENGTH) * 0.94;
+
+/*HEEEEERRRRREEEEEEEEEEEEEEEEEE
+STAR.momentumX += 0;
+STAR.momentumY += 0;
+*/
+
+
 PULL_X += STAR.momentumX;
 PULL_Y += STAR.momentumY;
 }
