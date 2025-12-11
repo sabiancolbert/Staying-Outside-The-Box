@@ -255,17 +255,11 @@ function moveStars() {
     // Finger influence only matters when you've moved recently, and if in bounds
 if (CLEANED_USER_SPEED > 0.05 && USER_DISTANCE < MAX_INFLUENCE) {
 
-    // 0 at finger, 1 at edge of influence radius
+    // Ring-shaped attractor around your finger (closer to ring = faster, inside ring = repel)
     const R = Math.min(USER_DISTANCE / MAX_INFLUENCE, 1);
-
-    // Ring-shaped attractor around your finger
-    const RING_RADIUS     = 0.35; // 0–1: desired orbit radius
-    const RING_STRENGTH = 13;   // how strongly stars seek that ring
-
-    // >0 outside ring (pull inward), <0 inside ring (push outward), fades at edges
+    const RING_RADIUS     = 0.35;
+    const RING_STRENGTH = 13;
     const RADIAL_INFLUENCE = RING_STRENGTH * (R - RING_RADIUS) * (1 - R);
-
-    // Radial push: toward ring if outside, away if inside
     PULL_X += OFFSET_USER_SPEED * RADIAL_INFLUENCE * DX * INV_DIST;
     PULL_Y += OFFSET_USER_SPEED * RADIAL_INFLUENCE * DY * INV_DIST;
 
@@ -294,9 +288,9 @@ if (CLEANED_USER_SPEED > 0.05 && USER_DISTANCE < MAX_INFLUENCE) {
     if (Math.abs(PULL_X) > 3) PULL_X = 3 * Math.sign(PULL_X);
     if (Math.abs(PULL_Y) > 3) PULL_Y = 3 * Math.sign(PULL_Y);
 
-    // Apply final movement
-    STAR.x += PULL_X;
-    STAR.y += PULL_Y;
+    // Apply final movement, while easing back to passive movement
+    STAR.x += PULL_X / 10 * CLEANED_USER_SPEED;
+    STAR.y += PULL_Y / 10 * CLEANED_USER_SPEED;
 
 
 
