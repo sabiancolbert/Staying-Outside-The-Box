@@ -228,44 +228,26 @@ function moveStars() {
     STAR.x += STAR.vx * (CLEANED_USER_SPEED + 1);
     STAR.y += STAR.vy * (CLEANED_USER_SPEED + 1);
 
-    // 2) Pointer pull / push zone around the cursor in a radial form
-    if (LAST_TIME !== 0) {
+    // 2) Pointer pull / push as a *bias* (no snapping, no vx/vy scaling)
+    if (LAST_TIME !== 0 && CLEANED_USER_SPEED > 0.19) {
       const DX = LAST_X - STAR.x;
       const DY = LAST_Y - STAR.y;
       const DIST_SQ = DX * DX + DY * DY;
 
       const MAX_INFLUENCE = 10000 * (SCALE_FACTOR / 500);
-      const MIN_TARGET_RADIUS = 2; // px radius for the "dot" around your finger
-
-      // If the star is extremely close, snap it into the dot
-      if (DIST_SQ <= MIN_TARGET_RADIUS * MIN_TARGET_RADIUS) {
-        STAR.x = LAST_X;
-        STAR.y = LAST_Y;
-
-        // Slow drift, but don't let it die completely
-        const oldSpeed = Math.hypot(STAR.vx, STAR.vy);
-        let newSpeed = oldSpeed * 0.2;
-        const MIN_SPEED = 0.05;
-
-        if (newSpeed < MIN_SPEED) newSpeed = MIN_SPEED;
-
-        if (oldSpeed > 0) {
-          const scale = newSpeed / oldSpeed;
-          STAR.vx *= scale;
-          STAR.vy *= scale;
-        }
-
-      } else if (DIST_SQ < MAX_INFLUENCE) {
+      if (DIST_SQ < MAX_INFLUENCE) {
         const DIST = Math.sqrt(DIST_SQ) || 1;
+        const MAX_RADIUS = Math.sqrt(MAX_INFLUENCE);
 
-        // Even if CLEANED_USER_SPEED decays to 0, keep a small pull
-        const SPEED_FACTOR = 0.4 + CLEANED_USER_SPEED; // base + your motion
-        const FALLOFF = (MAX_INFLUENCE - DIST_SQ) / MAX_INFLUENCE;
+        // Normalized distance 0..1 from the pointer
+        const NORM = Math.min(DIST / MAX_RADIUS, 1);
 
-        const BASE_PULL = 0.015 * SPEED_FACTOR * FALLOFF;
+        // Bell-shaped envelope: 0 at center & edge, max in the middle
+        const EXPONENT = 1.7; // tweak 1.4–2.2
+        const radialEnvelope = Math.pow(NORM, EXPONENT) * (1 - NORM);
 
-        const ATTR_PULL = BASE_PULL;
-        const REP_PULL = BASE_PULL * REPULSION_VALUE;
+        // Base pull from your motion, modulated by distance envelope
+        const BASE_PULL = 0.035 * CLEANED_USER_SPEED * radialEnvelope;
 
         // Unit radial vector (toward the pointer)
         const RAD_X = DX / DIST;
@@ -281,21 +263,44 @@ function moveStars() {
         const MIX_T = CURVE;
 
         // Attraction direction (toward pointer + orbit)
-        const ATTR_DIR_X = RAD_X * MIX_R + TAN_X * MIX_T;
-        const ATTR_DIR_Y = RAD_Y * MIX_R + TAN_Y * MIX_T;
+        let ATTR_DIR_X = RAD_X * MIX_R + TAN_X * MIX_T;
+        let ATTR_DIR_Y = RAD_Y * MIX_R + TAN_Y * MIX_T;
 
         // Repulsion direction (away from pointer + same orbit direction)
-        const REP_DIR_X = -RAD_X * MIX_R + TAN_X * MIX_T;
-        const REP_DIR_Y = -RAD_Y * MIX_R + TAN_Y * MIX_T;
+        let REP_DIR_X = -RAD_X * MIX_R + TAN_X * MIX_T;
+        let REP_DIR_Y = -RAD_Y * MIX_R + TAN_Y * MIX_T;
 
-        // Combine attraction + repulsion, scaled by distance
-        const PULL_X =
-          (ATTR_DIR_X * ATTR_PULL + REP_DIR_X * REP_PULL) * DIST;
-        const PULL_Y =
-          (ATTR_DIR_Y * ATTR_PULL + REP_DIR_Y * REP_PULL) * DIST;
+        // (Optional) wobble from the star's own velocity direction
+        const velLen = Math.hypot(STAR.vx, STAR.vy) || 1;
+        const velDirX = STAR.vx / velLen;
+        const velDirY = STAR.vy / velLen;
 
-        STAR.x += PULL_X;
-        STAR.y += PULL_Y;
+        const WOBBLE = 0.25; // 0 = clean orbit, 1 = follow velocity more
+        const INV_WOBBLE = 1 - WOBBLE;
+
+        ATTR_DIR_X = ATTR_DIR_X * INV_WOBBLE + velDirX * WOBBLE;
+        ATTR_DIR_Y = ATTR_DIR_Y * INV_WOBBLE + velDirY * WOBBLE;
+
+        REP_DIR_X = REP_DIR_X * INV_WOBBLE + velDirX * WOBBLE;
+        REP_DIR_Y = REP_DIR_Y * INV_WOBBLE + velDirY * WOBBLE;
+
+        const ATTR_PULL = BASE_PULL;
+        const REP_PULL  = BASE_PULL * REPULSION_VALUE;
+
+        // Combined pointer influence vector
+        let biasX =
+          ATTR_DIR_X * ATTR_PULL + REP_DIR_X * REP_PULL;
+        let biasY =
+          ATTR_DIR_Y * ATTR_PULL + REP_DIR_Y * REP_PULL;
+
+        // Scale a bit with distance so further stars get more kick
+        biasX *= DIST;
+        biasY *= DIST;
+
+        // Additive bias: this is what gives you the radial circle,
+        // without killing the intrinsic vx/vy drift.
+        STAR.x += biasX;
+        STAR.y += biasY;
       }
     }
 
