@@ -332,7 +332,7 @@ STAR.x += PULL_X;
   }
 
   // Slowly decay pointer speed influence
-  CLEANED_USER_SPEED *= 0.95;
+  CLEANED_USER_SPEED *= 0.98;
   if (CLEANED_USER_SPEED < 0.05) CLEANED_USER_SPEED = 0;
 
   // Gently decay repulsion bursts so they don't last forever
