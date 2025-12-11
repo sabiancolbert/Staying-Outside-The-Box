@@ -222,94 +222,75 @@ function moveStars() {
   if (!HAS_CANVAS || !STARS.length) return;
 
   for (const STAR of STARS) {
-  // --- 1. Pointer force: tweak velocity, not position ---
-  if (LAST_TIME !== 0 && CLEANED_USER_SPEED > 0.19) {
-    const DX = LAST_X - STAR.x;
-    const DY = LAST_Y - STAR.y;
-    const DIST_SQ = DX * DX + DY * DY;
+  // Pointer pull / push zone around the cursor in a radial form
+if (LAST_TIME !== 0) {
+  const DX = LAST_X - STAR.x;
+  const DY = LAST_Y - STAR.y;
+  const DIST_SQ = DX * DX + DY * DY;
 
-    const MAX_INFLUENCE = 10000 * (SCALE_FACTOR / 500);
+  const MAX_INFLUENCE = 10000 * (SCALE_FACTOR / 500);
+  const MIN_TARGET_RADIUS = 2; // px radius for the "dot" around your finger
 
-    if (DIST_SQ < MAX_INFLUENCE) {
-      const DIST = Math.sqrt(DIST_SQ) || 1;
-      const MAX_RADIUS = Math.sqrt(MAX_INFLUENCE);
+  // If the star is extremely close, snap it into the dot
+  if (DIST_SQ <= MIN_TARGET_RADIUS * MIN_TARGET_RADIUS) {
+    STAR.x = LAST_X;
+    STAR.y = LAST_Y;
 
-      // Normalized distance 0..1 from the pointer
-      const NORM = Math.min(DIST / MAX_RADIUS, 1);
+    // Slow drift, but don't let it die completely
+    const oldSpeed = Math.hypot(STAR.vx, STAR.vy);
+    let newSpeed = oldSpeed * 0.2;
+    const MIN_SPEED = 0.05;
 
-      // Bell-shaped envelope: 0 at center & edges, max in the midband
-      const EXPONENT = 1.7; // tweak 1.4–2.2 for flavor
-      const radialEnvelope = Math.pow(NORM, EXPONENT) * (1 - NORM);
+    if (newSpeed < MIN_SPEED) newSpeed = MIN_SPEED;
 
-      // Base strength of "force" from your motion
-      const BASE_FORCE = 0.0002 * CLEANED_USER_SPEED * radialEnvelope;
-
-      // Unit radial vector (toward the pointer)
-      const RAD_X = DX / DIST;
-      const RAD_Y = DY / DIST;
-
-      // Unit tangential vector (perpendicular) for orbit
-      const TAN_X = -RAD_Y;
-      const TAN_Y = RAD_X;
-
-      // 0 = pure radial, 1 = pure orbit
-      const CURVE = 0.45;
-      const MIX_R = 1 - CURVE;
-      const MIX_T = CURVE;
-
-      // Attraction direction (toward pointer + orbit)
-      let ATTR_DIR_X = RAD_X * MIX_R + TAN_X * MIX_T;
-      let ATTR_DIR_Y = RAD_Y * MIX_R + TAN_Y * MIX_T;
-
-      // Repulsion direction (away from pointer + same orbit direction)
-      let REP_DIR_X = -RAD_X * MIX_R + TAN_X * MIX_T;
-      let REP_DIR_Y = -RAD_Y * MIX_R + TAN_Y * MIX_T;
-
-      // Add wobble from star's own velocity direction
-      const velLen = Math.hypot(STAR.vx, STAR.vy) || 1;
-      const velDirX = STAR.vx / velLen;
-      const velDirY = STAR.vy / velLen;
-
-      const WOBBLE = 0.3; // 0 = perfect orbit, 1 = follow velocity more
-      const INV_WOBBLE = 1 - WOBBLE;
-
-      ATTR_DIR_X = ATTR_DIR_X * INV_WOBBLE + velDirX * WOBBLE;
-      ATTR_DIR_Y = ATTR_DIR_Y * INV_WOBBLE + velDirY * WOBBLE;
-
-      REP_DIR_X = REP_DIR_X * INV_WOBBLE + velDirX * WOBBLE;
-      REP_DIR_Y = REP_DIR_Y * INV_WOBBLE + velDirY * WOBBLE;
-
-      const ATTR_FORCE = BASE_FORCE;
-      const REP_FORCE  = BASE_FORCE * REPULSION_VALUE;
-
-      // Combined "force" vector in direction space
-      let forceX =
-        ATTR_DIR_X * ATTR_FORCE + REP_DIR_X * REP_FORCE;
-      let forceY =
-        ATTR_DIR_Y * ATTR_FORCE + REP_DIR_Y * REP_FORCE;
-
-      // Scale a bit with distance so outer stars get more kick
-      forceX *= DIST;
-      forceY *= DIST;
-
-      // Apply as acceleration to velocity (this is the key change)
-      STAR.vx += forceX;
-      STAR.vy += forceY;
-
-      // Clamp velocity so it doesn't explode over time
-      const vMag = Math.hypot(STAR.vx, STAR.vy);
-      const MAX_V = 0.7; // original range ~0.25, bump but don't go wild
-      if (vMag > MAX_V) {
-        STAR.vx = (STAR.vx / vMag) * MAX_V;
-        STAR.vy = (STAR.vy / vMag) * MAX_V;
-      }
+    if (oldSpeed > 0) {
+      const scale = newSpeed / oldSpeed;
+      STAR.vx *= scale;
+      STAR.vy *= scale;
     }
+  } else if (DIST_SQ < MAX_INFLUENCE) {
+    const DIST = Math.sqrt(DIST_SQ) || 1;
+
+    // Even if CLEANED_USER_SPEED decays to 0, keep a small pull
+    const SPEED_FACTOR = 0.4 + CLEANED_USER_SPEED; // base + your motion
+    const FALLOFF = (MAX_INFLUENCE - DIST_SQ) / MAX_INFLUENCE;
+
+    const BASE_PULL = 0.015 * SPEED_FACTOR * FALLOFF;
+
+    const ATTR_PULL = BASE_PULL;
+    const REP_PULL = BASE_PULL * REPULSION_VALUE;
+
+    // Unit radial vector (toward the pointer)
+    const RAD_X = DX / DIST;
+    const RAD_Y = DY / DIST;
+
+    // Unit tangential vector (perpendicular) for orbit
+    const TAN_X = -RAD_Y;
+    const TAN_Y = RAD_X;
+
+    // 0 = pure radial, 1 = pure orbit
+    const CURVE = 0.45;
+    const MIX_R = 1 - CURVE;
+    const MIX_T = CURVE;
+
+    // Attraction direction (toward pointer + orbit)
+    const ATTR_DIR_X = RAD_X * MIX_R + TAN_X * MIX_T;
+    const ATTR_DIR_Y = RAD_Y * MIX_R + TAN_Y * MIX_T;
+
+    // Repulsion direction (away from pointer + same orbit direction)
+    const REP_DIR_X = -RAD_X * MIX_R + TAN_X * MIX_T;
+    const REP_DIR_Y = -RAD_Y * MIX_R + TAN_Y * MIX_T;
+
+    // Combine attraction + repulsion, scaled by distance
+    const PULL_X =
+      (ATTR_DIR_X * ATTR_PULL + REP_DIR_X * REP_PULL) * DIST;
+    const PULL_Y =
+      (ATTR_DIR_Y * ATTR_PULL + REP_DIR_Y * REP_PULL) * DIST;
+
+    STAR.x += PULL_X;
+    STAR.y += PULL_Y;
   }
-
-  // --- 2. Passive drift using (possibly updated) velocity ---
-  STAR.x += STAR.vx * (CLEANED_USER_SPEED + 1);
-  STAR.y += STAR.vy * (CLEANED_USER_SPEED + 1);
-
+}
   // --- 3. White flash decay, twinkle, wrap (keep as you already have) ---
   if (STAR.whiteValue > 0) {
     STAR.whiteValue *= 0.98;
