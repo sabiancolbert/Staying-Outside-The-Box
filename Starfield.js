@@ -259,7 +259,7 @@ if (CLEANED_USER_SPEED > 0.05) {
 
     // 2) Orbit when close, with minimum tangential speed so they never stall
     let ORBIT_FORCE = USER_SPEED * NORMALIZED_DISTANCE * 0.4;
-    if (ORBIT_FORCE < 0.3) ORBIT_FORCE = 0.3;
+    if (ORBIT_FORCE < 1) ORBIT_FORCE = 1;
     PULL_X += (-DY / USER_DISTANCE) * ORBIT_FORCE;
     PULL_Y += ( DX / USER_DISTANCE) * ORBIT_FORCE;
 
