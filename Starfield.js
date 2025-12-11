@@ -316,27 +316,6 @@ let biasY =
     }
   }
 
-  // --- 3. Spark / fade / wrap behavior (unchanged) ---
-  if (STAR.whiteValue > 0) {
-    STAR.whiteValue *= 0.98;
-    if (STAR.whiteValue < 0.001) STAR.whiteValue = 0;
-  }
-
-  if (STAR.opacity <= 0.005) {
-    STAR.opacity = 1;
-    if (Math.random() < 0.07) STAR.whiteValue = 1;
-  } else if (STAR.opacity > 0.02) {
-    STAR.opacity -= 0.005 * STAR.fadeSpeed;
-  } else {
-    STAR.opacity -= 0.0001;
-  }
-
-  if (STAR.x < 0) STAR.x = WIDTH;
-  if (STAR.x > WIDTH) STAR.x = 0;
-  if (STAR.y < 0) STAR.y = HEIGHT;
-  if (STAR.y > HEIGHT) STAR.y = 0;
-}
-
     // White flash decay for "spark" effect
     if (STAR.whiteValue > 0) {
       STAR.whiteValue *= 0.98;
