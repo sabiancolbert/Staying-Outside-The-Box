@@ -251,17 +251,27 @@ if (CLEANED_USER_SPEED > 0.05) {
 
   if (USER_DISTANCE < MAX_INFLUENCE) {
 
-    const NORMALIZED_DISTANCE = Math.max(0, 1 - USER_DISTANCE / (MAX_INFLUENCE * 1.4));
-    
+    // 0 at far edge, 1 near finger
+    const NORMALIZED_DISTANCE = Math.max(
+      0,
+      1 - USER_DISTANCE / (MAX_INFLUENCE * 1.4)
+    );
+
+    // --- 1. Radial pull toward the finger ---
     let PULL_X = USER_SPEED * (1 - NORMALIZED_DISTANCE) * (DX / USER_DISTANCE);
     let PULL_Y = USER_SPEED * (1 - NORMALIZED_DISTANCE) * (DY / USER_DISTANCE);
 
-  
+    // --- 2. Combine orbit + anti-collapse outward-chambering ---
+    // Orbit = perpendicular to DX,DY
+    // Outward push = pushing away when too close (same perpendicular direction but scaled)
+    const ORBIT_FORCE = NORMALIZED_DISTANCE * CLEANED_USER_SPEED / 10;
+    const OUTWARD_FORCE = (1 - NORMALIZED_DISTANCE) * USER_SPEED * 0.5;
 
-    PULL_X += -DY / USER_DISTANCE * NORMALIZED_DISTANCE * CLEANED_USER_SPEED / 10;
-    PULL_Y += DX / USER_DISTANCE * NORMALIZED_DISTANCE * CLEANED_USER_SPEED / 10;
+    // Add both forces cleanly into the same lines
+    PULL_X += (-DY / USER_DISTANCE) * (ORBIT_FORCE + OUTWARD_FORCE);
+    PULL_Y += ( DX / USER_DISTANCE) * (ORBIT_FORCE + OUTWARD_FORCE);
 
-    // clamp
+    // Clamp
     if (Math.abs(PULL_X) > 3) PULL_X = 3 * Math.sign(PULL_X);
     if (Math.abs(PULL_Y) > 3) PULL_Y = 3 * Math.sign(PULL_Y);
 
