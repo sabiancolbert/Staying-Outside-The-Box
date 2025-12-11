@@ -287,7 +287,7 @@ if (CLEANED_USER_SPEED > 0.01 && USER_DISTANCE < MAX_INFLUENCE) {
     PULL_Y += STAR.momentumY;
     
     // Repulsion burst from clicks/taps: push straight away from finger
-    const CLEANED_REPULSION = 3 * INV_DIST * REPULSION_TIME * Math.max(0, 1 - USER_DISTANCE / MAX_INFLUENCE)
+    const CLEANED_REPULSION = 3 * INV_DIST * REPULSION_TIME * Math.max(0, 1 - USER_DISTANCE / MAX_INFLUENCE);
     PULL_X -= DX * CLEANED_REPULSION;
     PULL_Y -= DY * CLEANED_REPULSION;
         
@@ -296,8 +296,8 @@ if (CLEANED_USER_SPEED > 0.01 && USER_DISTANCE < MAX_INFLUENCE) {
     if (Math.abs(PULL_Y) > 3) PULL_Y = 3 * Math.sign(PULL_Y);
 
     // Apply final movement, while easing back to passive movement and adding passive drift
-    STAR.x += STAY.vx * OFFSET_USER_SPEED + PULL_X;
-    STAR.y += STAY.vy * OFFSET_USER_SPEED + PULL_Y;
+    STAR.x += STAR.vx * OFFSET_USER_SPEED + PULL_X;
+    STAR.y += STAR.vy * OFFSET_USER_SPEED + PULL_Y;
 
 
 
