@@ -242,7 +242,7 @@ function moveStars() {
 
 
 
-if (USER_TIME !== 0) {
+if (CLEANED_USER_SPEED > 0.05) {
   const DX = USER_X - STAR.x;
   const DY = USER_Y - STAR.y;
   const DISTANCE = 10 + Math.hypot(DX, DY);
