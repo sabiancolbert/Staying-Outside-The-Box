@@ -251,23 +251,15 @@ if (CLEANED_USER_SPEED > 0.05) {
 
   if (DISTANCE < MAX_INFLUENCE) {
 
-    // Stronger when far, softer when close
-    const BASE_PULL = (1 + CLEANED_USER_SPEED) * (DISTANCE / MAX_INFLUENCE);
-
-    let PULL_X = BASE_PULL * (DX / DISTANCE);
-    let PULL_Y = BASE_PULL * (DY / DISTANCE);
+    let PULL_X = (1 + CLEANED_USER_SPEED) * (DX / DISTANCE);
+    let PULL_Y = (1 + CLEANED_USER_SPEED) * (DY / DISTANCE);
 
     if (Math.abs(PULL_X) > 3) PULL_X = 3 * Math.sign(PULL_X);
     if (Math.abs(PULL_Y) > 3) PULL_Y = 3 * Math.sign(PULL_Y);
 
-    // --- ORBIT SKEW (tangential component) ---
-const ORBIT = 0.25; // 0 = no orbit, 1 = pure orbit
-const ORB_X = -PULL_Y * ORBIT; // rotate pull 90° clockwise
-const ORB_Y =  PULL_X * ORBIT; // rotate pull 90° clockwise
-
-// Final movement = radial pull + tangential orbit
-STAR.x += PULL_X + ORB_X;
-STAR.y += PULL_Y + ORB_Y;
+    // Final movement = radial pull + tangential orbit
+    STAR.x += PULL_X;
+    STAR.y += PULL_Y;
   }
 }
 
