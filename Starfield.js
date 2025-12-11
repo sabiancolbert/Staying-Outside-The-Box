@@ -222,7 +222,7 @@ function createStars() {
 function moveStars() {
   if (!HAS_CANVAS || !STARS.length) return;
   
-    const USER_SPEED = 1 + CLEANED_USER_SPEED;
+    const OFFSET_USER_SPEED = 1 + CLEANED_USER_SPEED;
     const MAX_INFLUENCE = 100 * (SCALE_FACTOR / 500);
     
   for (const STAR of STARS) {
@@ -268,12 +268,12 @@ const RADIAL_STRENGTH = 3;  // overall “importance” of radial vs orbit
 const radialFactor = RADIAL_STRENGTH * (R - RING) * (1 - R);
 
 // 1) Radial term: toward finger when outside ring, away when inside
- PULL_X += USER_SPEED * radialFactor * (DX / USER_DISTANCE);
- PULL_Y += USER_SPEED * radialFactor * (DY / USER_DISTANCE);
+ PULL_X += OFFSET_USER_SPEED * radialFactor * (DX / USER_DISTANCE);
+ PULL_Y += OFFSET_USER_SPEED * radialFactor * (DY / USER_DISTANCE);
 
 
     // 2) Orbit when close, with minimum tangential speed so they never stall
-    let ORBIT_FORCE = USER_SPEED * NORMALIZED_DISTANCE * 0.4;
+    let ORBIT_FORCE = OFFSET_USER_SPEED * NORMALIZED_DISTANCE * 0.4;
     if (ORBIT_FORCE < 1) ORBIT_FORCE = 1;
     PULL_X += (-DY / USER_DISTANCE) * ORBIT_FORCE * CLEANED_USER_SPEED / 10;
     PULL_Y += ( DX / USER_DISTANCE) * ORBIT_FORCE * CLEANED_USER_SPEED / 10;
@@ -286,12 +286,16 @@ const radialFactor = RADIAL_STRENGTH * (R - RING) * (1 - R);
 PULL_X -= (DX / USER_DISTANCE) * REPULSION_VALUE;
 PULL_Y -= (DY / USER_DISTANCE) * REPULSION_VALUE;
 
+//slow transition to passive movement (times 0-1)
+PULL_X *= CLEANED_USER_SPEED / 10;
+    PULL_Y *= CLEANED_USER_SPEED / 10;
+
   }
 }
 
 //passive movement
-PULL_X += STAR.vx * USER_SPEED;
-    PULL_Y += STAR.vy * USER_SPEED;
+PULL_X += STAR.vx * OFFSET_USER_SPEED;
+    PULL_Y += STAR.vy * OFFSET_USER_SPEED;
 
 STAR.x += PULL_X;
     STAR.y += PULL_Y;
