@@ -253,35 +253,32 @@ if (CLEANED_USER_SPEED > 0.05) {
 
     let PULL_X = (1 + CLEANED_USER_SPEED) * (DX / DISTANCE) * (DISTANCE / MAX_INFLUENCE);
     let PULL_Y = (1 + CLEANED_USER_SPEED) * (DY / DISTANCE) * (DISTANCE / MAX_INFLUENCE);
-
+    
     if (Math.abs(PULL_X) > 3) PULL_X = 3 * Math.sign(PULL_X);
     if (Math.abs(PULL_Y) > 3) PULL_Y = 3 * Math.sign(PULL_Y);
 
-// --- Orbit component: perpendicular to the finger direction ---
-
-    // Current radial pull magnitude (length of the pull vector)
-    const RADIAL_MAG = Math.hypot(PULL_X, PULL_Y);
-
-    // 1) Start a bit stronger than the radial pull
-    let ORBIT = RADIAL_MAG * 1.1;
-
-    // 2) Make orbit stronger when close to the finger, weaker far away
-    ORBIT *= MAX_INFLUENCE / (DISTANCE + MAX_INFLUENCE);
-
-    // 3) Minimum orbit so stars don't freeze on the fingertip
-    const MIN_ORBIT = RADIAL_MAG * 0.3;
-    if (ORBIT < MIN_ORBIT) ORBIT = MIN_ORBIT;
-
-    // 4) Maximum orbit so stars don't sling off-screen
-    if (ORBIT > 4) ORBIT = 4;
-
-    // Tangential unit vector (perpendicular to (DX, DY))
-    const TAN_X = -DY / DISTANCE;
-    const TAN_Y =  DX / DISTANCE;
-
-    // Blend radial pull + tangential orbit
-    PULL_X += ORBIT * TAN_X;
-    PULL_Y += ORBIT * TAN_Y;
+    // --- Perpendicular orbit velocity ---
+    const ORBIT_NEAR = Math.max(0, 1 - DISTANCE / MAX_INFLUENCE); 
+    // stronger as star gets close; 0 when far
+    
+    // perpendicular unit vector
+    const ORBX = -DY / DISTANCE;
+    const ORBY =  DX / DISTANCE;
+    
+    // base orbit strength
+    let ORBIT_FORCE = 0.6 * ORBIT_NEAR;   // tweak 0.6 for more/less orbit
+    
+    // ensure orbit never fully stops (prevents collapsing into a dot)
+    const MIN_ORBIT = 0.15;
+    if (ORBIT_FORCE < MIN_ORBIT) ORBIT_FORCE = MIN_ORBIT;
+    
+    // final perpendicular orbit contribution
+    let ORBIT_X = ORBX * ORBIT_FORCE;
+    let ORBIT_Y = ORBY * ORBIT_FORCE;
+    
+    // now add orbit into your pull
+    PULL_X += ORBIT_X;
+    PULL_Y += ORBIT_Y;
 
     // Final movement = radial pull + tangential orbit
     STAR.x += PULL_X;
