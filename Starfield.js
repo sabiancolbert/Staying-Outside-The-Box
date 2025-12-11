@@ -250,37 +250,39 @@ if (CLEANED_USER_SPEED > 0.05) {
   const MAX_INFLUENCE = 100 * (SCALE_FACTOR / 500);
 
   if (DISTANCE < MAX_INFLUENCE) {
+    // 0 far, 1 near finger
+    const NEAR = Math.max(0, 1 - DISTANCE / MAX_INFLUENCE);
 
-    let PULL_X = (1 + CLEANED_USER_SPEED) * (DX / DISTANCE) * (DISTANCE / MAX_INFLUENCE);
-    let PULL_Y = (1 + CLEANED_USER_SPEED) * (DY / DISTANCE) * (DISTANCE / MAX_INFLUENCE);
-    
-    if (Math.abs(PULL_X) > 3) PULL_X = 3 * Math.sign(PULL_X);
-    if (Math.abs(PULL_Y) > 3) PULL_Y = 3 * Math.sign(PULL_Y);
+    // Shared base strength scaled by speed
+    const BASE = 1 + CLEANED_USER_SPEED;
 
-    // --- Perpendicular orbit velocity ---
-    const ORBIT_NEAR = Math.max(0, 1 - DISTANCE / MAX_INFLUENCE); 
-    // stronger as star gets close; 0 when far
-    
-    // perpendicular unit vector
+    // --- Radial component (shrinks as we get close) ---
+    const RADIAL_SCALE = 1 - NEAR;   // 1 far, 0 close
+    let PULL_X = BASE * RADIAL_SCALE * (DX / DISTANCE);
+    let PULL_Y = BASE * RADIAL_SCALE * (DY / DISTANCE);
+
+    // --- Orbit component (grows as we get close) ---
     const ORBX = -DY / DISTANCE;
     const ORBY =  DX / DISTANCE;
-    
-    // base orbit strength
-    let ORBIT_FORCE = 0.6 * ORBIT_NEAR;   // tweak 0.6 for more/less orbit
-    
-    // ensure orbit never fully stops (prevents collapsing into a dot)
+
+    const ORBIT_STRENGTH = 0.8;      // tune this
+    let ORBIT_FORCE = BASE * NEAR * ORBIT_STRENGTH;
+
+    // minimum orbit so it doesn’t collapse into a dot
     const MIN_ORBIT = 0.15;
     if (ORBIT_FORCE < MIN_ORBIT) ORBIT_FORCE = MIN_ORBIT;
-    
-    // final perpendicular orbit contribution
-    let ORBIT_X = ORBX * ORBIT_FORCE;
-    let ORBIT_Y = ORBY * ORBIT_FORCE;
-    
-    // now add orbit into your pull
+
+    const ORBIT_X = ORBX * ORBIT_FORCE;
+    const ORBIT_Y = ORBY * ORBIT_FORCE;
+
+    // combine radial + orbit
     PULL_X += ORBIT_X;
     PULL_Y += ORBIT_Y;
 
-    // Final movement = radial pull + tangential orbit
+    // clamp
+    if (Math.abs(PULL_X) > 3) PULL_X = 3 * Math.sign(PULL_X);
+    if (Math.abs(PULL_Y) > 3) PULL_Y = 3 * Math.sign(PULL_Y);
+
     STAR.x += PULL_X;
     STAR.y += PULL_Y;
   }
