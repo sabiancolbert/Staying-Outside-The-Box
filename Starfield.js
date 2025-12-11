@@ -226,9 +226,9 @@ function moveStars() {
     const MAX_INFLUENCE = 100 * (SCALE_FACTOR / 500);
     
   for (const STAR of STARS) {
-    // --- 1. Passive drift (baseline motion) ---
-    STAR.x += STAR.vx * USER_SPEED;
-    STAR.y += STAR.vy * USER_SPEED;
+    
+    let PULL_X = 0;
+    let PULL_Y = 0;
 
 
 
@@ -268,8 +268,8 @@ const RADIAL_STRENGTH = 3;  // overall “importance” of radial vs orbit
 const radialFactor = RADIAL_STRENGTH * (R - RING) * (1 - R);
 
 // 1) Radial term: toward finger when outside ring, away when inside
-let PULL_X = USER_SPEED * radialFactor * (DX / USER_DISTANCE);
-let PULL_Y = USER_SPEED * radialFactor * (DY / USER_DISTANCE);
+ PULL_X += USER_SPEED * radialFactor * (DX / USER_DISTANCE);
+ PULL_Y += USER_SPEED * radialFactor * (DY / USER_DISTANCE);
 
 
     // 2) Orbit when close, with minimum tangential speed so they never stall
@@ -286,14 +286,15 @@ let PULL_Y = USER_SPEED * radialFactor * (DY / USER_DISTANCE);
 PULL_X -= (DX / USER_DISTANCE) * REPULSION_VALUE;
 PULL_Y -= (DY / USER_DISTANCE) * REPULSION_VALUE;
 
-    STAR.x += PULL_X;
-    STAR.y += PULL_Y;
   }
 }
 
+//passive movement
+PULL_X += STAR.vx * USER_SPEED;
+    PULL_Y += STAR.vy * USER_SPEED;
 
-
-
+STAR.x += PULL_X;
+    STAR.y += PULL_Y;
 
 
 
@@ -485,7 +486,7 @@ function updateSpeed(X, Y, TIME) {
 
 // Shared start handler for mouse/touch pointer interactions
 function startPointerInteraction(X, Y, TIME) {
-  REPULSION_VALUE = 5; // Repel on click/touch
+  REPULSION_VALUE = 7; // Repel on click/touch
   updateSpeed(X, Y, TIME);
   CLEANED_USER_SPEED = CLEANED_USER_SPEED + 0.8;
 }
