@@ -244,7 +244,7 @@ function moveStars() {
 
 
 
-
+// MAKE THE ALTERED BELL CURVE APPLY TO MOMENTUM INSTEAD OF RADOUS, MOMENTUM BECOMES THE ADD TO PULL INSTEAD OF RADIUS 
 
 
     // Finger influence only matters when you've moved recently
