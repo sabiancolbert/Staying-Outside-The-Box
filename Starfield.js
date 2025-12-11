@@ -247,6 +247,13 @@ function moveStars() {
 
 
 
+
+
+
+
+
+
+
 // passive includs random factor
 // MAKE THE ALTERED BELL CURVE APPLY TO MOMENTUM INSTEAD OF RADOUS, MOMENTUM BECOMES THE ADD TO PULL INSTEAD OF RADIUS 
 
@@ -289,7 +296,7 @@ if (CLEANED_USER_SPEED > 0.01 && USER_DISTANCE < MAX_INFLUENCE) {
 
     // Apply final movement, while easing back to passive movement and adding passive drift
     STAR.x += PULL_X + STAR.vx;
-    STAR.y += PULL_Y + STAR.vx;
+    STAR.y += PULL_Y + STAR.vy;
 
 
 
