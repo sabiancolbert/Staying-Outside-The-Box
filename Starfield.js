@@ -242,7 +242,7 @@ function moveStars() {
       const radialEnvelope = Math.pow(NORM, EXPONENT) * (1 - NORM);
 
       // Base strength of "force" from your motion
-      const BASE_FORCE = 0.002 * CLEANED_USER_SPEED * radialEnvelope;
+      const BASE_FORCE = 0.0002 * CLEANED_USER_SPEED * radialEnvelope;
 
       // Unit radial vector (toward the pointer)
       const RAD_X = DX / DIST;
