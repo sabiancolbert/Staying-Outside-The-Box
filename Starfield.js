@@ -286,9 +286,9 @@ const radialFactor = RADIAL_STRENGTH * (R - RING) * (1 - R);
 PULL_X -= (DX / USER_DISTANCE) * REPULSION_VALUE;
 PULL_Y -= (DY / USER_DISTANCE) * REPULSION_VALUE;
 
-//slow transition to passive movement (times 0-1)
-PULL_X *= CLEANED_USER_SPEED / 10;
-    PULL_Y *= CLEANED_USER_SPEED / 10;
+//slow transition to passive movement
+PULL_X *= CLEANED_USER_SPEED / 12;
+    PULL_Y *= CLEANED_USER_SPEED / 12;
 
   }
 }
