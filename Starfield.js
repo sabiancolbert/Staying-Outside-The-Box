@@ -251,7 +251,7 @@ if (CLEANED_USER_SPEED > 0.05) {
 
   if (DISTANCE < MAX_INFLUENCE) {
     // 0 far, 1 near finger
-    const NEAR = Math.max(0, 1 - DISTANCE / MAX_INFLUENCE);
+const NEAR = Math.max(0, 1 - DISTANCE / (MAX_INFLUENCE * 1.4));
 
     // Shared base strength scaled by speed
     const BASE = 1 + CLEANED_USER_SPEED;
