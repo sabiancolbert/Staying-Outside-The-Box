@@ -218,99 +218,107 @@ function createStars() {
 /*---------- Star animation step ----------*/
 
 // Move, fade, and wrap stars around the screen
+// Move, fade, and wrap stars around the screen
 function moveStars() {
   if (!HAS_CANVAS || !STARS.length) return;
 
   for (const STAR of STARS) {
-  // Pointer pull / push zone around the cursor in a radial form
-if (LAST_TIME !== 0) {
-  const DX = LAST_X - STAR.x;
-  const DY = LAST_Y - STAR.y;
-  const DIST_SQ = DX * DX + DY * DY;
 
-  const MAX_INFLUENCE = 10000 * (SCALE_FACTOR / 500);
-  const MIN_TARGET_RADIUS = 2; // px radius for the "dot" around your finger
+    // 1) Basic drift scaled by pointer speed (intrinsic motion)
+    STAR.x += STAR.vx * (CLEANED_USER_SPEED + 1);
+    STAR.y += STAR.vy * (CLEANED_USER_SPEED + 1);
 
-  // If the star is extremely close, snap it into the dot
-  if (DIST_SQ <= MIN_TARGET_RADIUS * MIN_TARGET_RADIUS) {
-    STAR.x = LAST_X;
-    STAR.y = LAST_Y;
+    // 2) Pointer pull / push zone around the cursor in a radial form
+    if (LAST_TIME !== 0) {
+      const DX = LAST_X - STAR.x;
+      const DY = LAST_Y - STAR.y;
+      const DIST_SQ = DX * DX + DY * DY;
 
-    // Slow drift, but don't let it die completely
-    const oldSpeed = Math.hypot(STAR.vx, STAR.vy);
-    let newSpeed = oldSpeed * 0.2;
-    const MIN_SPEED = 0.05;
+      const MAX_INFLUENCE = 10000 * (SCALE_FACTOR / 500);
+      const MIN_TARGET_RADIUS = 2; // px radius for the "dot" around your finger
 
-    if (newSpeed < MIN_SPEED) newSpeed = MIN_SPEED;
+      // If the star is extremely close, snap it into the dot
+      if (DIST_SQ <= MIN_TARGET_RADIUS * MIN_TARGET_RADIUS) {
+        STAR.x = LAST_X;
+        STAR.y = LAST_Y;
 
-    if (oldSpeed > 0) {
-      const scale = newSpeed / oldSpeed;
-      STAR.vx *= scale;
-      STAR.vy *= scale;
+        // Slow drift, but don't let it die completely
+        const oldSpeed = Math.hypot(STAR.vx, STAR.vy);
+        let newSpeed = oldSpeed * 0.2;
+        const MIN_SPEED = 0.05;
+
+        if (newSpeed < MIN_SPEED) newSpeed = MIN_SPEED;
+
+        if (oldSpeed > 0) {
+          const scale = newSpeed / oldSpeed;
+          STAR.vx *= scale;
+          STAR.vy *= scale;
+        }
+
+      } else if (DIST_SQ < MAX_INFLUENCE) {
+        const DIST = Math.sqrt(DIST_SQ) || 1;
+
+        // Even if CLEANED_USER_SPEED decays to 0, keep a small pull
+        const SPEED_FACTOR = 0.4 + CLEANED_USER_SPEED; // base + your motion
+        const FALLOFF = (MAX_INFLUENCE - DIST_SQ) / MAX_INFLUENCE;
+
+        const BASE_PULL = 0.015 * SPEED_FACTOR * FALLOFF;
+
+        const ATTR_PULL = BASE_PULL;
+        const REP_PULL = BASE_PULL * REPULSION_VALUE;
+
+        // Unit radial vector (toward the pointer)
+        const RAD_X = DX / DIST;
+        const RAD_Y = DY / DIST;
+
+        // Unit tangential vector (perpendicular) for orbit
+        const TAN_X = -RAD_Y;
+        const TAN_Y = RAD_X;
+
+        // 0 = pure radial, 1 = pure orbit
+        const CURVE = 0.45;
+        const MIX_R = 1 - CURVE;
+        const MIX_T = CURVE;
+
+        // Attraction direction (toward pointer + orbit)
+        const ATTR_DIR_X = RAD_X * MIX_R + TAN_X * MIX_T;
+        const ATTR_DIR_Y = RAD_Y * MIX_R + TAN_Y * MIX_T;
+
+        // Repulsion direction (away from pointer + same orbit direction)
+        const REP_DIR_X = -RAD_X * MIX_R + TAN_X * MIX_T;
+        const REP_DIR_Y = -RAD_Y * MIX_R + TAN_Y * MIX_T;
+
+        // Combine attraction + repulsion, scaled by distance
+        const PULL_X =
+          (ATTR_DIR_X * ATTR_PULL + REP_DIR_X * REP_PULL) * DIST;
+        const PULL_Y =
+          (ATTR_DIR_Y * ATTR_PULL + REP_DIR_Y * REP_PULL) * DIST;
+
+        STAR.x += PULL_X;
+        STAR.y += PULL_Y;
+      }
     }
-  } else if (DIST_SQ < MAX_INFLUENCE) {
-    const DIST = Math.sqrt(DIST_SQ) || 1;
 
-    // Even if CLEANED_USER_SPEED decays to 0, keep a small pull
-    const SPEED_FACTOR = 0.4 + CLEANED_USER_SPEED; // base + your motion
-    const FALLOFF = (MAX_INFLUENCE - DIST_SQ) / MAX_INFLUENCE;
+    // 3) White flash decay, twinkle, wrap
+    if (STAR.whiteValue > 0) {
+      STAR.whiteValue *= 0.98;
+      if (STAR.whiteValue < 0.001) STAR.whiteValue = 0;
+    }
 
-    const BASE_PULL = 0.015 * SPEED_FACTOR * FALLOFF;
+    if (STAR.opacity <= 0.005) {
+      STAR.opacity = 1;
+      if (Math.random() < 0.07) STAR.whiteValue = 1;
+    } else if (STAR.opacity > 0.02) {
+      STAR.opacity -= 0.005 * STAR.fadeSpeed;
+    } else {
+      STAR.opacity -= 0.0001;
+    }
 
-    const ATTR_PULL = BASE_PULL;
-    const REP_PULL = BASE_PULL * REPULSION_VALUE;
-
-    // Unit radial vector (toward the pointer)
-    const RAD_X = DX / DIST;
-    const RAD_Y = DY / DIST;
-
-    // Unit tangential vector (perpendicular) for orbit
-    const TAN_X = -RAD_Y;
-    const TAN_Y = RAD_X;
-
-    // 0 = pure radial, 1 = pure orbit
-    const CURVE = 0.45;
-    const MIX_R = 1 - CURVE;
-    const MIX_T = CURVE;
-
-    // Attraction direction (toward pointer + orbit)
-    const ATTR_DIR_X = RAD_X * MIX_R + TAN_X * MIX_T;
-    const ATTR_DIR_Y = RAD_Y * MIX_R + TAN_Y * MIX_T;
-
-    // Repulsion direction (away from pointer + same orbit direction)
-    const REP_DIR_X = -RAD_X * MIX_R + TAN_X * MIX_T;
-    const REP_DIR_Y = -RAD_Y * MIX_R + TAN_Y * MIX_T;
-
-    // Combine attraction + repulsion, scaled by distance
-    const PULL_X =
-      (ATTR_DIR_X * ATTR_PULL + REP_DIR_X * REP_PULL) * DIST;
-    const PULL_Y =
-      (ATTR_DIR_Y * ATTR_PULL + REP_DIR_Y * REP_PULL) * DIST;
-
-    STAR.x += PULL_X;
-    STAR.y += PULL_Y;
+    if (STAR.x < 0) STAR.x = WIDTH;
+    if (STAR.x > WIDTH) STAR.x = 0;
+    if (STAR.y < 0) STAR.y = HEIGHT;
+    if (STAR.y > HEIGHT) STAR.y = 0;
   }
-}
-  // --- 3. White flash decay, twinkle, wrap (keep as you already have) ---
-  if (STAR.whiteValue > 0) {
-    STAR.whiteValue *= 0.98;
-    if (STAR.whiteValue < 0.001) STAR.whiteValue = 0;
-  }
-
-  if (STAR.opacity <= 0.005) {
-    STAR.opacity = 1;
-    if (Math.random() < 0.07) STAR.whiteValue = 1;
-  } else if (STAR.opacity > 0.02) {
-    STAR.opacity -= 0.005 * STAR.fadeSpeed;
-  } else {
-    STAR.opacity -= 0.0001;
-  }
-
-  if (STAR.x < 0) STAR.x = WIDTH;
-  if (STAR.x > WIDTH) STAR.x = 0;
-  if (STAR.y < 0) STAR.y = HEIGHT;
-  if (STAR.y > HEIGHT) STAR.y = 0;
-}
 
   // Slowly decay pointer speed influence
   CLEANED_USER_SPEED *= 0.95;
