@@ -234,7 +234,7 @@ function moveStars() {
     let PULL_Y = 0;
     const DX = USER_X - STAR.x;
     const DY = USER_Y - STAR.y;
-    const USER_DISTANCE = 10 + Math.hypot(DX, DY);
+    const USER_DISTANCE = 1 + Math.hypot(DX, DY);
     const INV_DIST = 1 / USER_DISTANCE;
     
 
