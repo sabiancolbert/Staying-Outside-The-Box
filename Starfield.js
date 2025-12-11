@@ -9,6 +9,146 @@
  *  - Pointer input (mouse/touch) for repulsion
  *  - Canvas resize & animation loop
  *==============================================================*/
+
+// Move, fade, and wrap stars around the screen
+function moveStars() {
+  if (!HAS_CANVAS || !STARS.length) return;
+
+  for (const STAR of STARS) {
+
+    // --- 1. Pointer "gravity" modifies velocity (orbit-ish around finger) ---
+    if (LAST_TIME !== 0 && CLEANED_USER_SPEED > 0.19) {
+      const DX = LAST_X - STAR.x;
+      const DY = LAST_Y - STAR.y;
+      const DIST_SQ = DX * DX + DY * DY;
+
+      const MAX_INFLUENCE = 10000 * (SCALE_FACTOR / 500);
+
+      if (DIST_SQ > 9 && DIST_SQ < MAX_INFLUENCE) {
+        const DIST = Math.sqrt(DIST_SQ) || 1;
+        const MAX_RADIUS = Math.sqrt(MAX_INFLUENCE);
+
+        // Target ring radius around your finger (fraction of field radius)
+        const TARGET_RADIUS = MAX_RADIUS * 0.35;
+
+        // Positive if outside the ring, negative if inside
+        const radialError = DIST - TARGET_RADIUS;
+
+        // Unit radial vector (toward pointer)
+        const RAD_X = DX / DIST;
+        const RAD_Y = DY / DIST;
+
+        // Tangential (perpendicular) for orbit-ish motion
+        const TAN_X = -RAD_Y;
+        const TAN_Y = RAD_X;
+
+        // Base scale from your motion
+        const SPEED_FACTOR = 0.4 + CLEANED_USER_SPEED;
+
+        // Softer constants than before to avoid crazy speeds
+        const radialK = 0.00025 * SPEED_FACTOR;  // ring spring
+        const orbitK  = 0.0005  * SPEED_FACTOR;  // tangential "orbit"
+
+        // Spring-like radial term: push toward ring, not center
+        let radialAccel = -radialError * radialK;
+
+        // Allow repulsion to exaggerate radial behavior
+        radialAccel *= (1 + REPULSION_VALUE);
+
+        // Tangential acceleration
+        let orbitAccel = orbitK;
+
+        // Base acceleration vector
+        let ax = RAD_X * radialAccel + TAN_X * orbitAccel;
+        let ay = RAD_Y * radialAccel + TAN_Y * orbitAccel;
+
+        // --- Wobble: mix accel direction with the star's velocity direction ---
+        const vLen = Math.hypot(STAR.vx, STAR.vy) || 1;
+        const vDirX = STAR.vx / vLen;
+        const vDirY = STAR.vy / vLen;
+
+        const accelLen = Math.hypot(ax, ay) || 1;
+        let aDirX = ax / accelLen;
+        let aDirY = ay / accelLen;
+
+        const WOBBLE = 0.3;             // 0 = perfect ring orbit, 1 = follow velocity
+        const INV_WOBBLE = 1 - WOBBLE;
+
+        const mixedDirX = aDirX * INV_WOBBLE + vDirX * WOBBLE;
+        const mixedDirY = aDirY * INV_WOBBLE + vDirY * WOBBLE;
+
+        // Keep magnitude, just use mixed direction
+        ax = mixedDirX * accelLen;
+        ay = mixedDirY * accelLen;
+
+        // Apply acceleration to velocity
+        STAR.vx += ax;
+        STAR.vy += ay;
+      }
+    }
+
+    // --- 2. Friction + clamped speed so things never go insane or dead ---
+    // Mild global friction so speeds slowly relax
+    STAR.vx *= 0.995;
+    STAR.vy *= 0.995;
+
+    const speed = Math.hypot(STAR.vx, STAR.vy);
+    if (speed > 0) {
+      // Scale max speed to canvas size a bit
+      const MAX_SPEED = 0.8 * (SCALE_FACTOR / 1000);  // px per frame
+      const MIN_SPEED = 0.02;                         // keep tiny drift
+
+      if (speed > MAX_SPEED) {
+        const scaleDown = MAX_SPEED / speed;
+        STAR.vx *= scaleDown;
+        STAR.vy *= scaleDown;
+      } else if (speed < MIN_SPEED) {
+        const scaleUp = MIN_SPEED / speed;
+        STAR.vx *= scaleUp;
+        STAR.vy *= scaleUp;
+      }
+    }
+
+    // --- 3. Move by velocity only (NO extra CLEANED_USER_SPEED multiplier) ---
+    STAR.x += STAR.vx;
+    STAR.y += STAR.vy;
+
+    // --- 4. Spark / fade / wrap behavior (unchanged) ---
+    if (STAR.whiteValue > 0) {
+      STAR.whiteValue *= 0.98;
+      if (STAR.whiteValue < 0.001) STAR.whiteValue = 0;
+    }
+
+    if (STAR.opacity <= 0.005) {
+      STAR.opacity = 1;
+      if (Math.random() < 0.07) STAR.whiteValue = 1;
+    } else if (STAR.opacity > 0.02) {
+      STAR.opacity -= 0.005 * STAR.fadeSpeed;
+    } else {
+      STAR.opacity -= 0.0001;
+    }
+
+    if (STAR.x < 0) STAR.x = WIDTH;
+    if (STAR.x > WIDTH) STAR.x = 0;
+    if (STAR.y < 0) STAR.y = HEIGHT;
+    if (STAR.y > HEIGHT) STAR.y = 0;
+  }
+
+  // Pointer influence itself still fades out over time
+  CLEANED_USER_SPEED *= 0.95;
+  if (CLEANED_USER_SPEED < 0.05) CLEANED_USER_SPEED = 0;
+
+  REPULSION_VALUE *= 0.965;
+  if (REPULSION_VALUE < 0.01) REPULSION_VALUE = 0;
+}
+
+
+
+
+
+
+
+
 //#region STARFIELD GLOBALS
 /*========================================*
  *  STARFIELD GLOBAL STATE
@@ -175,120 +315,18 @@ function createStars() {
   }
 }
 /*---------- Star animation step ----------*/
-// Move, fade, and wrap stars around the screen
-// Move, fade, and wrap stars around the screen
-function moveStars() {
-  if (!HAS_CANVAS || !STARS.length) return;
 
-  for (const STAR of STARS) {
 
-    // --- 1. Pointer "gravity" modifies velocity (orbit around a ring) ---
-    if (LAST_TIME !== 0 && CLEANED_USER_SPEED > 0.19) {
-      const DX = LAST_X - STAR.x;
-      const DY = LAST_Y - STAR.y;
-      const DIST_SQ = DX * DX + DY * DY;
 
-      const MAX_INFLUENCE = 10000 * (SCALE_FACTOR / 500);
 
-      if (DIST_SQ > 9 && DIST_SQ < MAX_INFLUENCE) {
-        const DIST = Math.sqrt(DIST_SQ) || 1;
-        const MAX_RADIUS = Math.sqrt(MAX_INFLUENCE);
 
-        // Target ring radius around your finger (fraction of the field)
-        const TARGET_RADIUS = MAX_RADIUS * 0.35;
 
-        // Positive if outside the ring, negative if inside
-        const radialError = DIST - TARGET_RADIUS;
 
-        // Unit radial vector (toward pointer)
-        const RAD_X = DX / DIST;
-        const RAD_Y = DY / DIST;
 
-        // Tangential (perpendicular) for orbit
-        const TAN_X = -RAD_Y;
-        const TAN_Y = RAD_X;
 
-        // Base acceleration scale from your motion
-        const SPEED_FACTOR = 0.4 + CLEANED_USER_SPEED;
 
-        // Spring-like radial term: pushes toward the ring, not the center
-        const radialK = 0.0006 * SPEED_FACTOR;
-        let radialAccel = -radialError * radialK;
 
-        // Allow click repulsion to exaggerate radial motion
-        radialAccel *= (1 + REPULSION_VALUE);
 
-        // Orbital term: always tangential
-        const orbitK = 0.0012 * SPEED_FACTOR;
-        let orbitAccel = orbitK;
-
-        // Base acceleration vector from ring-spring + orbit
-        let ax = RAD_X * radialAccel + TAN_X * orbitAccel;
-        let ay = RAD_Y * radialAccel + TAN_Y * orbitAccel;
-
-        // --- Wobble: mix accel direction with star's existing velocity ---
-        const vLen = Math.hypot(STAR.vx, STAR.vy) || 1;
-        const vDirX = STAR.vx / vLen;
-        const vDirY = STAR.vy / vLen;
-
-        const accelLen = Math.hypot(ax, ay) || 1;
-        let aDirX = ax / accelLen;
-        let aDirY = ay / accelLen;
-
-        const WOBBLE = 0.3;             // 0 = perfect ring orbit, 1 = follow velocity
-        const INV_WOBBLE = 1 - WOBBLE;
-
-        // Blend the directions
-        const mixedDirX = aDirX * INV_WOBBLE + vDirX * WOBBLE;
-        const mixedDirY = aDirY * INV_WOBBLE + vDirY * WOBBLE;
-
-        // Keep same magnitude but use mixed direction
-        ax = mixedDirX * accelLen;
-        ay = mixedDirY * accelLen;
-
-        // Apply acceleration to velocity (not directly to position)
-        STAR.vx += ax;
-        STAR.vy += ay;
-      }
-    }
-
-    // --- 2. Passive drift using velocity (like before) ---
-    STAR.x += STAR.vx * (CLEANED_USER_SPEED + 1);
-    STAR.y += STAR.vy * (CLEANED_USER_SPEED + 1);
-
-    // Gentle global friction so speeds don't blow up but never fully die
-    STAR.vx *= 0.998;
-    STAR.vy *= 0.998;
-
-    // --- 3. Spark / fade / wrap behavior (unchanged) ---
-    if (STAR.whiteValue > 0) {
-      STAR.whiteValue *= 0.98;
-      if (STAR.whiteValue < 0.001) STAR.whiteValue = 0;
-    }
-
-    if (STAR.opacity <= 0.005) {
-      STAR.opacity = 1;
-      if (Math.random() < 0.07) STAR.whiteValue = 1;
-    } else if (STAR.opacity > 0.02) {
-      STAR.opacity -= 0.005 * STAR.fadeSpeed;
-    } else {
-      STAR.opacity -= 0.0001;
-    }
-
-    if (STAR.x < 0) STAR.x = WIDTH;
-    if (STAR.x > WIDTH) STAR.x = 0;
-    if (STAR.y < 0) STAR.y = HEIGHT;
-    if (STAR.y > HEIGHT) STAR.y = 0;
-  }
-
-  // Slowly decay pointer speed influence
-  CLEANED_USER_SPEED *= 0.95;
-  if (CLEANED_USER_SPEED < 0.05) CLEANED_USER_SPEED = 0;
-
-  // Gently decay repulsion bursts so they don't last forever
-  REPULSION_VALUE *= 0.965;
-  if (REPULSION_VALUE < 0.01) REPULSION_VALUE = 0;
-}
 
 /*---------- Star rendering ----------*/
 // Draw all lines and star bodies for the current frame
