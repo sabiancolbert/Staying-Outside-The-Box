@@ -218,21 +218,6 @@ function createStars() {
   }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /*---------- Star animation step ----------*/
 
 // Move, fade, and wrap stars around the screen
@@ -247,6 +232,20 @@ function moveStars() {
     // Accumulator for everything that moves this star this frame
     let PULL_X = 0;
     let PULL_Y = 0;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     // Finger influence only matters when you've moved recently
     if (CLEANED_USER_SPEED > 0.05) {
@@ -282,7 +281,7 @@ const DIR_Y = DY * INV_DIST;
 const NEAR = 1 - R; // R is USER_DISTANCE / MAX_INFLUENCE
 
 // Small acceleration toward finger, scaled by how close you are
-const MOMENTUM_PUSH = CLEANED_USER_SPEED * 2 * NEAR;
+const MOMENTUM_PUSH = USER_SPEED * 2 * NEAR;
 // ^ 0.12 is deliberately small; we can nudge this later
 
 // Use the *existing* momentum fields (lowercase)
@@ -314,6 +313,29 @@ PULL_Y += STAR.momentumY;
       }
      
     }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
      // Global decay (friction) – always runs, even when finger is still
 STAR.momentumX *= 0.94;
 STAR.momentumY *= 0.94;
@@ -360,21 +382,6 @@ if (Math.abs(STAR.momentumY) < 0.01) STAR.momentumY = 0;
   REPULSION_VALUE *= 0.98;
   if (REPULSION_VALUE < 0.01) REPULSION_VALUE = 0;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /*---------- Star rendering ----------*/
 
