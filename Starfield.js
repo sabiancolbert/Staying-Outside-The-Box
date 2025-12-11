@@ -221,12 +221,14 @@ function createStars() {
 // Move, fade, and wrap stars around the screen
 function moveStars() {
   if (!HAS_CANVAS || !STARS.length) return;
-
+  
+    const USER_SPEED = 1 + CLEANED_USER_SPEED;
+    const MAX_INFLUENCE = 100 * (SCALE_FACTOR / 500);
+    
   for (const STAR of STARS) {
     // --- 1. Passive drift (baseline motion) ---
-    const BASE_SPEED = CLEANED_USER_SPEED + 1; // never below 1
-    STAR.x += STAR.vx * BASE_SPEED;
-    STAR.y += STAR.vy * BASE_SPEED;
+    STAR.x += STAR.vx * USER_SPEED;
+    STAR.y += STAR.vy * USER_SPEED;
 
 
 
@@ -245,39 +247,21 @@ function moveStars() {
 if (CLEANED_USER_SPEED > 0.05) {
   const DX = USER_X - STAR.x;
   const DY = USER_Y - STAR.y;
-  const DISTANCE = 10 + Math.hypot(DX, DY);
+  const USER_DISTANCE = 10 + Math.hypot(DX, DY);
 
-  const MAX_INFLUENCE = 100 * (SCALE_FACTOR / 500);
+  if (USER_DISTANCE < MAX_INFLUENCE) {
 
-  if (DISTANCE < MAX_INFLUENCE) {
-    // 0 far, 1 near finger
-const NEAR = Math.max(0, 1 - DISTANCE / (MAX_INFLUENCE * 1.4));
+    const NORMALIZED_DISTANCE = Math.max(0, 1 - USER_DISTANCE / (MAX_INFLUENCE * 1.4));
+    
+    let PULL_X = USER_SPEED * (1 - NORMALIZED_DISTANCE) * (DX / USER_DISTANCE);
+    let PULL_Y = USER_SPEED * (1 - NORMALIZED_DISTANCE) * (DY / USER_DISTANCE);
 
-    // Shared base strength scaled by speed
-    const BASE = 1 + CLEANED_USER_SPEED;
-
-    // --- Radial component (shrinks as we get close) ---
-    const RADIAL_SCALE = 1 - NEAR;   // 1 far, 0 close
-    let PULL_X = BASE * RADIAL_SCALE * (DX / DISTANCE);
-    let PULL_Y = BASE * RADIAL_SCALE * (DY / DISTANCE);
-
-    // --- Orbit component (grows as we get close) ---
-    const ORBX = -DY / DISTANCE;
-    const ORBY =  DX / DISTANCE;
-
-    const ORBIT_STRENGTH = 0.8;      // tune this
-    let ORBIT_FORCE = BASE * NEAR * ORBIT_STRENGTH;
-
-    // minimum orbit so it doesn’t collapse into a dot
-    const MIN_ORBIT = 0.15;
-    if (ORBIT_FORCE < MIN_ORBIT) ORBIT_FORCE = MIN_ORBIT;
-
-    const ORBIT_X = ORBX * ORBIT_FORCE;
-    const ORBIT_Y = ORBY * ORBIT_FORCE;
+    let ORBIT_FORCE = USER_SPEED * NORMALIZED_DISTANCE;
+    if (ORBIT_FORCE < .3) ORBIT_FORCE = .3;
 
     // combine radial + orbit
-    PULL_X += ORBIT_X;
-    PULL_Y += ORBIT_Y;
+    PULL_X += -DY / USER_DISTANCE * ORBIT_FORCE;
+    PULL_Y += DX / USER_DISTANCE * ORBIT_FORCE;
 
     // clamp
     if (Math.abs(PULL_X) > 3) PULL_X = 3 * Math.sign(PULL_X);
