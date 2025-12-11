@@ -254,12 +254,14 @@ function moveStars() {
 
 
 
-// passive includs random factor
+
 // MAKE THE ALTERED BELL CURVE APPLY TO MOMENTUM INSTEAD OF RADOUS, MOMENTUM BECOMES THE ADD TO PULL INSTEAD OF RADIUS 
 
 
-    // Finger influence only matters when you've moved recently, and if in bounds
-if (CLEANED_USER_SPEED > 0.01 && USER_DISTANCE < MAX_INFLUENCE) {
+//if within preset distance
+if (USER_DISTANCE < MAX_INFLUENCE) {
+  //if user is moving
+  if (CLEANED_USER_SPEED > 0.01){
 
     // Ring-shaped attractor around your finger (closer to ring = faster, inside ring = repel)
     const R = Math.min(USER_DISTANCE / MAX_INFLUENCE, 1);
@@ -277,8 +279,10 @@ if (CLEANED_USER_SPEED > 0.01 && USER_DISTANCE < MAX_INFLUENCE) {
     STAR.momentumX += 0;
     STAR.momentumY += 0;
 }
+//if within preset distance
 
     // Decay and apply momentum
+//HEEEEREE MAKE THIS DECAY WITH DITAAAAAAANCE
     STAR.momentumX *= 0.94;
     STAR.momentumY *= 0.94;
     if (Math.abs(STAR.momentumX) < 0.01) STAR.momentumX = 0;
@@ -287,13 +291,16 @@ if (CLEANED_USER_SPEED > 0.01 && USER_DISTANCE < MAX_INFLUENCE) {
     PULL_Y += STAR.momentumY;
     
     // Repulsion burst from clicks/taps: push straight away from finger
-    PULL_X -= 3 * DX * INV_DIST * REPULSION_TIME * Math.max(0, 1 - USER_DISTANCE / MAX_INFLUENCE);
-    PULL_Y -= 3 * DY * INV_DIST * REPULSION_TIME * Math.max(0, 1 - USER_DISTANCE / MAX_INFLUENCE);
+PULL_X -= 3 * DX * INV_DIST * REPULSION_TIME;
+PULL_Y -= 3 * DY * INV_DIST * REPULSION_TIME;
+}
+//happens even out of preset user distance
         
     // Clamp combined user influence so it never explodes
     if (Math.abs(PULL_X) > 3) PULL_X = 3 * Math.sign(PULL_X);
     if (Math.abs(PULL_Y) > 3) PULL_Y = 3 * Math.sign(PULL_Y);
 
+// HEEEERE ADD RANDOMNESSSS
     // Apply final movement, while easing back to passive movement and adding passive drift
     STAR.x += PULL_X + STAR.vx;
     STAR.y += PULL_Y + STAR.vy;
