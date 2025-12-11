@@ -253,9 +253,24 @@ if (CLEANED_USER_SPEED > 0.05) {
 
     const NORMALIZED_DISTANCE = Math.max(0, 1 - USER_DISTANCE / (MAX_INFLUENCE * 1.4));
     
-    // 1) Radial pull toward finger (stronger when far)
-    let PULL_X = USER_SPEED * (1 - NORMALIZED_DISTANCE) * (DX / USER_DISTANCE);
-    let PULL_Y = USER_SPEED * (1 - NORMALIZED_DISTANCE) * (DY / USER_DISTANCE);
+// Distance as fraction of influence radius: 0 = center, 1 = edge
+const R = Math.min(USER_DISTANCE / MAX_INFLUENCE, 1);
+
+// Where you want the orbit ring to live (0.0–1.0 of MAX_INFLUENCE)
+const RING = 0.35; // tweak between ~0.25 and 0.5 to change radius
+
+// Signed bell:
+// - negative when inside the ring (push out)
+// - zero at the ring
+// - positive between ring and edge (pull in)
+// - back to zero at the outer edge
+const RADIAL_STRENGTH = 2.0;  // overall “importance” of radial vs orbit
+const radialFactor = RADIAL_STRENGTH * (R - RING) * (1 - R);
+
+// 1) Radial term: toward finger when outside ring, away when inside
+let PULL_X = USER_SPEED * radialFactor * (DX / USER_DISTANCE);
+let PULL_Y = USER_SPEED * radialFactor * (DY / USER_DISTANCE);
+
 
     // 2) Orbit when close, with minimum tangential speed so they never stall
     let ORBIT_FORCE = USER_SPEED * NORMALIZED_DISTANCE * 0.4;
