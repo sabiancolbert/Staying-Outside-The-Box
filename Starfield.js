@@ -475,7 +475,7 @@ function updateSpeed(X, Y, TIME) {
 
 // Shared start handler for mouse/touch pointer interactions
 function startPointerInteraction(X, Y, TIME) {
-  REPULSION_TIME = 3; // Repel on click/touch
+  REPULSION_TIME = 8; // Repel on click/touch
   updateSpeed(X, Y, TIME);
   CLEANED_USER_SPEED = CLEANED_USER_SPEED + 0.8;
 }
