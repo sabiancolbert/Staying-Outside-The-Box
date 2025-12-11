@@ -252,7 +252,7 @@ if (USER_TIME !== 0) {
   if (DISTANCE < MAX_INFLUENCE) {
 
     // Stronger when far, softer when close
-    const BASE_PULL = 0.01 * (1 + CLEANED_USER_SPEED) * (DISTANCE / MAX_INFLUENCE);
+    const BASE_PULL = 1 * (1 + CLEANED_USER_SPEED) * (DISTANCE / MAX_INFLUENCE);
 
     let PULL_X = BASE_PULL * (DX / DISTANCE);
     let PULL_Y = BASE_PULL * (DY / DISTANCE);
