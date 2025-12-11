@@ -282,6 +282,10 @@ let PULL_Y = USER_SPEED * radialFactor * (DY / USER_DISTANCE);
     if (Math.abs(PULL_X) > 3) PULL_X = 3 * Math.sign(PULL_X);
     if (Math.abs(PULL_Y) > 3) PULL_Y = 3 * Math.sign(PULL_Y);
 
+// Repulsion pushes directly away from the finger
+PULL_X += (DX / USER_DISTANCE) * REPULSION_VALUE;
+PULL_Y += (DY / USER_DISTANCE) * REPULSION_VALUE;
+
     STAR.x += PULL_X;
     STAR.y += PULL_Y;
   }
