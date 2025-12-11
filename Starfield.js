@@ -239,6 +239,99 @@ function moveStars() {
   if (!HAS_CANVAS || !STARS.length) return;
 
   for (const STAR of STARS) {
+    // --- 1. Passive drift (baseline motion) ---
+    const baseSpeed = CLEANED_USER_SPEED + 1;   // never below 1
+    STAR.x += STAR.vx * baseSpeed;
+    STAR.y += STAR.vy * baseSpeed;
+
+    // --- 2. Pointer orbit bias (simple radial+tangential) ---
+    if (LAST_TIME !== 0 && CLEANED_USER_SPEED > 0.19) {
+      const DX = LAST_X - STAR.x;
+      const DY = LAST_Y - STAR.y;
+      const DIST_SQ = DX * DX + DY * DY;
+
+      const MAX_INFLUENCE = 10000 * (SCALE_FACTOR / 500);
+
+      if (DIST_SQ < MAX_INFLUENCE) {
+        const DIST = Math.sqrt(DIST_SQ) || 1;
+        const MAX_RADIUS = Math.sqrt(MAX_INFLUENCE);
+
+        // 0..1 from center to edge of influence
+        const NORM = Math.min(DIST / MAX_RADIUS, 1);
+
+        // Simple bell curve: 0 at center & edge, max in the middle
+        const ENVELOPE = NORM * (1 - NORM); // no exponent, nice and cheap
+
+        // Strength from your motion & distance band
+        const BASE_PULL = 0.04 * CLEANED_USER_SPEED * ENVELOPE;
+
+        // Radial unit vector (toward pointer)
+        const RAD_X = DX / DIST;
+        const RAD_Y = DY / DIST;
+
+        // Tangential unit vector (perpendicular) for orbit
+        const TAN_X = -RAD_Y;
+        const TAN_Y = RAD_X;
+
+        // 0 = pure radial, 1 = pure orbit
+        const CURVE = 0.6; // a bit more orbit than before
+        const MIX_R = 1 - CURVE;
+        const MIX_T = CURVE;
+
+        // Final orbit direction (single vector)
+        let dirX = RAD_X * MIX_R + TAN_X * MIX_T;
+        let dirY = RAD_Y * MIX_R + TAN_Y * MIX_T;
+
+        // Normalize direction
+        const LEN = Math.hypot(dirX, dirY) || 1;
+        dirX /= LEN;
+        dirY /= LEN;
+
+        // Repulsion just scales total strength
+        const STRENGTH = BASE_PULL * (1 + REPULSION_VALUE) * DIST;
+
+        // Additive bias: nudge position, don't touch vx/vy
+        STAR.x += dirX * STRENGTH;
+        STAR.y += dirY * STRENGTH;
+      }
+    }
+
+    // --- 3. Spark / fade / wrap behavior (unchanged) ---
+    if (STAR.whiteValue > 0) {
+      STAR.whiteValue *= 0.98;
+      if (STAR.whiteValue < 0.001) STAR.whiteValue = 0;
+    }
+
+    if (STAR.opacity <= 0.005) {
+      STAR.opacity = 1;
+      if (Math.random() < 0.07) STAR.whiteValue = 1;
+    } else if (STAR.opacity > 0.02) {
+      STAR.opacity -= 0.005 * STAR.fadeSpeed;
+    } else {
+      STAR.opacity -= 0.0001;
+    }
+
+    if (STAR.x < 0) STAR.x = WIDTH;
+    if (STAR.x > WIDTH) STAR.x = 0;
+    if (STAR.y < 0) STAR.y = HEIGHT;
+    if (STAR.y > HEIGHT) STAR.y = 0;
+  }
+
+  // Slowly decay pointer speed influence
+  CLEANED_USER_SPEED *= 0.95;
+  if (CLEANED_USER_SPEED < 0.05) CLEANED_USER_SPEED = 0;
+
+  // Gently decay repulsion bursts so they don't last forever
+  REPULSION_VALUE *= 0.965;
+  if (REPULSION_VALUE < 0.01) REPULSION_VALUE = 0;
+}
+
+/*
+// Move, fade, and wrap stars around the screen
+function moveStars() {
+  if (!HAS_CANVAS || !STARS.length) return;
+
+  for (const STAR of STARS) {
   // --- 1. Passive drift for this frame (unchanged baseline motion) ---
   const passiveDX = STAR.vx * (CLEANED_USER_SPEED + 1);
   const passiveDY = STAR.vy * (CLEANED_USER_SPEED + 1);
@@ -354,7 +447,7 @@ let biasY =
   // Gently decay repulsion bursts so they don't last forever
   REPULSION_VALUE *= 0.965;
   if (REPULSION_VALUE < 0.01) REPULSION_VALUE = 0;
-}
+}*/
 
 
 
