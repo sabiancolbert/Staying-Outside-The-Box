@@ -251,8 +251,8 @@ if (CLEANED_USER_SPEED > 0.05) {
 
   if (DISTANCE < MAX_INFLUENCE) {
 
-    let PULL_X = (1 + CLEANED_USER_SPEED) * (DX / DISTANCE);
-    let PULL_Y = (1 + CLEANED_USER_SPEED) * (DY / DISTANCE);
+    let PULL_X = (1 + CLEANED_USER_SPEED) * (DX / DISTANCE) * (DISTANCE / MAX_INFLUENCE);
+    let PULL_Y = (1 + CLEANED_USER_SPEED) * (DY / DISTANCE) * (DISTANCE / MAX_INFLUENCE);
 
     if (Math.abs(PULL_X) > 3) PULL_X = 3 * Math.sign(PULL_X);
     if (Math.abs(PULL_Y) > 3) PULL_Y = 3 * Math.sign(PULL_Y);
