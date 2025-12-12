@@ -232,9 +232,9 @@ function moveStars() {
     // Accumulator for everything that moves this star this frame
     let PULL_X = 0;
     let PULL_Y = 0;
-    const DX = USER_X - STAR.x;
-    const DY = USER_Y - STAR.y;
-    const USER_DISTANCE = 1 + Math.hypot(DX, DY);
+    const X_DISTANCE = USER_X - STAR.x;
+    const Y_DISTANCE = USER_Y - STAR.y;
+    const USER_DISTANCE = 1 + Math.hypot(X_DISTANCE, Y_DISTANCE);
     const INV_DIST = 1 / USER_DISTANCE;
     
 
@@ -283,12 +283,8 @@ if (CLEANED_USER_SPEED > 0.01 && USER_DISTANCE < MAX_INFLUENCE) {
   const RING_GAUSS = Math.exp(-(RING_RADIUS * RING_RADIUS) / (2 * RING_THICKNESS * RING_THICKNESS));
   const RADIAL_INFLUENCE = 13 * Math.sign(RING_RADIUS) * RING_GAUSS;
   const MOMENTUM_FACTOR = (1 - Math.min(REPULSION_TIME / 30, 1)) * OFFSET_USER_SPEED * RADIAL_INFLUENCE * INV_DIST;
-  STAR.momentumX += DX * MOMENTUM_FACTOR;
-  STAR.momentumY += DY * MOMENTUM_FACTOR;
-
-  //Decay PULL strength (CUS var is never 0 in this bracket)
-  PULL_X *= CLEANED_USER_SPEED / 10;
-  PULL_Y *= CLEANED_USER_SPEED / 10;
+  STAR.momentumX += X_DISTANCE * MOMENTUM_FACTOR * (CLEANED_USER_SPEED / 10);
+  STAR.momentumY += Y_DISTANCE * MOMENTUM_FACTOR * (CLEANED_USER_SPEED / 10);
 }
 
     // Decay and apply momentum
@@ -301,8 +297,8 @@ if (CLEANED_USER_SPEED > 0.01 && USER_DISTANCE < MAX_INFLUENCE) {
     
     // Repulsion burst from clicks/taps: push straight away from finger
     const CLEANED_REPULSION = 3 * INV_DIST * REPULSION_TIME * Math.max(0, 1 - USER_DISTANCE / (1.5 * MAX_INFLUENCE));
-    PULL_X -= DX * CLEANED_REPULSION;
-    PULL_Y -= DY * CLEANED_REPULSION;
+    PULL_X -= X_DISTANCE * CLEANED_REPULSION;
+    PULL_Y -= Y_DISTANCE * CLEANED_REPULSION;
     
     // Clamp combined user influence so it never explodes
     if (Math.abs(PULL_X) > 3) PULL_X = 3 * Math.sign(PULL_X);
@@ -377,9 +373,9 @@ function drawStarsWithLines() {
     for (let J = I + 1; J < COUNT; J++) {
       const A = STARS[I];
       const B = STARS[J];
-      const DX = A.x - B.x;
-      const DY = A.y - B.y;
-      const DIST = Math.hypot(DX, DY);
+      const X_DISTANCE = A.x - B.x;
+      const Y_DISTANCE = A.y - B.y;
+      const DIST = Math.hypot(X_DISTANCE, Y_DISTANCE);
 
       if (DIST < MAX_LINK_DISTANCE) {
         const ALPHA =
