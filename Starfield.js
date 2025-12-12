@@ -276,15 +276,15 @@ function moveStars() {
 
 
     // Finger influence only matters when you've moved recently, and if in bounds
-if (CLEANED_USER_SPEED > 0.01 && USER_DISTANCE < MAX_INFLUENCE && REPULSION_TIME == 0) {
+if (CLEANED_USER_SPEED > 0.01 && USER_DISTANCE < MAX_INFLUENCE) {
   // Make the ring
   const RING_THICKNESS = 0.12;
   const RING_RADIUS = (Math.min(USER_DISTANCE / MAX_INFLUENCE, 1) - 0.35);
   const RING_GAUSS = Math.exp(-(RING_RADIUS * RING_RADIUS) / (2 * RING_THICKNESS * RING_THICKNESS));
   const RADIAL_INFLUENCE = 13 * Math.sign(RING_RADIUS) * RING_GAUSS;
-  
-  STAR.momentumX += OFFSET_USER_SPEED * RADIAL_INFLUENCE * DX * INV_DIST;
-  STAR.momentumY += OFFSET_USER_SPEED * RADIAL_INFLUENCE * DY * INV_DIST;
+  const MOMENTUM_FACTOR = (1 - Math.min(REPULSION_TIME / 30, 1)) * OFFSET_USER_SPEED * RADIAL_INFLUENCE * INV_DIST;
+  STAR.momentumX += DX * MOMENTUM_FACTOR;
+  STAR.momentumY += DY * MOMENTUM_FACTOR;
 
   //Decay PULL strength (CUS var is never 0 in this bracket)
   PULL_X *= CLEANED_USER_SPEED / 10;
@@ -353,7 +353,7 @@ if (CLEANED_USER_SPEED > 0.01 && USER_DISTANCE < MAX_INFLUENCE && REPULSION_TIME
   // Let the user influence slowly die out
   CLEANED_USER_SPEED *= 0.94;
   if (CLEANED_USER_SPEED < 0.01) CLEANED_USER_SPEED = 0;
-  REPULSION_TIME *= 0.9;
+  REPULSION_TIME *= 0.85;
   if (REPULSION_TIME < 0.01) REPULSION_TIME = 0;
         
 document.getElementById('repulsion').textContent = REPULSION_TIME.toFixed(3);
