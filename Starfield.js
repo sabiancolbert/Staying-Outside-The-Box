@@ -278,8 +278,8 @@ function moveStars() {
     // Finger influence only matters when you've moved recently, and if in bounds
 if (CLEANED_USER_SPEED > 0.01 && USER_DISTANCE < MAX_INFLUENCE) {
   // Make the ring
-  const RING_THICKNESS = 0.12;
-  const RING_RADIUS = (Math.min(USER_DISTANCE / MAX_INFLUENCE, 1) - 0.35);
+  const RING_THICKNESS = 0.5;
+  const RING_RADIUS = (Math.min(USER_DISTANCE / MAX_INFLUENCE, 1) - 0.2);
   const RING_GAUSS = Math.exp(-(RING_RADIUS * RING_RADIUS) / (2 * RING_THICKNESS * RING_THICKNESS));
   const RADIAL_INFLUENCE = 13 * RING_RADIUS * RING_GAUSS;
   const MOMENTUM_FACTOR = (1 - Math.min(REPULSION_TIME / 30, 1)) * OFFSET_USER_SPEED * RADIAL_INFLUENCE;
@@ -288,8 +288,8 @@ if (CLEANED_USER_SPEED > 0.01 && USER_DISTANCE < MAX_INFLUENCE) {
 }
 
     // Clamp, then apply, then decay momentum
-    STAR.momentumX = Math.abs(STAR.momentumX) < 0.01 ? 0 : Math.max(-2, Math.min(2, STAR.momentumX));
-    STAR.momentumY = Math.abs(STAR.momentumY) < 0.01 ? 0 : Math.max(-2, Math.min(2, STAR.momentumY));
+    STAR.momentumX = Math.abs(STAR.momentumX) < 0.01 ? 0 : Math.max(-3, Math.min(3, STAR.momentumX));
+    STAR.momentumY = Math.abs(STAR.momentumY) < 0.01 ? 0 : Math.max(-3, Math.min(3, STAR.momentumY));
     PULL_X += STAR.momentumX;
     PULL_Y += STAR.momentumY;
     STAR.momentumX *= 0.99;
