@@ -352,7 +352,7 @@ if (CLEANED_USER_SPEED > 0.01 && USER_DISTANCE < MAX_INFLUENCE && REPULSION_TIME
   // Let the user influence slowly die out
   CLEANED_USER_SPEED *= 0.94;
   if (CLEANED_USER_SPEED < 0.01) CLEANED_USER_SPEED = 0;
-  REPULSION_TIME *= 0.97;
+  REPULSION_TIME *= 0.9;
   if (REPULSION_TIME < 0.01) REPULSION_TIME = 0;
         
 document.getElementById('repulsion').textContent = REPULSION_TIME.toFixed(3);
