@@ -290,10 +290,12 @@ if (CLEANED_USER_SPEED > 0.01 && USER_DISTANCE < MAX_INFLUENCE) {
     // Decay and apply momentum
     PULL_X += STAR.momentumX;
     PULL_Y += STAR.momentumY;
-    STAR.momentumX *= 0.9;
-    STAR.momentumY *= 0.9;
+    STAR.momentumX *= 0.99;
+    STAR.momentumY *= 0.99;
     if (Math.abs(STAR.momentumX) < 0.01) STAR.momentumX = 0;
     if (Math.abs(STAR.momentumY) < 0.01) STAR.momentumY = 0;
+    if (Math.abs(STAR.momentumX) > 1.5) STAR.momentumX = 1.5;
+    if (Math.abs(STAR.momentumY) > 1.5) STAR.momentumY = 1.5;
     
     // Repulsion burst from clicks/taps: push straight away from finger
     const CLEANED_REPULSION = 3 * INV_DIST * REPULSION_TIME * Math.max(0, 1 - USER_DISTANCE / (1.5 * MAX_INFLUENCE));
