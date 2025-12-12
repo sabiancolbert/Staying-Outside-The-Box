@@ -273,7 +273,6 @@ function moveStars() {
 
 
 // passive includs random factor
-// MAKE THE ALTERED BELL CURVE APPLY TO MOMENTUM INSTEAD OF RADOUS, MOMENTUM BECOMES THE ADD TO PULL INSTEAD OF RADIUS 
 
 
     // Finger influence only matters when you've moved recently, and if in bounds
@@ -324,7 +323,8 @@ if(REPULSION_TIME > 0){
   CLEANED_USER_SPEED *= 0.94;
   if (CLEANED_USER_SPEED < 0.01) CLEANED_USER_SPEED = 0;
 
-
+document.getElementById('repulsion').textContent = REPULSION_TIME.toFixed(3);
+document.getElementById('speed').textContent = CLEANED_USER_SPEED.toFixed(3);
   
 
 
