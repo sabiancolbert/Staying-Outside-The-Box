@@ -279,7 +279,7 @@ function moveStars() {
     // Finger influence only matters when you've moved recently, and if in bounds
 //if you were going to make the alTERED BELL CURVE APPLY TO MOMENTUM INSTEAD OF RADius, and MOMENTUM BECOMES THE ADD TO PULL INSTEAD OF RADIUS in less than 6 lines, what would you do? 
 
-if (CLEANED_USER_SPEED > 0.01 && USER_DISTANCE < MAX_INFLUENCE) {
+if (CLEANED_USER_SPEED > 0.01 && USER_DISTANCE < MAX_INFLUENCE && REPULSION_TIME > 0.01) {
 
     // Ring-shaped attractor around your finger (closer to ring = faster, inside ring = repel)
     const R = Math.min(USER_DISTANCE / MAX_INFLUENCE, 1);
@@ -292,25 +292,22 @@ if (CLEANED_USER_SPEED > 0.01 && USER_DISTANCE < MAX_INFLUENCE) {
     // Decay PULL strength (CUS var is mever 0 in this bracket)
     PULL_X *= CLEANED_USER_SPEED / 10;
     PULL_Y *= CLEANED_USER_SPEED / 10;
-/*
-    // Give stars momentum
-    STAR.momentumX += DX * INV_DIST * 0.2;
-    STAR.momentumY += DY * INV_DIST * 0.2;
-*/
 }
 
     // Decay and apply momentum
+    PULL_X += STAR.momentumX;
+    PULL_Y += STAR.momentumY;
     STAR.momentumX *= 0.9;
     STAR.momentumY *= 0.9;
     if (Math.abs(STAR.momentumX) < 0.01) STAR.momentumX = 0;
     if (Math.abs(STAR.momentumY) < 0.01) STAR.momentumY = 0;
-    PULL_X += STAR.momentumX;
-    PULL_Y += STAR.momentumY;
     
     // Repulsion burst from clicks/taps: push straight away from finger
     const CLEANED_REPULSION = 3 * INV_DIST * REPULSION_TIME * Math.max(0, 1 - USER_DISTANCE / MAX_INFLUENCE);
     PULL_X -= DX * CLEANED_REPULSION;
     PULL_Y -= DY * CLEANED_REPULSION;
+    REPULSION_TIME *= 0.9;
+    if (REPULSION_TIME < 0.01) REPULSION_TIME = 0;
         
     // Clamp combined user influence so it never explodes
     if (Math.abs(PULL_X) > 3) PULL_X = 3 * Math.sign(PULL_X);
@@ -320,8 +317,12 @@ if (CLEANED_USER_SPEED > 0.01 && USER_DISTANCE < MAX_INFLUENCE) {
     STAR.x += STAR.vx * OFFSET_USER_SPEED + PULL_X;
     STAR.y += STAR.vy * OFFSET_USER_SPEED + PULL_Y;
 
+// Let the "finger motion" effect slowly die out
+  CLEANED_USER_SPEED *= 0.94;
+  if (CLEANED_USER_SPEED < 0.01) CLEANED_USER_SPEED = 0;
 
 
+  
 
 
 
@@ -351,14 +352,6 @@ if (CLEANED_USER_SPEED > 0.01 && USER_DISTANCE < MAX_INFLUENCE) {
     if (STAR.y < 0) STAR.y = HEIGHT;
     if (STAR.y > HEIGHT) STAR.y = 0;
   }
-
-  // Let the "finger motion" effect slowly die out
-  CLEANED_USER_SPEED *= 0.94;
-  if (CLEANED_USER_SPEED < 0.01) CLEANED_USER_SPEED = 0;
-
-  // Repulsion bursts decay too
-  REPULSION_TIME *= 0.9;
-  if (REPULSION_TIME < 0.01) REPULSION_TIME = 0;
 }
 
 /*---------- Star rendering ----------*/
