@@ -286,16 +286,17 @@ if (CLEANED_USER_SPEED > 0.01 && USER_DISTANCE < MAX_INFLUENCE) {
     const RING_RADIUS     = 0.35;
     const RING_STRENGTH = 13;
     const RADIAL_INFLUENCE = RING_STRENGTH * (R - RING_RADIUS) * (1 - R);
-    PULL_X += OFFSET_USER_SPEED * RADIAL_INFLUENCE * DX * INV_DIST;
-    PULL_Y += OFFSET_USER_SPEED * RADIAL_INFLUENCE * DY * INV_DIST;
+    STAR.momentumX += OFFSET_USER_SPEED * RADIAL_INFLUENCE * DX * INV_DIST;
+    STAR.momentumY += OFFSET_USER_SPEED * RADIAL_INFLUENCE * DY * INV_DIST;
 
     // Decay PULL strength (CUS var is mever 0 in this bracket)
     PULL_X *= CLEANED_USER_SPEED / 10;
     PULL_Y *= CLEANED_USER_SPEED / 10;
-
+/*
     // Give stars momentum
     STAR.momentumX += DX * INV_DIST * 0.2;
     STAR.momentumY += DY * INV_DIST * 0.2;
+*/
 }
 
     // Decay and apply momentum
