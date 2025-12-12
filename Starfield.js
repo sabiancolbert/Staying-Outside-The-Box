@@ -278,7 +278,7 @@ function moveStars() {
     // Finger influence only matters when you've moved recently, and if in bounds
 if (CLEANED_USER_SPEED > 0.01 && USER_DISTANCE < MAX_INFLUENCE) {
   // Make the ring
-  const RING_THICKNESS = 6;
+  const RING_THICKNESS = 0.9;
   const RING_RADIUS = 0.6;
   
   const CLEANED_RAD =(Math.min(USER_DISTANCE / MAX_INFLUENCE, 1) - RING_RADIUS);
