@@ -291,22 +291,18 @@ if (CLEANED_USER_SPEED > 0.01 && USER_DISTANCE < MAX_INFLUENCE) {
   STAR.momentumY += TOWARDS_USER_Y * MOMENTUM_FACTOR;
   
   // Passive center pull
-PULL_X += TOWARDS_USER_X * 2;
-PULL_Y += TOWARDS_USER_Y * 2;
+PULL_X += TOWARDS_USER_X * 5;
+PULL_Y += TOWARDS_USER_Y * 5;
 }
 
     // Circular clamp (keeps direction, avoids diamond / axis bias)
-    const DEAD = 0.01;
-    const MAX_MOM = 3;
-    
-    const MAG = Math.hypot(STAR.momentumX, STAR.momentumY);
-    if (MAG < DEAD) {
+    const STAR_HYPOT = Math.hypot(STAR.momentumX, STAR.momentumY);
+    if (STAR_HYPOT < 0.01) {
       STAR.momentumX = 0;
       STAR.momentumY = 0;
-    } else if (MAG > MAX_MOM) {
-      const S = MAX_MOM / MAG;
-      STAR.momentumX *= S;
-      STAR.momentumY *= S;
+    } else if (STAR_HYPOT > 5) {
+      STAR.momentumX *= 5 / STAR_HYPOT;
+      STAR.momentumY *= 5 / STAR_HYPOT;
     }
     // Apply then decay momentum
     PULL_X += STAR.momentumX;
@@ -320,12 +316,10 @@ PULL_Y += TOWARDS_USER_Y * 2;
     PULL_Y -= TOWARDS_USER_Y * CLEANED_REPULSION;
     
     // Clamp and "circularize" combined user influence so it never explodes
-    const MAX_PULL = 3;
-    const PULL_MAG = Math.hypot(PULL_X, PULL_Y);
-    if (PULL_MAG > MAX_PULL) {
-      const S = MAX_PULL / PULL_MAG;
-      PULL_X *= S;
-      PULL_Y *= S;
+    const PULL_HYPOT = Math.hypot(PULL_X, PULL_Y);
+    if (PULL_HYPOT > 3) {
+      PULL_X *= 3 / PULL_HYPOT;
+      PULL_Y *= 3 / PULL_HYPOT;
     }
     
     // Apply final movement, while easing back to passive movement and adding passive drift
