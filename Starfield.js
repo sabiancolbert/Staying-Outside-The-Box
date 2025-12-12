@@ -303,9 +303,7 @@ if (CLEANED_USER_SPEED > 0.01 && USER_DISTANCE < MAX_INFLUENCE) {
     const CLEANED_REPULSION = 3 * INV_DIST * REPULSION_TIME * Math.max(0, 1 - USER_DISTANCE / (1.5 * MAX_INFLUENCE));
     PULL_X -= DX * CLEANED_REPULSION;
     PULL_Y -= DY * CLEANED_REPULSION;
-    REPULSION_TIME *= 0.9;
-    if (REPULSION_TIME < 0.01) REPULSION_TIME = 0;
-        
+    
     // Clamp combined user influence so it never explodes
     if (Math.abs(PULL_X) > 3) PULL_X = 3 * Math.sign(PULL_X);
     if (Math.abs(PULL_Y) > 3) PULL_Y = 3 * Math.sign(PULL_Y);
@@ -314,13 +312,7 @@ if (CLEANED_USER_SPEED > 0.01 && USER_DISTANCE < MAX_INFLUENCE) {
     STAR.x += STAR.vx * OFFSET_USER_SPEED + PULL_X;
     STAR.y += STAR.vy * OFFSET_USER_SPEED + PULL_Y;
 
-// Let the "finger motion" effect slowly die out
-  CLEANED_USER_SPEED *= 0.94;
-  if (CLEANED_USER_SPEED < 0.01) CLEANED_USER_SPEED = 0;
 
-document.getElementById('repulsion').textContent = REPULSION_TIME.toFixed(3);
-document.getElementById('speed').textContent = CLEANED_USER_SPEED.toFixed(3);
-  
 
 
 
@@ -357,6 +349,15 @@ document.getElementById('speed').textContent = CLEANED_USER_SPEED.toFixed(3);
     if (STAR.y < 0) STAR.y = HEIGHT;
     if (STAR.y > HEIGHT) STAR.y = 0;
   }
+  
+  // Let the user influence slowly die out
+  CLEANED_USER_SPEED *= 0.94;
+  if (CLEANED_USER_SPEED < 0.01) CLEANED_USER_SPEED = 0;
+  REPULSION_TIME *= 0.9;
+  if (REPULSION_TIME < 0.01) REPULSION_TIME = 0;
+        
+document.getElementById('repulsion').textContent = REPULSION_TIME.toFixed(3);
+document.getElementById('speed').textContent = CLEANED_USER_SPEED.toFixed(3);
 }
 
 /*---------- Star rendering ----------*/
