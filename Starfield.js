@@ -226,7 +226,7 @@ function moveStars() {
 
   // Speed baseline + how far the finger can influence stars
   const OFFSET_USER_SPEED = 1 + CLEANED_USER_SPEED;
-  const MAX_INFLUENCE = 100 * (SCALE_FACTOR / 500);
+  const MAX_INFLUENCE = 50 * (SCALE_FACTOR / 500);
 
   for (const STAR of STARS) {
     // Accumulator for everything that moves this star this frame
