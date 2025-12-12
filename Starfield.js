@@ -536,6 +536,20 @@ window.addEventListener('touchmove', (E) => {
   if (!TOUCH_POINT) return;
   updateSpeed(TOUCH_POINT.clientX, TOUCH_POINT.clientY, E.timeStamp);
 });
+
+function endPointerInteraction() {
+  CLEANED_USER_SPEED = 0;
+  SMOOTH_SPEED = 0;
+  POINTER_SPEED = 0;
+}
+
+// Mouse
+window.addEventListener('mouseup', endPointerInteraction);
+window.addEventListener('mouseleave', endPointerInteraction);
+
+// Touch
+window.addEventListener('touchend', endPointerInteraction, { passive: true });
+window.addEventListener('touchcancel', endPointerInteraction, { passive: true });
 //#endregion POINTER INPUT
 
 
