@@ -279,7 +279,7 @@ function moveStars() {
     // Finger influence only matters when you've moved recently, and if in bounds
 //if you were going to make the alTERED BELL CURVE APPLY TO MOMENTUM INSTEAD OF RADius, and MOMENTUM BECOMES THE ADD TO PULL INSTEAD OF RADIUS in less than 6 lines, what would you do? 
 
-if (CLEANED_USER_SPEED > 0.01 && USER_DISTANCE < MAX_INFLUENCE) {
+if (CLEANED_USER_SPEED > 0.01 && USER_DISTANCE < MAX_INFLUENCE && REPULSION_TIME == 0) {
 
     // Ring-shaped attractor around your finger (closer to ring = faster, inside ring = repel)
     const R = Math.min(USER_DISTANCE / MAX_INFLUENCE, 1);
@@ -294,7 +294,7 @@ if (CLEANED_USER_SPEED > 0.01 && USER_DISTANCE < MAX_INFLUENCE) {
     PULL_Y *= CLEANED_USER_SPEED / 10;
 }
 
-if(REPULSION_TIME > 0.01){
+if(REPULSION_TIME > 0){
   STAR.momentumX = 0;
   STAR.momentumY = 0;
 }
