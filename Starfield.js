@@ -272,7 +272,7 @@ function moveStars() {
     // Finger influence only matters when you've moved recently, and if in bounds
 if (NORM_USER_SPEED > 0.001 && USER_DISTANCE < MAX_INFLUENCE) {
   // Make the ring
-  const RING_THICKNESS = 1;
+  const RING_THICKNESS = 0.4;
   const RING_RADIUS = 0.8;
   const INNER_REPEL = 6;
   const OUTER_ATTRACT = 2;
