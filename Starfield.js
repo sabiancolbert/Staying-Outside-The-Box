@@ -217,7 +217,6 @@ function moveStars() {
   if (!HAS_CANVAS || !STARS.length) return;
 
   // Speed baseline + how far the finger can influence stars
-  const OFFSET_USER_SPEED = 1 + NORM_USER_SPEED;
   const MAX_INFLUENCE = 50 * (SCALE_FACTOR / 500);
 
   for (const STAR of STARS) {
@@ -306,8 +305,8 @@ PULL_Y += TOWARDS_USER_Y * 5;
     STAR.momentumY *= 0.99;
     
     // Repulsion burst from clicks/taps: push straight away from finger
-    PULL_X -= TOWARDS_USER_X * 40 * NORM_REPULSION * Math.max(0, 1 - USER_DISTANCE / (1.5 * MAX_INFLUENCE)) * NORM_INV_DISTANCE;
-    PULL_Y -= TOWARDS_USER_Y * 40 * NORM_REPULSION * Math.max(0, 1 - USER_DISTANCE / (1.5 * MAX_INFLUENCE)) * NORM_INV_DISTANCE;
+    PULL_X -= TOWARDS_USER_X * 40 * NORM_REPULSION * Math.max(0, 1 - USER_DISTANCE / (1.5 * MAX_INFLUENCE));
+    PULL_Y -= TOWARDS_USER_Y * 40 * NORM_REPULSION * Math.max(0, 1 - USER_DISTANCE / (1.5 * MAX_INFLUENCE));
 
     // Clamp and "circularize" combined user influence so it never explodes
     const PULL_HYPOT = Math.hypot(PULL_X, PULL_Y);
@@ -317,8 +316,8 @@ PULL_Y += TOWARDS_USER_Y * 5;
     }
     
     // Apply final movement, while easing back to passive movement and adding passive drift
-    STAR.x += STAR.vx * OFFSET_USER_SPEED + PULL_X;
-    STAR.y += STAR.vy * OFFSET_USER_SPEED + PULL_Y;
+    STAR.x += STAR.vx * (NORM_USER_SPEED + 1) + PULL_X;
+    STAR.y += STAR.vy * (NORM_USER_SPEED + 1) + PULL_Y;
 
 
 
