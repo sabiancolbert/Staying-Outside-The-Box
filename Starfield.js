@@ -272,10 +272,10 @@ function moveStars() {
     // Finger influence only matters when you've moved recently, and if in bounds
 if (NORM_USER_SPEED > 0.001 && USER_DISTANCE < MAX_INFLUENCE) {
   // Make the ring
-  const RING_THICKNESS = 0.3;
+  const RING_THICKNESS = 0.2;
   const RING_RADIUS = 0.4;
   const INNER_REPEL = 6;
-  const OUTER_ATTRACT = 1.5;
+  const OUTER_ATTRACT = 3;
 
   const IS_IN_OR_OUT =(Math.min(USER_DISTANCE / MAX_INFLUENCE, 1) - RING_RADIUS);
   const THICKENED_SHAPE = Math.exp(-(IS_IN_OR_OUT * IS_IN_OR_OUT) / (2 * RING_THICKNESS * RING_THICKNESS));
@@ -285,7 +285,7 @@ if (NORM_USER_SPEED > 0.001 && USER_DISTANCE < MAX_INFLUENCE) {
   STAR.momentumY += TOWARDS_USER_Y * MOMENTUM_FACTOR;
   
   // Passive center pull
-const CENTER_PULL = 0.35;
+const CENTER_PULL = 0.5;
   const CENTER_FADE = Math.max(
   0,
   1 - USER_DISTANCE / MAX_INFLUENCE
