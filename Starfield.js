@@ -289,8 +289,8 @@ if (NORM_USER_SPEED > 0.001 && USER_DISTANCE < MAX_INFLUENCE) {
   const F = dir * RING_FORCE * t * t; // squared makes it softer
 
   // apply directly to this frame's pull
-  STAR.momentumX += TOWARDS_USER_X * F;
-  STAR.momentumY += TOWARDS_USER_Y * F;
+  PULL_X += TOWARDS_USER_X * F;
+  PULL_Y += TOWARDS_USER_Y * F;
   
   // Repulsion burst from clicks/taps: push straight away from finger
   PULL_X -= TOWARDS_USER_X * 40 * NORM_REPULSION;
