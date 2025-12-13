@@ -38,7 +38,7 @@ let USER_Y = 0;
 let USER_TIME = 0;
 let POINTER_SPEED = 0;
 let SMOOTH_SPEED = 0;
-let CLEANED_USER_SPEED = 0;
+let NORM_USER_SPEED = 0;
 
 // Repulsion strength
 let REPULSION_TIME = 0;
@@ -73,7 +73,7 @@ function saveStarsToStorage() {
         height:          HEIGHT,
         scaleFactor:     SCALE_FACTOR,
         repulsionValue:  REPULSION_TIME,
-        cleanedUserSpeed:CLEANED_USER_SPEED,
+        cleanedUserSpeed:NORM_USER_SPEED,
         smoothSpeed:     SMOOTH_SPEED,
         pointerSpeed:    POINTER_SPEED,
         lastX:           USER_X,
@@ -157,7 +157,7 @@ function initStars() {
 
           // Restore motion state and pointer info
           REPULSION_TIME   = META.repulsionValue    ?? 0;
-          CLEANED_USER_SPEED = META.cleanedUserSpeed ?? 0;
+          NORM_USER_SPEED = META.cleanedUserSpeed ?? 0;
           SMOOTH_SPEED       = META.smoothSpeed      ?? 0;
           POINTER_SPEED      = META.pointerSpeed     ?? 0;
 
@@ -225,7 +225,7 @@ function moveStars() {
   if (!HAS_CANVAS || !STARS.length) return;
 
   // Speed baseline + how far the finger can influence stars
-  const OFFSET_USER_SPEED = 1 + CLEANED_USER_SPEED;
+  const OFFSET_USER_SPEED = 1 + NORM_USER_SPEED;
   const MAX_INFLUENCE = 50 * (SCALE_FACTOR / 500);
 
   for (const STAR of STARS) {
@@ -235,9 +235,9 @@ function moveStars() {
     const X_DISTANCE = USER_X - STAR.x;
     const Y_DISTANCE = USER_Y - STAR.y;
     const USER_DISTANCE = 1 + Math.hypot(X_DISTANCE, Y_DISTANCE);
-    const INV_DIST = 1 / USER_DISTANCE;
-    const TOWARDS_USER_X = X_DISTANCE * INV_DIST;
-    const TOWARDS_USER_Y = Y_DISTANCE * INV_DIST;
+    const NORM_INV_DISTANCE = 1 / USER_DISTANCE;
+    const TOWARDS_USER_X = X_DISTANCE * NORM_INV_DISTANCE;
+    const TOWARDS_USER_Y = Y_DISTANCE * NORM_INV_DISTANCE;
 
     
 
@@ -279,20 +279,20 @@ function moveStars() {
 
 
     // Finger influence only matters when you've moved recently, and if in bounds
-if (CLEANED_USER_SPEED > 0.01 && USER_DISTANCE < MAX_INFLUENCE) {
+if (NORM_USER_SPEED > 0.001 && USER_DISTANCE < MAX_INFLUENCE) {
   // Make the ring
   const RING_THICKNESS = 1;
   const RING_RADIUS = 0.8;
-  
-  const CLEANED_RAD =(Math.min(USER_DISTANCE / MAX_INFLUENCE, 1) - RING_RADIUS);
-const INNER_REPEL = 6;   // strength inside the ring (CLEANED_RAD < 0)
-const OUTER_ATTRACT = 2; // strength outside the ring (CLEANED_RAD > 0)
+  const INNER_REPEL = 6;
+  const OUTER_ATTRACT = 2;
 
-const BASE = Math.exp(-(CLEANED_RAD * CLEANED_RAD) / (2 * RING_THICKNESS * RING_THICKNESS));
-const RING_STRENGTH = (CLEANED_RAD < 0 ? INNER_REPEL : OUTER_ATTRACT) * CLEANED_RAD * BASE;
-  const MOMENTUM_FACTOR = (1 - Math.min(REPULSION_TIME / 30, 1)) * OFFSET_USER_SPEED * RING_STRENGTH * (CLEANED_USER_SPEED / 10);
+  const IS_IN_OR_OUT =(Math.min(USER_DISTANCE / MAX_INFLUENCE, 1) - RING_RADIUS);
+  const THICKENED_SHAPE = Math.exp(-(IS_IN_OR_OUT * IS_IN_OR_OUT) / (2 * RING_THICKNESS * RING_THICKNESS));
+  const FINAL_SHAPE = (IS_IN_OR_OUT < 0 ? INNER_REPEL : OUTER_ATTRACT) * IS_IN_OR_OUT * THICKENED_SHAPE;
+  const MOMENTUM_FACTOR = FINAL_SHAPE * NORM_USER_SPEED * (1 - Math.min(REPULSION_TIME / 30, 1));
   STAR.momentumX += TOWARDS_USER_X * MOMENTUM_FACTOR;
   STAR.momentumY += TOWARDS_USER_Y * MOMENTUM_FACTOR;
+  
   // Passive center pull
 PULL_X += TOWARDS_USER_X * 5;
 PULL_Y += TOWARDS_USER_Y * 5;
@@ -314,8 +314,8 @@ PULL_Y += TOWARDS_USER_Y * 5;
     STAR.momentumY *= 0.99;
     
     // Repulsion burst from clicks/taps: push straight away from finger
-    PULL_X -= TOWARDS_USER_X * 40 * REPULSION_TIME * Math.max(0, 1 - USER_DISTANCE / (1.5 * MAX_INFLUENCE)) * INV_DIST;
-    PULL_Y -= TOWARDS_USER_Y * 40 * REPULSION_TIME * Math.max(0, 1 - USER_DISTANCE / (1.5 * MAX_INFLUENCE)) * INV_DIST;
+    PULL_X -= TOWARDS_USER_X * 40 * REPULSION_TIME * Math.max(0, 1 - USER_DISTANCE / (1.5 * MAX_INFLUENCE)) * NORM_INV_DISTANCE;
+    PULL_Y -= TOWARDS_USER_Y * 40 * REPULSION_TIME * Math.max(0, 1 - USER_DISTANCE / (1.5 * MAX_INFLUENCE)) * NORM_INV_DISTANCE;
 
     // Clamp and "circularize" combined user influence so it never explodes
     const PULL_HYPOT = Math.hypot(PULL_X, PULL_Y);
@@ -367,13 +367,13 @@ PULL_Y += TOWARDS_USER_Y * 5;
   }
   
   // Let the user influence slowly die out
-  CLEANED_USER_SPEED *= 0.94;
-  if (CLEANED_USER_SPEED < 0.01) CLEANED_USER_SPEED = 0;
+  NORM_USER_SPEED *= 0.94;
+  if (NORM_USER_SPEED < 0.001) NORM_USER_SPEED = 0;
   REPULSION_TIME *= 0.85;
-  if (REPULSION_TIME < 0.01) REPULSION_TIME = 0;
+  if (REPULSION_TIME < 0.001) REPULSION_TIME = 0;
         
 document.getElementById('repulsion').textContent = REPULSION_TIME.toFixed(3);
-document.getElementById('speed').textContent = CLEANED_USER_SPEED.toFixed(3);
+document.getElementById('speed').textContent = NORM_USER_SPEED.toFixed(3);
 }
 
 /*---------- Star rendering ----------*/
@@ -482,7 +482,7 @@ function animate() {
  *  POINTER INPUT (MOUSE / TOUCH)
  *========================================*/
 
-// Update pointer speed and derived CLEANED_USER_SPEED
+// Update pointer speed and derived NORM_USER_SPEED
 function updateSpeed(X, Y, TIME) {
   // Fallback if a weird environment passes an invalid timestamp
   if (!Number.isFinite(TIME)) {
@@ -492,27 +492,16 @@ function updateSpeed(X, Y, TIME) {
   }
 
   const DT = TIME - USER_TIME;
-
-  if (DT > 0) {
-    POINTER_SPEED = Math.hypot(X - USER_X, Y - USER_Y) / DT;
-  }
-
-  SMOOTH_SPEED = SMOOTH_SPEED * 0.8 + POINTER_SPEED * 10;
-  CLEANED_USER_SPEED = Math.min(
-    SMOOTH_SPEED * (SCALE_FACTOR / 1100) ** 2,
-    10
-  );
-
+  USER_TIME = TIME;
   USER_X = X;
   USER_Y = Y;
-  USER_TIME = TIME;
+  NORM_USER_SPEED = Math.min(Math.hypot(X - USER_X, Y - USER_Y) / DT / 1, 1);
 }
 
 // Shared start handler for mouse/touch pointer interactions
 function startPointerInteraction(X, Y, TIME) {
   REPULSION_TIME = 1; // Repel on click/touch
   updateSpeed(X, Y, TIME);
-  CLEANED_USER_SPEED = CLEANED_USER_SPEED + 0.8;
 }
 
 // Mouse move updates live pointer speed
