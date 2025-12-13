@@ -273,7 +273,7 @@ function moveStars() {
 if (NORM_USER_SPEED > 0.001 && USER_DISTANCE < MAX_INFLUENCE) {
   // Make the ring
   const RING_THICKNESS = 0.3;
-  const RING_RADIUS = 0.8;
+  const RING_RADIUS = 0.4;
   const INNER_REPEL = 6;
   const OUTER_ATTRACT = 1.5;
 
