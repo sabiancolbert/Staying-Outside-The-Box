@@ -274,8 +274,8 @@ if (NORM_USER_SPEED > 0.001 && USER_DISTANCE < MAX_INFLUENCE) {
   // Make the ring
   const RING_THICKNESS = 0.4;
   const RING_RADIUS = 0.8;
-  const INNER_REPEL = 6;
-  const OUTER_ATTRACT = 2;
+  const INNER_REPEL = 15;
+  const OUTER_ATTRACT = 8;
 
   const IS_IN_OR_OUT =(Math.min(USER_DISTANCE / MAX_INFLUENCE, 1) - RING_RADIUS);
   const THICKENED_SHAPE = Math.exp(-(IS_IN_OR_OUT * IS_IN_OR_OUT) / (2 * RING_THICKNESS * RING_THICKNESS));
