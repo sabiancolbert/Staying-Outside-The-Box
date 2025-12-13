@@ -237,49 +237,36 @@ function moveStars() {
     /*--------------------------------------*
      *  FINGER RING INTERACTION
      *--------------------------------------*/
-    if (
-      NORM_USER_SPEED > 0.001 &&
-      USER_DISTANCE < 220 * (SCALE_FACTOR / 1000)
-    ) {
-      // Ring params (scaled once by screen size)
-      const RING_RADIUS = 140 * (SCALE_FACTOR / 1000);
-      const RING_WIDTH  =  70 * (SCALE_FACTOR / 1000);
-      const RING_FORCE  = 18;
+    not b bevause norm_user_speed ends up at 0, ill just add inverted distance to let ring takeover when close. c no its supposedd to look like it follows finger, no finger means no ring. ive removed the max_distance to keep the ring the same real life size on all screens. what should i change width and radius to?
 
-      // Signed distance from ring
-      // Signed distance from ring
-const d = USER_DISTANCE - RING_RADIUS;
+if (NORM_USER_SPEED > 0.001 && USER_DISTANCE < MAX_INFLUENCE) {
+  // Ring params (simple + stable)
+  const RING_RADIUS = 0.8;
+  const RING_WIDTH  = 0.25;
+  const RING_FORCE  = 18;                
 
-// Dead zone at the ring (keep your fan-out feel)
-const DEAD_BAND = 6 * (SCALE_FACTOR / 1000);
-if (!Math.abs(d) < DEAD_BAND) {
-  // ASYMMETRIC tolerance bands:
-  // - inside (repel) is tight
-  // - outside (attract) is wider
-  const INNER_WIDTH = 18 * (SCALE_FACTOR / 1000);  // try 10–25
-  const OUTER_WIDTH = 90 * (SCALE_FACTOR / 1000);  // try 60–140
+  // signed distance from the ring: negative = inside, positive = outside
+  const d = USER_DISTANCE - RING_RADIUS;
 
-  const width = d < 0 ? INNER_WIDTH : OUTER_WIDTH;
+  // smooth "how much to apply" (1 near ring, 0 far away)
+  const t = Math.max(0, 1 - Math.abs(d) / RING_WIDTH);
 
-  // 1 at the boundary, 0 at the edge of the band
-  const t = Math.max(0, 1 - Math.abs(d) / width);
+  // direction: if outside (d>0) pull inward; if inside (d<0) push outward
+  const dir = -Math.sign(d);
 
-  // direction: inside -> push outward, outside -> pull inward
-  const dir = d < 0 ? +1 : -1;
+  // final radial force (smooth, strongest near ring, zero far away)
+  const F = dir * RING_FORCE * t * t; // squared makes it softer
 
-  // Smooth force (so it doesn't snap)
-  const F = dir * RING_FORCE * t * t;
-
+  // apply directly to this frame's pull
   PULL_X += TOWARDS_USER_X * F;
   PULL_Y += TOWARDS_USER_Y * F;
-      // Repulsion burst from clicks/taps
-      PULL_X -= TOWARDS_USER_X * 40 * NORM_REPULSION;
-      PULL_Y -= TOWARDS_USER_Y * 40 * NORM_REPULSION;
-    }
+  
+  // Repulsion burst from clicks/taps: push straight away from finger
+  PULL_X -= TOWARDS_USER_X * 40 * NORM_REPULSION;
+  PULL_Y -= TOWARDS_USER_Y * 40 * NORM_REPULSION;
+}
 
-    /*--------------------------------------*
-     *  MOMENTUM CLAMP & DECAY
-     *--------------------------------------*/
+    // Circular clamp (keeps direction, avoids diamond / axis bias)
     const STAR_HYPOT = Math.hypot(STAR.momentumX, STAR.momentumY);
     if (STAR_HYPOT < 0.01) {
       STAR.momentumX = 0;
@@ -288,31 +275,22 @@ if (!Math.abs(d) < DEAD_BAND) {
       STAR.momentumX *= 5 / STAR_HYPOT;
       STAR.momentumY *= 5 / STAR_HYPOT;
     }
-
+    // Apply then decay momentum
     PULL_X += STAR.momentumX;
     PULL_Y += STAR.momentumY;
     STAR.momentumX *= 0.99;
     STAR.momentumY *= 0.99;
 
-    /*--------------------------------------*
-     *  FINAL PULL CLAMP
-     *--------------------------------------*/
+    // Clamp and "circularize" combined user influence so it never explodes
     const PULL_HYPOT = Math.hypot(PULL_X, PULL_Y);
     if (PULL_HYPOT > 5) {
       PULL_X *= 5 / PULL_HYPOT;
       PULL_Y *= 5 / PULL_HYPOT;
     }
-
-    /*--------------------------------------*
-     *  APPLY MOVEMENT
-     *--------------------------------------*/
-    const SPEED_BOOST = Math.min(
-      1 + INVERTED_DISTANCE * NORM_USER_SPEED * 20,
-      6
-    );
-
-    STAR.x += STAR.vx * SPEED_BOOST + PULL_X;
-    STAR.y += STAR.vy * SPEED_BOOST + PULL_Y;
+    
+    // Apply final movement, while easing back to passive movement and adding passive drift
+    STAR.x += STAR.vx * (INVERTED_DISTANCE * NORM_USER_SPEED * 20 + 1) + PULL_X;
+    STAR.y += STAR.vy * (INVERTED_DISTANCE * NORM_USER_SPEED * 20 + 1) + PULL_Y;
 
     /*--------------------------------------*
      *  TWINKLE & LIFE CYCLE
