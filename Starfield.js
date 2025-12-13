@@ -271,36 +271,30 @@ function moveStars() {
 
     // Finger influence only matters when you've moved recently, and if in bounds
 if (NORM_USER_SPEED > 0.001 && USER_DISTANCE < MAX_INFLUENCE) {
-  // Make the ring
-  const RING_THICKNESS = 0.1;
-  const RING_RADIUS = 0.8;
-  const INNER_REPEL = 6;
-  const OUTER_ATTRACT = 13;
+  // Ring params (simple + stable)
+  const RING_RADIUS = 0.8 * MAX_INFLUENCE;   // ring radius in pixels
+  const RING_WIDTH  = 0.25 * MAX_INFLUENCE;  // softness / tolerance band
+  const RING_FORCE  = 3.0;                   // overall strength
 
-  const IS_IN_OR_OUT =(Math.min(USER_DISTANCE / MAX_INFLUENCE, 1) - RING_RADIUS);
-  const THICKENED_SHAPE = Math.exp(-(IS_IN_OR_OUT * IS_IN_OR_OUT) / (2 * RING_THICKNESS * RING_THICKNESS));
-const TOL = 0.02; // try 0.01–0.05
-const S = Math.abs(IS_IN_OR_OUT) < TOL
-  ? 0
-  : (IS_IN_OR_OUT < 0 ? -INNER_REPEL : OUTER_ATTRACT);
+  // signed distance from the ring: negative = inside, positive = outside
+  const d = USER_DISTANCE - RING_RADIUS;
 
-const FINAL_SHAPE = S * THICKENED_SHAPE;
- const MOMENTUM_FACTOR = FINAL_SHAPE * NORM_USER_SPEED * (1 - Math.min(NORM_REPULSION / 30, 1));
-  STAR.momentumX += TOWARDS_USER_X * MOMENTUM_FACTOR;
-  STAR.momentumY += TOWARDS_USER_Y * MOMENTUM_FACTOR;
-  
-  // Passive center pull
-const CENTER_PULL = 0.5;
-  const CENTER_FADE = Math.max(
-  0,
-  1 - USER_DISTANCE / MAX_INFLUENCE
-);
-PULL_X += TOWARDS_USER_X * CENTER_PULL * CENTER_FADE;
-PULL_Y += TOWARDS_USER_Y * CENTER_PULL * CENTER_FADE;
+  // smooth "how much to apply" (1 near ring, 0 far away)
+  const t = Math.max(0, 1 - Math.abs(d) / RING_WIDTH);
+
+  // direction: if outside (d>0) pull inward; if inside (d<0) push outward
+  const dir = -Math.sign(d);
+
+  // final radial force (smooth, strongest near ring, zero far away)
+  const F = dir * RING_FORCE * t * t; // squared makes it softer
+
+  // apply directly to this frame's pull
+  STAR.momentumX += TOWARDS_USER_X * F;
+  STAR.momentumY += TOWARDS_USER_Y * F;
   
   // Repulsion burst from clicks/taps: push straight away from finger
-    PULL_X -= TOWARDS_USER_X * 40 * NORM_REPULSION;
-    PULL_Y -= TOWARDS_USER_Y * 40 * NORM_REPULSION;
+  PULL_X -= TOWARDS_USER_X * 40 * NORM_REPULSION;
+  PULL_Y -= TOWARDS_USER_Y * 40 * NORM_REPULSION;
 }
 
     // Circular clamp (keeps direction, avoids diamond / axis bias)
