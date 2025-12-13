@@ -233,7 +233,9 @@ function createStars() {
 // Move, fade, and wrap stars around the screen
 function moveStars() {
   if (!HAS_CANVAS || !STARS.length) return;
-
+  /* ADJUSTMENTS */
+  const REPEL_BURST = 400;
+  
   for (const STAR of STARS) {
     // Accumulator for everything that moves this star this frame
     let PULL_X = 0;
@@ -256,8 +258,8 @@ function moveStars() {
 
 
     // Repulsion burst from clicks/taps: push straight away from finger
-    PULL_X -= 400 * NORM_REPULSION * NORM_GRAD_TO_USER_X;
-    PULL_Y -= 400 * NORM_REPULSION * NORM_GRAD_TO_USER_Y;
+    PULL_X -= REPEL_BURST * NORM_REPULSION * NORM_GRAD_TO_USER_X;
+    PULL_Y -= REPEL_BURST * NORM_REPULSION * NORM_GRAD_TO_USER_Y;
 
     /*--------------------------------------*
      *  MALE A CIRCLE, CLAMP, APPLY, DECAY
