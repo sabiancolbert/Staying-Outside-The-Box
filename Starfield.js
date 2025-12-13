@@ -209,13 +209,7 @@ function createStars() {
     });
   }
 }
-/*---------- Star animation step ----------*/
-/*---------- Star animation step ----------*/
-/*---------- Star animation step ----------*/
-/*---------- Star animation step ----------*/
-/*---------- Star animation step ----------*/
-/*---------- Star animation step ----------*/
-/*---------- Star animation step ----------*/
+
 /*---------- Star animation step ----------*/
 // Move, fade, and wrap stars around the screen
 function moveStars() {
@@ -238,34 +232,13 @@ function moveStars() {
      *  FINGER RING INTERACTION
      *--------------------------------------*/
 
+    // Repulsion burst from clicks/taps: push straight away from finger
+    PULL_X -= TOWARDS_USER_X * 40 * NORM_REPULSION;
+    PULL_Y -= TOWARDS_USER_Y * 40 * NORM_REPULSION;
 
-if (NORM_USER_SPEED > 0.001 && USER_DISTANCE < SCREEN_SIZE * 0.2) {
-  // Ring params (simple + stable)
-  const RING_RADIUS = 0.8;
-  const RING_WIDTH  = 0.25;
-  const RING_FORCE  = 18;                
-
-  // signed distance from the ring: negative = inside, positive = outside
-  const d = USER_DISTANCE - RING_RADIUS;
-
-  // smooth "how much to apply" (1 near ring, 0 far away)
-  const t = Math.max(0, 1 - Math.abs(d) / RING_WIDTH);
-
-  // direction: if outside (d>0) pull inward; if inside (d<0) push outward
-  const dir = -Math.sign(d);
-
-  // final radial force (smooth, strongest near ring, zero far away)
-  const F = dir * RING_FORCE * t * t; // squared makes it softer
-
-  // apply directly to this frame's pull
-  PULL_X += TOWARDS_USER_X * F;
-  PULL_Y += TOWARDS_USER_Y * F;
-  
-  // Repulsion burst from clicks/taps: push straight away from finger
-  PULL_X -= TOWARDS_USER_X * 40 * NORM_REPULSION;
-  PULL_Y -= TOWARDS_USER_Y * 40 * NORM_REPULSION;
-}
-
+    /*--------------------------------------*
+     *  CLAMP, APPLY, DECAY
+     *--------------------------------------*/
     // Circular clamp (keeps direction, avoids diamond / axis bias)
     const STAR_HYPOT = Math.hypot(STAR.momentumX, STAR.momentumY);
     if (STAR_HYPOT < 0.01) {
@@ -291,6 +264,24 @@ if (NORM_USER_SPEED > 0.001 && USER_DISTANCE < SCREEN_SIZE * 0.2) {
     // Apply final movement, while easing back to passive movement and adding passive drift
     STAR.x += STAR.vx * (INVERTED_DISTANCE * NORM_USER_SPEED * 20 + 1) + PULL_X;
     STAR.y += STAR.vy * (INVERTED_DISTANCE * NORM_USER_SPEED * 20 + 1) + PULL_Y;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /*--------------------------------------*
      *  TWINKLE & LIFE CYCLE
