@@ -226,9 +226,9 @@ function moveStars() {
     const X_DISTANCE = USER_X - STAR.x;
     const Y_DISTANCE = USER_Y - STAR.y;
     const USER_DISTANCE = 1 + Math.hypot(X_DISTANCE, Y_DISTANCE);
-    const NORM_INV_DISTANCE = 1 / USER_DISTANCE;
-    const TOWARDS_USER_X = X_DISTANCE * NORM_INV_DISTANCE;
-    const TOWARDS_USER_Y = Y_DISTANCE * NORM_INV_DISTANCE;
+    const INVERTED_DISTANCE = 1 / USER_DISTANCE;
+    const TOWARDS_USER_X = X_DISTANCE * INVERTED_DISTANCE;
+    const TOWARDS_USER_Y = Y_DISTANCE * INVERTED_DISTANCE;
 
     
 
@@ -285,8 +285,8 @@ if (NORM_USER_SPEED > 0.001 && USER_DISTANCE < MAX_INFLUENCE) {
   STAR.momentumY += TOWARDS_USER_Y * MOMENTUM_FACTOR;
   
   // Passive center pull
-PULL_X += TOWARDS_USER_X * 5;
-PULL_Y += TOWARDS_USER_Y * 5;
+  PULL_X += TOWARDS_USER_X * 5;
+  PULL_Y += TOWARDS_USER_Y * 5;
 }
 
     // Circular clamp (keeps direction, avoids diamond / axis bias)
@@ -482,7 +482,7 @@ function updateSpeed(X, Y, TIME) {
   const DY = Y - USER_Y;
   const USER_SPEED = Math.hypot(DX, DY) / DT;            
   
-  NORM_USER_SPEED = Math.min(USER_SPEED / 1, 1);   
+  NORM_USER_SPEED = Math.min(USER_SPEED / 0.9, 1);   
   USER_X = X;
   USER_Y = Y;
   USER_TIME = TIME;
