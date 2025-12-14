@@ -265,8 +265,8 @@ function moveStars() {
     STAR.x += STAR.vx + STAR.momentumX - (REPEL_TIMER * GRADIANT_TO_USER_X);
     STAR.y += STAR.vy + STAR.momentumY - (REPEL_TIMER * GRADIANT_TO_USER_Y);
 
-    STAR.momentumX *= 0.99;
-    STAR.momentumY *= 0.99;
+    STAR.momentumX *= 0.9;
+    STAR.momentumY *= 0.9;
 
 
 
