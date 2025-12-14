@@ -246,11 +246,15 @@ function moveStars() {
     const GRADIENT_TO_USER_X = X_DISTANCE * (INV_GRADIENT_DISTANCE ** 2); 
     const GRADIENT_TO_USER_Y = Y_DISTANCE * (INV_GRADIENT_DISTANCE ** 2); 
     
+    /*--------------------------------------*
+     *  FORM RING AROUND USER
+     *--------------------------------------*/
     // Increase all stars speed with user movememnt
     const RING_RADIUS = 100;
-    const RING_STRENGTH = 200;
-    STAR.momentumX += 10 * USER_SPEED * STAR.vx * (1 + RING_STRENGTH / (DISTANCE + RING_RADIUS));
-    STAR.momentumY += 10 * USER_SPEED * STAR.vy * (1 + RING_STRENGTH / (DISTANCE + RING_RADIUS));
+    const RING_SPEED = 200;
+    const GLOBAL_SPEED = 5;
+    STAR.momentumX += GLOBAL_SPEED * USER_SPEED * STAR.vx * (1 + RING_SPEED / (DISTANCE + RING_RADIUS));
+    STAR.momentumY += GLOBAL_SPEED * USER_SPEED * STAR.vy * (1 + RING_SPEED / (DISTANCE + RING_RADIUS));
     // Gravity well around user
     STAR.momentumX += 200 * USER_SPEED * GRADIENT_TO_USER_X;
     STAR.momentumY += 200 * USER_SPEED * GRADIENT_TO_USER_Y;
