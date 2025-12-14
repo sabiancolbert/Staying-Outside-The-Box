@@ -245,13 +245,17 @@ function moveStars() {
     // Gradient towards user
     const GRADIENT_TO_USER_X = X_DISTANCE * (INV_GRADIENT_DISTANCE ** 2); 
     const GRADIENT_TO_USER_Y = Y_DISTANCE * (INV_GRADIENT_DISTANCE ** 2); 
+    
     // Increase all stars speed with user movememnt
-    STAR.momentumX += 10 * USER_SPEED * STAR.vx;
-    STAR.momentumY += 10 * USER_SPEED * STAR.vy;
-
+                                                //STRENGTH         RADIUS
+    STAR.momentumX += 10 * USER_SPEED * STAR.vx * (10 / (DISTANCE + 10));
+    STAR.momentumY += 10 * USER_SPEED * STAR.vy * (10 / (DISTANCE + 10));
     // Gravity well around user
     STAR.momentumX += 200 * USER_SPEED * GRADIENT_TO_USER_X;
     STAR.momentumY += 200 * USER_SPEED * GRADIENT_TO_USER_Y;
+    // Repel immediate area around user
+    //STAR.momentumX -= (dx / DISTANCE) * REPULSE;
+    //STAR.momentumY -= (dy / DISTANCE) * REPULSE;
 
     // Clamp momentum, and make it form a circle
     const STAR_HYPOT = Math.hypot(STAR.momentumX, STAR.momentumY);
