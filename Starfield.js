@@ -250,9 +250,9 @@ function moveStars() {
      *  FORM RING AROUND USER
      *--------------------------------------*/
     // Increase all star speed (clamped) with user interaction
-    //   no less than 0.01
-    STAR.momentumX += 0.05 * USER_SPEED * STAR.vx;
-    STAR.momentumY += 0.05 * USER_SPEED * STAR.vy;
+    //   no less than 0.01, no more rhan .05
+    STAR.momentumX += 0.03 * USER_SPEED * STAR.vx;
+    STAR.momentumY += 0.03 * USER_SPEED * STAR.vy;
     STAR.momentumX = Math.max(-5, Math.min(STAR.momentumX, 5));
     STAR.momentumY = Math.max(-5, Math.min(STAR.momentumY, 5));
     
