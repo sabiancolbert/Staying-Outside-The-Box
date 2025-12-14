@@ -313,7 +313,7 @@ function moveStars() {
   /*--------------------------------------*
    *  GLOBAL DECAY
    *--------------------------------------*/
-  USER_SPEED *= 0.97;
+  USER_SPEED *= 0.85;
   if (USER_SPEED < 0.01) USER_SPEED = 0;
 
   REPEL_TIMER *= 0.85;
