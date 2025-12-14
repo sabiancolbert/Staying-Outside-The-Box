@@ -267,10 +267,13 @@ function moveStars() {
 const LIMIT = 10;
 const HYPOT = Math.hypot(STAR.momentumX, STAR.momentumY);
 if (HYPOT > LIMIT) { STAR.momentumX *= LIMIT / HYPOT; STAR.momentumY *= LIMIT / HYPOT; }
+
+// All stars repel from pokes
+const GLOBAL_REPULSION = Math.min(10, REPEL_TIMER * GRADIENT_TO_USER_X);
     
     // Apply calculated forces
-    STAR.x += STAR.vx + STAR.momentumX - (REPEL_TIMER * GRADIENT_TO_USER_X);
-    STAR.y += STAR.vy + STAR.momentumY - (REPEL_TIMER * GRADIENT_TO_USER_Y);
+    STAR.x += STAR.vx + STAR.momentumX - GLOBAL_REPULSION;
+    STAR.y += STAR.vy + STAR.momentumY - GLOBAL_REPULSION;
     
     // Decay momentum
     STAR.momentumX *= 0.97;
