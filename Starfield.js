@@ -289,7 +289,7 @@ function moveStars() {
     }
     
         // Apply final movement, while easing back to passive movement and adding passive drift
-    const SPEED_INCREASE = GLOBAL_INFLUENCE * DISTANCE_GRADIANT * USER_SPEED + 1;
+    const SPEED_INCREASE = GLOBAL_INFLUENCE * INVERTED_DISTANCE * USER_SPEED + 1;
     STAR.x += STAR.vx * SPEED_INCREASE + PULL_X;
     STAR.y += STAR.vy * SPEED_INCREASE + PULL_Y;
 
