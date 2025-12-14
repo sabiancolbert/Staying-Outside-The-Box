@@ -252,7 +252,7 @@ function moveStars() {
 
     // Clamp momentum, and make it form a circle
     const STAR_HYPOT = Math.hypot(STAR.momentumX, STAR.momentumY);
-    if (STAR_HYPOT < 0.01) {
+    if (STAR_HYPOT < 0.5) {
       STAR.momentumX = 0;
       STAR.momentumY = 0;
     } else if (STAR_HYPOT > 5) {
@@ -265,8 +265,8 @@ function moveStars() {
     STAR.y += STAR.vy + STAR.momentumY - (REPEL_TIMER * GRADIANT_TO_USER_Y);
     
     // Decay momentum
-    STAR.momentumX *= 0.99;
-    STAR.momentumY *= 0.99;
+    STAR.momentumX *= 0.97;
+    STAR.momentumY *= 0.97;
 
 
 
