@@ -342,7 +342,7 @@ function moveStars() {
   USER_SPEED *= 0.99;
   if (USER_SPEED < 0.001) USER_SPEED = 0;
 
-  REPEL_TIMER *= 0.99;
+  REPEL_TIMER *= 0.85;
   if (REPEL_TIMER < 0.001) REPEL_TIMER = 0;
 
   document.getElementById('repulsion').textContent =
@@ -485,7 +485,7 @@ function updateSpeed(X, Y, TIME) {
   const DY = Y - USER_Y;
   const RAW_USER_SPEED = Math.hypot(DX, DY) / DT;            
   
-  USER_SPEED = 10 * Math.min(RAW_USER_SPEED / 0.9, 1);   
+  USER_SPEED = Math.min(RAW_USER_SPEED * 10, 10);
   USER_X = X;
   USER_Y = Y;
   USER_TIME = TIME;
