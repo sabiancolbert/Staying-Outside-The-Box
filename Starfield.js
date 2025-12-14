@@ -246,8 +246,8 @@ function moveStars() {
     const GRADIANT_TO_USER_X = X_DISTANCE * (INV_GRADIENT_DISTANCE ** 2); 
     const GRADIANT_TO_USER_Y = Y_DISTANCE * (INV_GRADIENT_DISTANCE ** 2); 
 
-
-
+    //STAR.momentumX += USER_SPEED * GRADIANT_TO_USER_X;
+    //STAR.momentumY += USER_SPEED * GRADIANT_TO_USER_Y;
 
     // Circular clamp (keeps direction, avoids diamond / axis bias)
     const STAR_HYPOT = Math.hypot(STAR.momentumX, STAR.momentumY);
@@ -259,8 +259,8 @@ function moveStars() {
       STAR.momentumY *= 5 / STAR_HYPOT;
     }
     
-    STAR.x += (STAR.vx + STAR.momentumX) - (REPEL_TIMER * GRADIANT_TO_USER_X);
-    STAR.y += (STAR.vy + STAR.momentumY) - (REPEL_TIMER * GRADIANT_TO_USER_Y);
+    STAR.x += (STAR.vx * (USER_SPEED + 1)) + STAR.momentumX - (REPEL_TIMER * GRADIANT_TO_USER_X);
+    STAR.y += (STAR.vy * (USER_SPEED + 1)) + STAR.momentumY - (REPEL_TIMER * GRADIANT_TO_USER_Y);
 
     STAR.momentumX *= 0.99;
     STAR.momentumY *= 0.99;
