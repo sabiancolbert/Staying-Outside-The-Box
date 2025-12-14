@@ -268,8 +268,8 @@ function moveStars() {
     STAR.y += STAR.vy + STAR.momentumY - (REPEL_TIMER * GRADIANT_TO_USER_Y);
     
     // Decay momentum
-    STAR.momentumX = Math.sign(STAR.momentumX) * Math.max(0, Math.abs(STAR.momentumX) - 10);
-    STAR.momentumY = Math.sign(STAR.momentumY) * Math.max(0, Math.abs(STAR.momentumY) - 10);
+    STAR.momentumX = Math.sign(STAR.momentumX) * Math.max(0, Math.abs(STAR.momentumX) - 0.01);
+    STAR.momentumY = Math.sign(STAR.momentumY) * Math.max(0, Math.abs(STAR.momentumY) - 0.01);
 
 
 
