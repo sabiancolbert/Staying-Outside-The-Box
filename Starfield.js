@@ -243,8 +243,8 @@ function moveStars() {
     // 0 = far, 1 = close
     const INV_GRADIENT_DISTANCE = 1 / DISTANCE;
     // Gradient towards user
-    const GRADIENT_TO_USER_X = X_DISTANCE * (INV_GRADIENT_DISTANCE ** 3); 
-    const GRADIENT_TO_USER_Y = Y_DISTANCE * (INV_GRADIENT_DISTANCE ** 3); 
+    const GRADIENT_TO_USER_X = X_DISTANCE * (INV_GRADIENT_DISTANCE ** 4);
+    const GRADIENT_TO_USER_Y = Y_DISTANCE * (INV_GRADIENT_DISTANCE ** 4);
     
     /*--------------------------------------*
      *  FORM RING AROUND USER
@@ -256,12 +256,12 @@ function moveStars() {
     STAR.momentumY = Math.max(-5, Math.min(STAR.momentumY, 5));
     
     // Gravity well around user
-    STAR.momentumX += 300 * USER_SPEED * GRADIENT_TO_USER_X;
-    STAR.momentumY += 300 * USER_SPEED * GRADIENT_TO_USER_Y;
+    STAR.momentumX += 100000 * USER_SPEED * GRADIENT_TO_USER_X;
+    STAR.momentumY += 100000 * USER_SPEED * GRADIENT_TO_USER_Y;
     // Repel immediate ring around user
 //need to use the same fall off variable as attraction
-    STAR.momentumX -= 12000 * USER_SPEED * GRADIENT_TO_USER_X * INV_GRADIENT_DISTANCE;
-    STAR.momentumY -= 12000 * USER_SPEED * GRADIENT_TO_USER_Y * INV_GRADIENT_DISTANCE;
+    STAR.momentumX -= 150000000 * USER_SPEED * GRADIENT_TO_USER_X * INV_GRADIENT_DISTANCE;
+    STAR.momentumY -= 150000000 * USER_SPEED * GRADIENT_TO_USER_Y * INV_GRADIENT_DISTANCE;
     
     // Clamp ring momentum high, and make it form a circle
     const LIMIT = 10;
