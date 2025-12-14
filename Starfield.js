@@ -36,7 +36,7 @@ let FREEZE_CONSTELLATION = false;
 let USER_X = 0;
 let USER_Y = 0;
 let USER_TIME = 0;
-let NORM_USER_SPEED = 0;
+let USER_SPEED = 0;
 let REPEL_TIMER = 0;
 
 // Canvas size and star scaling
@@ -69,7 +69,7 @@ function saveStarsToStorage() {
         height:          HEIGHT,
         scaleFactor:     SCREEN_SIZE,
         normRepulsion:   REPEL_TIMER,
-        normUserSpeed:   NORM_USER_SPEED,
+        normUserSpeed:   USER_SPEED,
         userX:           USER_X,
         userY:           USER_Y,
         userTime:        USER_TIME
@@ -151,7 +151,7 @@ function initStars() {
 
           // Restore motion state and pointer info
           REPEL_TIMER   = META.normRepulsion    ?? 0;
-          NORM_USER_SPEED = META.normUserSpeed ?? 0;
+          USER_SPEED = META.normUserSpeed ?? 0;
 
           if (typeof META.userX === 'number') USER_X = META.userX;
           if (typeof META.userY === 'number') USER_Y = META.userY;
@@ -289,7 +289,7 @@ function moveStars() {
     }
     
         // Apply final movement, while easing back to passive movement and adding passive drift
-    const SPEED_INCREASE = GLOBAL_INFLUENCE * DISTANCE_GRADIANT * NORM_USER_SPEED + 1;
+    const SPEED_INCREASE = GLOBAL_INFLUENCE * DISTANCE_GRADIANT * USER_SPEED + 1;
     STAR.x += STAR.vx * SPEED_INCREASE + PULL_X;
     STAR.y += STAR.vy * SPEED_INCREASE + PULL_Y;
 
@@ -340,8 +340,8 @@ function moveStars() {
   /*--------------------------------------*
    *  GLOBAL DECAY
    *--------------------------------------*/
-  NORM_USER_SPEED *= 0.94;
-  if (NORM_USER_SPEED < 0.001) NORM_USER_SPEED = 0;
+  USER_SPEED *= 0.94;
+  if (USER_SPEED < 0.001) USER_SPEED = 0;
 
   REPEL_TIMER *= 0.85;
   if (REPEL_TIMER < 0.001) REPEL_TIMER = 0;
@@ -349,7 +349,7 @@ function moveStars() {
   document.getElementById('repulsion').textContent =
     REPEL_TIMER.toFixed(3);
   document.getElementById('speed').textContent =
-    NORM_USER_SPEED.toFixed(3);
+    USER_SPEED.toFixed(3);
 }
 
 
@@ -477,16 +477,16 @@ function animate() {
  *  POINTER INPUT (MOUSE / TOUCH)
  *========================================*/
 
-// Update pointer speed and derived NORM_USER_SPEED
+// Update pointer speed and derived USER_SPEED
 function updateSpeed(X, Y, TIME) {
   if (!Number.isFinite(TIME)) TIME = performance.now ? performance.now() : Date.now();
 
   const DT = Math.max(1, TIME - USER_TIME);           
   const DX = X - USER_X;
   const DY = Y - USER_Y;
-  const USER_SPEED = Math.hypot(DX, DY) / DT;            
+  const RAW_USER_SPEED = Math.hypot(DX, DY) / DT;            
   
-  NORM_USER_SPEED = Math.min(USER_SPEED / 0.9, 10);   
+  USER_SPEED = 10 * Math.min(RAW_USER_SPEED / 0.9, 1);   
   USER_X = X;
   USER_Y = Y;
   USER_TIME = TIME;
