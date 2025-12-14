@@ -310,7 +310,7 @@ function moveStars() {
   /*--------------------------------------*
    *  GLOBAL DECAY
    *--------------------------------------*/
-  USER_SPEED *= 0.85;
+  USER_SPEED *= 0.97;
   if (USER_SPEED < 0.001) USER_SPEED = 0;
 
   REPEL_TIMER *= 0.85;
@@ -456,7 +456,7 @@ function updateSpeed(X, Y, TIME) {
   const DY = Y - USER_Y;
   const RAW_USER_SPEED = Math.hypot(DX, DY) / DT;            
   
-  USER_SPEED = Math.min(RAW_USER_SPEED * 75, 75);
+  USER_SPEED = Math.min(RAW_USER_SPEED * 50, 50);
   USER_X = X;
   USER_Y = Y;
   USER_TIME = TIME;
