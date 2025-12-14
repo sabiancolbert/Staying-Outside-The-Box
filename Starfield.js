@@ -240,7 +240,7 @@ function moveStars() {
     const Y_DISTANCE = USER_Y - STAR.y;
     // Distance from user
     const DISTANCE = Math.hypot(X_DISTANCE, Y_DISTANCE) || 1;
-    // 1 = far, bigger = close
+    // 0 = far, 1 = close
     const INV_GRADIENT_DISTANCE = 1 / DISTANCE;
     // Gradient towards user
     const GRADIENT_TO_USER_X = X_DISTANCE * (INV_GRADIENT_DISTANCE ** 2); 
@@ -250,8 +250,8 @@ function moveStars() {
      *  FORM RING AROUND USER
      *--------------------------------------*/
     // Increase all star speed (clamped) with user interaction
-    STAR.momentumX += GLOBAL_SPEED * USER_SPEED * STAR.vx;
-    STAR.momentumY += GLOBAL_SPEED * USER_SPEED * STAR.vy;
+    STAR.momentumX += 10 * USER_SPEED * STAR.vx;
+    STAR.momentumY += 10 * USER_SPEED * STAR.vy;
     STAR.momentumX = Math.max(-5, Math.min(STAR.momentumX, 5));
     STAR.momentumY = Math.max(-5, Math.min(STAR.momentumY, 5));
     
