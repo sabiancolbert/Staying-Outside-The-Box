@@ -268,9 +268,9 @@ function moveStars() {
     if (STAR_HYPOT < 0.001) {
       STAR.momentumX = 0;
       STAR.momentumY = 0;
-    } else if (STAR_HYPOT > 3) {
-      STAR.momentumX *= 3 / STAR_HYPOT;
-      STAR.momentumY *= 3 / STAR_HYPOT;
+    } else if (STAR_HYPOT > 10) {
+      STAR.momentumX *= 10 / STAR_HYPOT;
+      STAR.momentumY *= 10 / STAR_HYPOT;
     }
     
     // Apply calculated forces
