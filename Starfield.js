@@ -256,8 +256,7 @@ function moveStars() {
     STAR.momentumY = Math.max(-5, Math.min(STAR.momentumY, 5));
     
     // User gravity ring & repel ball
-    //9000 too small
-    const ATTRACT = 10000;
+    const ATTRACT = 90000;
     const REPEL = 50 * ATTRACT;
     STAR.momentumX += ATTRACT * USER_SPEED * GRADIENT_TO_USER_X;
     STAR.momentumY += ATTRACT * USER_SPEED * GRADIENT_TO_USER_Y;
