@@ -256,7 +256,8 @@ function moveStars() {
     STAR.momentumY = Math.max(-5, Math.min(STAR.momentumY, 5));
     
     // Gravity well & repel center around user
-    const ATTRACT = 9000;
+    //9000 too small
+    const ATTRACT = 10000;
     const REPEL = 50 * ATTRACT;
     STAR.momentumX += ATTRACT * USER_SPEED * GRADIENT_TO_USER_X;
     STAR.momentumY += ATTRACT * USER_SPEED * GRADIENT_TO_USER_Y;
