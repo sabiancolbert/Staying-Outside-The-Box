@@ -243,17 +243,17 @@ function moveStars() {
     // Gradient towards user
     const GRADIANT_TO_USER_X = X_DISTANCE * (INV_GRADIENT_DISTANCE ** 2); 
     const GRADIANT_TO_USER_Y = Y_DISTANCE * (INV_GRADIENT_DISTANCE ** 2); 
-
+    // Increase all stars speed with user movememnt
     STAR.momentumX += USER_SPEED * STAR.vx;
     STAR.momentumY += USER_SPEED * STAR.vy;
 
     //STAR.momentumX += USER_SPEED * GRADIANT_TO_USER_X;
     //STAR.momentumY += USER_SPEED * GRADIANT_TO_USER_Y;
 
-    // Clamp high end
+    // Clamp high end of momentum
     STAR.momentumX = Math.max(-100, Math.min(STAR.momentumX, 100));
     STAR.momentumY = Math.max(-100, Math.min(STAR.momentumY, 100));
-    // Clamp low end, then make it form a circle
+    // Clamp low end of momentum, then make it form a circle
     const STAR_HYPOT = Math.hypot(STAR.momentumX, STAR.momentumY);
     if (STAR_HYPOT < 0.01) {
       STAR.momentumX = 0;
@@ -263,11 +263,13 @@ function moveStars() {
       STAR.momentumY *= 5 / STAR_HYPOT;
     }
     
+    // Apply calculated forces
     STAR.x += STAR.vx + STAR.momentumX - (REPEL_TIMER * GRADIANT_TO_USER_X);
     STAR.y += STAR.vy + STAR.momentumY - (REPEL_TIMER * GRADIANT_TO_USER_Y);
-
-    STAR.momentumX -= 10;
-    STAR.momentumY -= 10;
+    
+    // Decay momentum
+    STAR.momentumX = Math.sign(STAR.momentumX) * Math.max(0, Math.abs(STAR.momentumX) - 10);
+    STAR.momentumY = Math.sign(STAR.momentumY) * Math.max(0, Math.abs(STAR.momentumY) - 10);
 
 
 
