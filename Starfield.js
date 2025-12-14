@@ -250,8 +250,8 @@ function moveStars() {
      *  FORM RING AROUND USER
      *--------------------------------------*/
     // Increase all star speed (clamped) with user interaction
-    STAR.momentumX += 0.03 * USER_SPEED * STAR.vx;
-    STAR.momentumY += 0.03 * USER_SPEED * STAR.vy;
+    STAR.momentumX += 0.3 * USER_SPEED * STAR.vx;
+    STAR.momentumY += 0.3 * USER_SPEED * STAR.vy;
     STAR.momentumX = Math.max(-5, Math.min(STAR.momentumX, 5));
     STAR.momentumY = Math.max(-5, Math.min(STAR.momentumY, 5));
     
@@ -482,7 +482,7 @@ function updateSpeed(X, Y, TIME) {
 
 // Shared start handler for mouse/touch pointer interactions
 function startPointerInteraction(X, Y, TIME) {
-  REPEL_TIMER = 1000; // Repel on click/touch
+  REPEL_TIMER = 10000; // Repel on click/touch
   updateSpeed(X, Y, TIME);
 }
 
