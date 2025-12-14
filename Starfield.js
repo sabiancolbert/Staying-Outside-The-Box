@@ -234,8 +234,8 @@ function createStars() {
 function moveStars() {
   if (!HAS_CANVAS || !STARS.length) return;
   /* ADJUSTMENTS */
-  const GLOBAL_INFLUENCE = 30;
-  const REPEL_POWER = 40;
+  const GLOBAL_INFLUENCE = 300;
+  const REPEL_POWER = 400;
   
   for (const STAR of STARS) {
     // Accumulator for everything that moves this star this frame
@@ -245,10 +245,11 @@ function moveStars() {
     const X_DISTANCE = USER_X - STAR.x;
     const Y_DISTANCE = USER_Y - STAR.y;
     const USER_DISTANCE = Math.hypot(X_DISTANCE, Y_DISTANCE) || 1;
-    const NORM_INV_DIST = 1 / USER_DISTANCE;
-    // Normalized gradient towards user
-    const NORM_GRAD_TO_USER_X = X_DISTANCE * NORM_INV_DIST * NORM_INV_DIST; 
-    const NORM_GRAD_TO_USER_Y = Y_DISTANCE * NORM_INV_DIST * NORM_INV_DIST; 
+    const INVERTED_DISTANCE = 1 / USER_DISTANCE;
+    const DISTANCE_GRADIANT = INVERTED_DISTANCE * INVERTED_DISTANCE;
+    // Gradient towards user
+    const GRADIANT_TO_USER_X = X_DISTANCE * DISTANCE_GRADIANT; 
+    const GRADIANT_TO_USER_Y = Y_DISTANCE * DISTANCE_GRADIANT; 
 
     /*--------------------------------------*
      *  FINGER RING INTERACTION
@@ -259,8 +260,8 @@ function moveStars() {
 
 
     // Repulsion burst from clicks/taps: push straight away from finger
-    PULL_X -= REPEL_POWER * REPEL_TIMER * NORM_GRAD_TO_USER_X;
-    PULL_Y -= REPEL_POWER * REPEL_TIMER * NORM_GRAD_TO_USER_Y;
+    PULL_X -= REPEL_POWER * REPEL_TIMER * GRADIANT_TO_USER_X;
+    PULL_Y -= REPEL_POWER * REPEL_TIMER * GRADIANT_TO_USER_Y;
 
     /*--------------------------------------*
      *  MALE A CIRCLE, CLAMP, APPLY, DECAY
@@ -288,7 +289,7 @@ function moveStars() {
     }
     
         // Apply final movement, while easing back to passive movement and adding passive drift
-    const SPEED_INCREASE = Math.pow(NORM_INV_DIST, 0.25) * NORM_USER_SPEED * GLOBAL_INFLUENCE + 1;
+    const SPEED_INCREASE = GLOBAL_INFLUENCE * DISTANCE_GRADIANT * NORM_USER_SPEED + 1;
     STAR.x += STAR.vx * SPEED_INCREASE + PULL_X;
     STAR.y += STAR.vy * SPEED_INCREASE + PULL_Y;
 
