@@ -246,8 +246,8 @@ function moveStars() {
     const GRADIANT_TO_USER_X = X_DISTANCE * (INV_GRADIENT_DISTANCE ** 2); 
     const GRADIANT_TO_USER_Y = Y_DISTANCE * (INV_GRADIENT_DISTANCE ** 2); 
 
-    STAR.momentumX += USER_SPEED;
-    STAR.momentumY += USER_SPEED;
+    STAR.momentumX += USER_SPEED * STAR.vx;
+    STAR.momentumY += USER_SPEED * STAR.vy;
 
     //STAR.momentumX += USER_SPEED * GRADIANT_TO_USER_X;
     //STAR.momentumY += USER_SPEED * GRADIANT_TO_USER_Y;
