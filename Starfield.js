@@ -269,13 +269,14 @@ function moveStars() {
     const HYPOT = Math.hypot(STAR.momentumX, STAR.momentumY);
     if (HYPOT > LIMIT) { STAR.momentumX *= LIMIT / HYPOT; STAR.momentumY *= LIMIT / HYPOT; }
     
-    // All stars repel from pokes (clamped)
-    const GLOBAL_REPULSION = Math.min(3, REPEL_TIMER * GRADIENT_TO_USER_X / INV_GRADIENT_DISTANCE);
-    
-    // Apply calculated forces
-    STAR.x += STAR.vx + STAR.momentumX - GLOBAL_REPULSION;
-    STAR.y += STAR.vy + STAR.momentumY - GLOBAL_REPULSION;
-    
+    // Add repulsion on pokes
+    const GLOBAL_REPULSION_X = Math.min(3, REPEL_TIMER * GRADIENT_TO_USER_X / INV_GRADIENT_DISTANCE);
+    const GLOBAL_REPULSION_Y = Math.min(3, REPEL_TIMER * GRADIENT_TO_USER_Y / INV_GRADIENT_DISTANCE);
+
+    // Add all vectors up and apply them
+    STAR.x += STAR.vx + STAR.momentumX - GLOBAL_REPULSION_X;
+    STAR.y += STAR.vy + STAR.momentumY - GLOBAL_REPULSION_Y;
+
     // Decay momentum
     STAR.momentumX *= 0.97;
     STAR.momentumY *= 0.97;
@@ -298,10 +299,8 @@ function moveStars() {
     /*--------------------------------------*
      *  SCREEN WRAP
      *--------------------------------------*/
-    if (STAR.x < 0) STAR.x = WIDTH;
-    if (STAR.x > WIDTH) STAR.x = 0;
-    if (STAR.y < 0) STAR.y = HEIGHT;
-    if (STAR.y > HEIGHT) STAR.y = 0;
+    STAR.x = (STAR.x % WIDTH + WIDTH) % WIDTH;
+    STAR.y = (STAR.y % HEIGHT + HEIGHT) % HEIGHT;
     /*--------------------------------------*
      *  TWINKLE & LIFE CYCLE
      *--------------------------------------*/
