@@ -248,8 +248,8 @@ function moveStars() {
     
     // Increase all stars speed with user movememnt
                                                 //STRENGTH         RADIUS
-    STAR.momentumX += 10 * USER_SPEED * STAR.vx * (10 / (DISTANCE + 10));
-    STAR.momentumY += 10 * USER_SPEED * STAR.vy * (10 / (DISTANCE + 10));
+    STAR.momentumX += 10 * USER_SPEED * STAR.vx * (160 / (DISTANCE + 80));
+    STAR.momentumY += 10 * USER_SPEED * STAR.vy * (160 / (DISTANCE + 80));
     // Gravity well around user
     STAR.momentumX += 200 * USER_SPEED * GRADIENT_TO_USER_X;
     STAR.momentumY += 200 * USER_SPEED * GRADIENT_TO_USER_Y;
