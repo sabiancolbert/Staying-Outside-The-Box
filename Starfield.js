@@ -295,7 +295,13 @@ function moveStars() {
 
 
 
-
+    /*--------------------------------------*
+     *  SCREEN WRAP
+     *--------------------------------------*/
+    if (STAR.x < 0) STAR.x = WIDTH;
+    if (STAR.x > WIDTH) STAR.x = 0;
+    if (STAR.y < 0) STAR.y = HEIGHT;
+    if (STAR.y > HEIGHT) STAR.y = 0;
     /*--------------------------------------*
      *  TWINKLE & LIFE CYCLE
      *--------------------------------------*/
@@ -315,14 +321,6 @@ function moveStars() {
     } else {
       STAR.opacity -= 0.0001;
     }
-
-    /*--------------------------------------*
-     *  SCREEN WRAP
-     *--------------------------------------*/
-    if (STAR.x < 0) STAR.x = WIDTH;
-    if (STAR.x > WIDTH) STAR.x = 0;
-    if (STAR.y < 0) STAR.y = HEIGHT;
-    if (STAR.y > HEIGHT) STAR.y = 0;
   }
 
   /*--------------------------------------*
