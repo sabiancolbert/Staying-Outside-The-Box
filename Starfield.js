@@ -326,6 +326,8 @@ function moveStars() {
     REPEL_TIMER.toFixed(3);
   document.getElementById('speed').textContent =
     USER_SPEED.toFixed(3);
+      document.getElementById('momentum').textContent =
+    STARS[1].momentumX.toFixed(3);
 }
 
 
