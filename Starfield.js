@@ -328,6 +328,8 @@ function moveStars() {
     USER_SPEED.toFixed(3);
       document.getElementById('momentum').textContent =
     STARS[1].momentumX.toFixed(3);
+    document.getElementById('attpt').textContent =
+    (STARS[1].vx * USER_SPEED).toFixed(3);
 }
 
 
