@@ -260,16 +260,16 @@ function moveStars() {
     STAR.momentumY += 70 * USER_SPEED * GRADIENT_TO_USER_Y;
     // Repel immediate ring around user
 //need to use the same fall off variable as attraction
-    //STAR.momentumX -= (dx / DISTANCE) * REPULSE;
-    //STAR.momentumY -= (dy / DISTANCE) * REPULSE;
+    STAR.momentumX -= 70 * USER_SPEED * GRADIENT_TO_USER_X;
+    STAR.momentumY -= 70 * USER_SPEED * GRADIENT_TO_USER_Y;
     
     // Clamp ring momentum high, and make it form a circle
-const LIMIT = 10;
-const HYPOT = Math.hypot(STAR.momentumX, STAR.momentumY);
-if (HYPOT > LIMIT) { STAR.momentumX *= LIMIT / HYPOT; STAR.momentumY *= LIMIT / HYPOT; }
-
-// All stars repel from pokes
-const GLOBAL_REPULSION = Math.min(4, REPEL_TIMER * GRADIENT_TO_USER_X);
+    const LIMIT = 10;
+    const HYPOT = Math.hypot(STAR.momentumX, STAR.momentumY);
+    if (HYPOT > LIMIT) { STAR.momentumX *= LIMIT / HYPOT; STAR.momentumY *= LIMIT / HYPOT; }
+    
+    // All stars repel from pokes (clamped)
+    const GLOBAL_REPULSION = Math.min(6, REPEL_TIMER * GRADIENT_TO_USER_X);
     
     // Apply calculated forces
     STAR.x += STAR.vx + STAR.momentumX - GLOBAL_REPULSION;
