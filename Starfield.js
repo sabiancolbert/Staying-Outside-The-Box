@@ -245,17 +245,19 @@ function moveStars() {
     STAR.momentumX = Math.max(-5, Math.min(STAR.momentumX, 5));
     STAR.momentumY = Math.max(-5, Math.min(STAR.momentumY, 5));
     
+    // Scale gravity ring to screen size
+    const INV_SCREEN_SIZE = Math.pow(1234 / SCREEN_SIZE, 0.5);
     // User gravity ring (attract from outside)
-    STAR.momentumX += 4.0e4 * USER_SPEED * X_DISTANCE * (FADE_WITH_DISTANCE ** 3);
-    STAR.momentumY += 4.0e4 * USER_SPEED * Y_DISTANCE * (FADE_WITH_DISTANCE ** 3);
-    //4 and 6
+    STAR.momentumX += 4.0e4 * USER_SPEED * X_DISTANCE * (FADE_WITH_DISTANCE ** (INV_SCREEN_SIZE * 4));
+    STAR.momentumY += 4.0e4 * USER_SPEED * Y_DISTANCE * (FADE_WITH_DISTANCE ** (INV_SCREEN_SIZE * 4));
+    //laptop 3.2 & 5
     // User gravity ring (repel from inside)
-    STAR.momentumX -= 1.25e8 * USER_SPEED * X_DISTANCE * (FADE_WITH_DISTANCE ** 4.5);
-    STAR.momentumY -= 1.25e8 * USER_SPEED * Y_DISTANCE * (FADE_WITH_DISTANCE ** 4.5);
+    STAR.momentumX -= 1.25e8 * USER_SPEED * X_DISTANCE * (FADE_WITH_DISTANCE ** (INV_SCREEN_SIZE * 6));
+    STAR.momentumY -= 1.25e8 * USER_SPEED * Y_DISTANCE * (FADE_WITH_DISTANCE ** (INV_SCREEN_SIZE * 6));
     //0.00486 * SCREEN_SIZE
     // Global repulsion on pokes
-    const GLOBAL_REPULSION_X = -X_DISTANCE * REPEL_TIMER * (FADE_WITH_DISTANCE ** 3);
-    const GLOBAL_REPULSION_Y = -Y_DISTANCE * REPEL_TIMER * (FADE_WITH_DISTANCE ** 3);
+    const GLOBAL_REPULSION_X = -X_DISTANCE * REPEL_TIMER * (FADE_WITH_DISTANCE ** (INV_SCREEN_SIZE * 3));
+    const GLOBAL_REPULSION_Y = -Y_DISTANCE * REPEL_TIMER * (FADE_WITH_DISTANCE ** (INV_SCREEN_SIZE * 3));
 
     // Make momentum form a circle (clamped high)
     const LIMIT = 10;
