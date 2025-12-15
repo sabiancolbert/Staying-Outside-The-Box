@@ -26,6 +26,8 @@ const BRUSH = CANVAS && CANVAS.getContext ? CANVAS.getContext('2d') : null;
 const HAS_CANVAS = !!(CANVAS && BRUSH);
 let ANIMATION_STARTED = false;
 let RESIZE_WIRED = false;
+let BEFOREUNLOAD_WIRED = false;
+let STARS_INITIALIZED = false;
 
 if (!HAS_CANVAS) {
   console.warn('Constellation canvas not found or unsupported; starfield disabled.');
@@ -83,7 +85,10 @@ function saveStarsToStorage() {
 }
 
 // Save constellation right before the page unloads or reloads
-window.addEventListener('beforeunload', saveStarsToStorage);
+if (!BEFOREUNLOAD_WIRED) {
+  BEFOREUNLOAD_WIRED = true;
+  window.addEventListener('beforeunload', saveStarsToStorage);
+}
 //#endregion STARFIELD STORAGE
 
 
@@ -536,7 +541,10 @@ function startStarfield() {
   }
 
   // Create/restore stars (safe to call again)
+  if (!STARS_INITIALIZED) {
+  STARS_INITIALIZED = true;
   initStars();
+}
 
   // Start RAF loop only once
   if (!ANIMATION_STARTED) {
