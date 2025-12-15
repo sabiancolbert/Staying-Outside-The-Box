@@ -249,6 +249,9 @@ function moveStars() {
     const Y_DISTANCE = USER_Y - STAR.y;
     // Almost 1 when close, rapidly approaches 0 with distance
     const FADE_WITH_DISTANCE = 1 / ((Math.hypot(X_DISTANCE, Y_DISTANCE) / (SCREEN_SIZE / 1234)) || 1);
+    // Interaction ring scales to screen size
+    const ATTRACT = 35 * SCREEN_SIZE;
+    const REPEL   = 1e5 * SCREEN_SIZE;
     
     // Increase all star speed (clamped low) with user interaction
     STAR.momentumX += 0.03 * USER_SPEED * STAR.vx;
@@ -256,9 +259,6 @@ function moveStars() {
     STAR.momentumX = Math.max(-5, Math.min(STAR.momentumX, 5));
     STAR.momentumY = Math.max(-5, Math.min(STAR.momentumY, 5));
     
-    // Scale forces to screen size
-    const ATTRACT = 35 * SCREEN_SIZE;
-    const REPEL   = 1e5 * SCREEN_SIZE;
     // User gravity ring (attract from outside)
     STAR.momentumX += ATTRACT * USER_SPEED * X_DISTANCE * (FADE_WITH_DISTANCE ** 4);
     STAR.momentumY += ATTRACT * USER_SPEED * Y_DISTANCE * (FADE_WITH_DISTANCE ** 4);
