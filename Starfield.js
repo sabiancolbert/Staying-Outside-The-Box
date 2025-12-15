@@ -313,6 +313,25 @@ function moveStars() {
       STAR.opacity -= 0.0001;
     }
   }
+  
+  // Colored ring around user
+RING_RADIUS = 200;
+RING_WIDTH  = 1.5 + USER_SPEED * 0.15;
+RING_ALPHA  = Math.min(USER_SPEED * 0.04, 0.6);
+
+if (USER_TIME > 0) {
+  BRUSH.save();
+
+  BRUSH.globalAlpha = RING_ALPHA;
+  BRUSH.lineWidth = RING_WIDTH;
+  BRUSH.strokeStyle = 'rgba(255,255,255,1)';
+
+  BRUSH.beginPath();
+  BRUSH.arc(USER_X, USER_Y, RING_RADIUS, 0, Math.PI * 2);
+  BRUSH.stroke();
+
+  BRUSH.restore();
+}
 
   // Global variable decay
   USER_SPEED *= 0.85;
