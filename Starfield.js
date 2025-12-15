@@ -514,18 +514,46 @@ window.addEventListener('touchmove', (E) => {
  *  STARFIELD INITIALIZATION
  *========================================*/
 
-try {
-  // Initialize canvas size
+function lockScrollToContainer(PAGE = getPage()) {
+  document.documentElement.style.overflowY = "hidden";
+  document.body.style.height = "100dvh";   // dvh is safer here
+  if (PAGE) PAGE.style.overflowY = "auto";
+
+  // Force canvas to resync after scrollbar disappears
+  if (typeof resizeCanvas === "function") resizeCanvas();
+}
+
+function sizesReady() {
+  return (
+    Number.isFinite(WIDTH) &&
+    Number.isFinite(HEIGHT) &&
+    WIDTH > 50 &&
+    HEIGHT > 50
+  );
+}
+
+function startStarfield() {
+  // Always size first
   resizeCanvas();
 
-  // Restore or create starfield
+  // Chromebook / first-load guard: wait until layout is real
+  if (!sizesReady()) {
+    requestAnimationFrame(startStarfield);
+    return;
+  }
+
+  // Now it is safe to create or restore stars
   initStars();
 
-  // Start animation loop
+  // Start animation loop once
   animate();
 
-  // Keep canvas scaled to window size
+  // Keep canvas matched to viewport
   window.addEventListener('resize', resizeCanvas);
+}
+
+try {
+  startStarfield();
 } catch (ERR) {
   console.error('Initialization error in starfield script:', ERR);
 }
