@@ -254,8 +254,8 @@ function moveStars() {
     const REPEL = 125 * ATTRACT;
     STAR.momentumX += ATTRACT * USER_SPEED * GRADIENT_TO_USER_X;
     STAR.momentumY += ATTRACT * USER_SPEED * GRADIENT_TO_USER_Y;
-    STAR.momentumX -= 0.75 * (REPEL * USER_SPEED * GRADIENT_TO_USER_X * (INV_GRADIENT_DISTANCE * 0.5));
-    STAR.momentumY -= 0.75 * (REPEL * USER_SPEED * GRADIENT_TO_USER_Y * (INV_GRADIENT_DISTANCE * 0.5));
+    STAR.momentumX -= 0.6 * (REPEL * USER_SPEED * GRADIENT_TO_USER_X * (INV_GRADIENT_DISTANCE * 0.3));
+    STAR.momentumY -= 0.6 * (REPEL * USER_SPEED * GRADIENT_TO_USER_Y * (INV_GRADIENT_DISTANCE * 0.3));
     
     // Clamp ring momentum high, and make it form a circle
     const LIMIT = 10;
