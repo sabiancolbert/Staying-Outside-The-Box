@@ -266,8 +266,14 @@ function moveStars() {
     STAR.momentumY *= 0.97;
 
     // Screen wrap
-    STAR.x = (STAR.x % WIDTH + WIDTH) % WIDTH;
-    STAR.y = (STAR.y % HEIGHT + HEIGHT) % HEIGHT;
+    if(USER_SPEED > 0) {
+      STAR.x = (STAR.x % WIDTH + WIDTH) % WIDTH;
+      STAR.y = (STAR.y % HEIGHT + HEIGHT) % HEIGHT;
+    }
+    // Screen bounce
+    else {
+      //GPT HELP PLEASE
+    }
     
     // If the star has white value, decay it
     if (STAR.whiteValue > 0) {
@@ -347,7 +353,6 @@ function drawStarsWithLines() {
     BRUSH.fill();
   }
 }
-
 
 /*---------- Canvas resize & animation loop ----------*/
 
