@@ -24,6 +24,8 @@
 const CANVAS = document.getElementById('constellations');
 const BRUSH = CANVAS && CANVAS.getContext ? CANVAS.getContext('2d') : null;
 const HAS_CANVAS = !!(CANVAS && BRUSH);
+let ANIMATION_STARTED = false;
+let RESIZE_WIRED = false;
 
 if (!HAS_CANVAS) {
   console.warn('Constellation canvas not found or unsupported; starfield disabled.');
@@ -527,20 +529,26 @@ function startStarfield() {
   // Always size first
   resizeCanvas();
 
-  // Chromebook / first-load guard: wait until layout is real
+  // Wait until layout is real
   if (!sizesReady()) {
     requestAnimationFrame(startStarfield);
     return;
   }
 
-  // Now it is safe to create or restore stars
+  // Create/restore stars (safe to call again)
   initStars();
 
-  // Start animation loop once
-  animate();
+  // Start RAF loop only once
+  if (!ANIMATION_STARTED) {
+    ANIMATION_STARTED = true;
+    animate();
+  }
 
-  // Keep canvas matched to viewport
-  window.addEventListener('resize', resizeCanvas);
+  // Wire resize listener only once
+  if (!RESIZE_WIRED) {
+    RESIZE_WIRED = true;
+    window.addEventListener('resize', resizeCanvas);
+  }
 }
 
 try {
