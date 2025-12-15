@@ -267,7 +267,9 @@ function moveStars() {
     const DIST = Math.hypot(X_DISTANCE, Y_DISTANCE) || 1;
 
     const FADE_ATTRACT = ATTRACT_RADIUS_PX / DIST;
-    const FADE_REPEL   = REPEL_RADIUS_PX   / DIST;
+const FADE_REPEL   = REPEL_RADIUS_PX   / DIST;
+
+const FADE_WITH_DISTANCE = FADE_ATTRACT;
       // Increase all star speed (clamped low) with user interaction
       STAR.momentumX += 0.03 * USER_SPEED * STAR.vx;
       STAR.momentumY += 0.03 * USER_SPEED * STAR.vy;
