@@ -24,10 +24,6 @@
 const CANVAS = document.getElementById('constellations');
 const BRUSH = CANVAS && CANVAS.getContext ? CANVAS.getContext('2d') : null;
 const HAS_CANVAS = !!(CANVAS && BRUSH);
-let ANIMATION_STARTED = false;
-let RESIZE_WIRED = false;
-let BEFOREUNLOAD_WIRED = false;
-let STARS_INITIALIZED = false;
 
 if (!HAS_CANVAS) {
   console.warn('Constellation canvas not found or unsupported; starfield disabled.');
@@ -41,15 +37,13 @@ let USER_X = 0;
 let USER_Y = 0;
 let USER_TIME = 0;
 let USER_SPEED = 0;
+let CIRCLE_TIMER =0;
 let REPEL_TIMER = 0;
-let CIRCLE_TIMER = 0;
 
 // Canvas size and star scaling
 let WIDTH = 0;
 let HEIGHT = 0;
 let SCREEN_SIZE = 0;
-const BASE_SCREEN = 1234;
-let SCREEN_SCALE = 1;
 let MAX_STAR_COUNT = 0;
 let MAX_LINK_DISTANCE = 0;
 
@@ -88,10 +82,7 @@ function saveStarsToStorage() {
 }
 
 // Save constellation right before the page unloads or reloads
-if (!BEFOREUNLOAD_WIRED) {
-  BEFOREUNLOAD_WIRED = true;
-  window.addEventListener('beforeunload', saveStarsToStorage);
-}
+window.addEventListener('beforeunload', saveStarsToStorage);
 //#endregion STARFIELD STORAGE
 
 
@@ -233,78 +224,31 @@ function createStars() {
 
 
 
-
-
-
-
-
-
-
-
 /*---------- Star animation step ----------*/
 // Move, fade, and wrap stars around user interaction
 function moveStars() {
   if (!HAS_CANVAS || !STARS.length) return;
-
-  // radii scale with screen, repel stays smaller than attract
-  const ATTRACT_RADIUS_PX = 0.28 * SCREEN_SIZE;
-  const REPEL_RADIUS_PX   = 0.12 * SCREEN_SIZE;
-
-  // baseline radii (your phone “feel”)
-  const BASE_ATTRACT_RADIUS = 0.28 * BASE_SCREEN;
-  const BASE_REPEL_RADIUS   = 0.12 * BASE_SCREEN;
-
-  const ATTRACT_RADIUS_RATIO = ATTRACT_RADIUS_PX / BASE_ATTRACT_RADIUS;
-  const REPEL_RADIUS_RATIO   = REPEL_RADIUS_PX   / BASE_REPEL_RADIUS;
-
-  // strengths adjusted so phone stays the same
-  const ATTRACT = 35 * SCREEN_SIZE * Math.pow(ATTRACT_RADIUS_RATIO, -4);
-const REPEL   = 1e5 * SCREEN_SIZE * Math.pow(REPEL_RADIUS_RATIO,   -6);
-
   for (const STAR of STARS) {
+ 
+    // Distance from user
     const X_DISTANCE = USER_X - STAR.x;
     const Y_DISTANCE = USER_Y - STAR.y;
-    const DIST = Math.hypot(X_DISTANCE, Y_DISTANCE) || 1;
-
-    const FADE_ATTRACT = ATTRACT_RADIUS_PX / DIST;
-const FADE_REPEL   = REPEL_RADIUS_PX   / DIST;
-
-const FADE_WITH_DISTANCE = FADE_ATTRACT;
-      // Increase all star speed (clamped low) with user interaction
-      STAR.momentumX += 0.03 * USER_SPEED * STAR.vx;
-      STAR.momentumY += 0.03 * USER_SPEED * STAR.vy;
-      STAR.momentumX = Math.max(-5, Math.min(STAR.momentumX, 5));
-      STAR.momentumY = Math.max(-5, Math.min(STAR.momentumY, 5));
-      
-      STAR.momentumX += ATTRACT * USER_SPEED * X_DISTANCE * (FADE_ATTRACT ** 4);
-      STAR.momentumY += ATTRACT * USER_SPEED * Y_DISTANCE * (FADE_ATTRACT ** 4);
-      
-      STAR.momentumX -= REPEL   * USER_SPEED * X_DISTANCE * (FADE_REPEL   ** 6);
-      STAR.momentumY -= REPEL   * USER_SPEED * Y_DISTANCE * (FADE_REPEL   ** 6);
-      
-      
-      
-  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    // Almost 1 when close, rapidly approaches 0 with distance
+    const FADE_WITH_DISTANCE = 1 / (Math.hypot(X_DISTANCE, Y_DISTANCE) || 1);
+    
+    // Increase all star speed (clamped low) with user interaction
+    STAR.momentumX += 0.03 * USER_SPEED * STAR.vx;
+    STAR.momentumY += 0.03 * USER_SPEED * STAR.vy;
+    STAR.momentumX = Math.max(-5, Math.min(STAR.momentumX, 5));
+    STAR.momentumY = Math.max(-5, Math.min(STAR.momentumY, 5));
+    
+    // User gravity ring (attract from outside)
+    STAR.momentumX += 4.0e4 * USER_SPEED * X_DISTANCE * (FADE_WITH_DISTANCE ** 4);
+    STAR.momentumY += 4.0e4 * USER_SPEED * Y_DISTANCE * (FADE_WITH_DISTANCE ** 4);
+    // User gravity ring (repel from inside)
+    STAR.momentumX -= 1.25e8 * USER_SPEED * X_DISTANCE * (FADE_WITH_DISTANCE ** 6);
+    STAR.momentumY -= 1.25e8 * USER_SPEED * Y_DISTANCE * (FADE_WITH_DISTANCE ** 6);
+    
     // Global repulsion on pokes
     const GLOBAL_REPULSION_X = -X_DISTANCE * REPEL_TIMER * (FADE_WITH_DISTANCE ** 3);
     const GLOBAL_REPULSION_Y = -Y_DISTANCE * REPEL_TIMER * (FADE_WITH_DISTANCE ** 3);
@@ -374,7 +318,7 @@ const FADE_WITH_DISTANCE = FADE_ATTRACT;
   // Global variable decay
   USER_SPEED *= 0.85;
   if (USER_SPEED < 0.001) USER_SPEED = 0;
-  CIRCLE_TIMER *= 0.6;
+  CIRCLE_TIMER *= 0.85;
   if (CIRCLE_TIMER < 0.001) CIRCLE_TIMER = 0;
   REPEL_TIMER *= 0.94;
   if (REPEL_TIMER < 0.001) REPEL_TIMER = 0;
@@ -406,8 +350,8 @@ function drawStarsWithLines() {
 
  // Colored ring around user
   const RING_RADIUS = 40;
-  const RING_WIDTH  = 1.5 + USER_SPEED * 0.15;
-  const RING_ALPHA  = Math.min(USER_SPEED * 0.07, 1);
+  const RING_WIDTH  = 1.5 + CIRCLE_TIMER * 0.15;
+  const RING_ALPHA  = Math.min(CIRCLE_TIMER * 0.07, 1);
 
   if (USER_TIME > 0 && RING_ALPHA > 0.001) {
     BRUSH.save();
@@ -485,9 +429,7 @@ function resizeCanvas() {
   CANVAS.width = WIDTH;
   CANVAS.height = HEIGHT;
 
-  SCREEN_SIZE = WIDTH + HEIGHT;
-  SCREEN_SCALE = SCREEN_SIZE / BASE_SCREEN;
-  
+  SCREEN_SIZE = Math.min(WIDTH + HEIGHT, 2000);
   MAX_STAR_COUNT = SCREEN_SIZE / 10;
   MAX_LINK_DISTANCE = SCREEN_SIZE / 10;
 
@@ -531,7 +473,7 @@ function updateSpeed(X, Y, TIME) {
   const RAW_USER_SPEED = Math.hypot(DX, DY) / DT;            
   
   USER_SPEED = Math.min(RAW_USER_SPEED * 50, 50);
-  CIRCLE_TIMER = USER_SPEED * 1.5;
+  CIRCLE_TIMER = USER_SPEED;
   USER_X = X;
   USER_Y = Y;
   USER_TIME = TIME;
@@ -589,29 +531,20 @@ function startStarfield() {
   // Always size first
   resizeCanvas();
 
-  // Wait until layout is real
+  // Chromebook / first-load guard: wait until layout is real
   if (!sizesReady()) {
     requestAnimationFrame(startStarfield);
     return;
   }
 
-  // Create/restore stars (safe to call again)
-  if (!STARS_INITIALIZED) {
-  STARS_INITIALIZED = true;
+  // Now it is safe to create or restore stars
   initStars();
-}
 
-  // Start RAF loop only once
-  if (!ANIMATION_STARTED) {
-    ANIMATION_STARTED = true;
-    animate();
-  }
+  // Start animation loop once
+  animate();
 
-  // Wire resize listener only once
-  if (!RESIZE_WIRED) {
-    RESIZE_WIRED = true;
-    window.addEventListener('resize', resizeCanvas);
-  }
+  // Keep canvas matched to viewport
+  window.addEventListener('resize', resizeCanvas);
 }
 
 try {
