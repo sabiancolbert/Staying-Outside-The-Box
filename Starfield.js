@@ -245,9 +245,8 @@ function createStars() {
 function moveStars() {
   if (!HAS_CANVAS || !STARS.length) return;
   // Interaction ring scales to screen size
-  const FORCE_SCALE = Math.pow(SCREEN_SCALE, 0.5);
-const ATTRACT = 35 * BASE_SCREEN * FORCE_SCALE;
-const REPEL   = 1e5 * BASE_SCREEN * FORCE_SCALE;
+  const ATTRACT = 35 * BASE_SCREEN * Math.pow(SCREEN_SCALE, -4);
+const REPEL   = 1e5 * BASE_SCREEN * Math.pow(SCREEN_SCALE, -6);
 for (const STAR of STARS) {
  
     // Distance from user
