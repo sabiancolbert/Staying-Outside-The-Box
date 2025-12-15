@@ -68,8 +68,8 @@ function saveStarsToStorage() {
         width:           WIDTH,
         height:          HEIGHT,
         scaleFactor:     SCREEN_SIZE,
-        normRepulsion:   REPEL_TIMER,
-        normUserSpeed:   USER_SPEED,
+        repelTimer:      REPEL_TIMER,
+        userSpeed:       USER_SPEED,
         userX:           USER_X,
         userY:           USER_Y,
         userTime:        USER_TIME
@@ -150,8 +150,8 @@ function initStars() {
           }
 
           // Restore motion state and pointer info
-          REPEL_TIMER   = META.normRepulsion    ?? 0;
-          USER_SPEED = META.normUserSpeed ?? 0;
+          REPEL_TIMER   = META.repelTimer    ?? 0;
+          USER_SPEED = META.userSpeed ?? 0;
 
           if (typeof META.userX === 'number') USER_X = META.userX;
           if (typeof META.userY === 'number') USER_Y = META.userY;
