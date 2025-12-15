@@ -232,7 +232,7 @@ function createStars() {
 function moveStars() {
   if (!HAS_CANVAS || !STARS.length) return;
       // Scale gravity ring to screen size
-    const INV_SCREEN_SIZE = Math.pow(1100 / SCREEN_SIZE, 0.3);
+    const INV_SCREEN_SIZE = Math.pow(1100 / SCREEN_SIZE, 0.2);
   for (const STAR of STARS) {
  
     // Distance from user
@@ -256,8 +256,26 @@ function moveStars() {
     STAR.momentumY -= 1.25e8 * USER_SPEED * Y_DISTANCE * (FADE_WITH_DISTANCE ** (INV_SCREEN_SIZE * 6));
     //0.00486 * SCREEN_SIZE
     // Global repulsion on pokes
-    const GLOBAL_REPULSION_X = -X_DISTANCE * REPEL_TIMER * (FADE_WITH_DISTANCE ** (INV_SCREEN_SIZE * 3));
-    const GLOBAL_REPULSION_Y = -Y_DISTANCE * REPEL_TIMER * (FADE_WITH_DISTANCE ** (INV_SCREEN_SIZE * 3));
+    let GLOBAL_REPULSION_Y = 0;
+    let GLOBAL_REPULSION_X = 0;
+        
+    if (Y_DISTANCE <= SCREEN_SIZE * 0.25) {
+      GLOBAL_REPULSION_Y =
+        -Y_DISTANCE *
+        REPEL_TIMER *
+        (FADE_WITH_DISTANCE ** (INV_SCREEN_SIZE * 3));
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
     // Make momentum form a circle (clamped high)
     const LIMIT = 10;
@@ -324,7 +342,7 @@ function moveStars() {
   // Global variable decay
   USER_SPEED *= 0.85;
   if (USER_SPEED < 0.001) USER_SPEED = 0;
-  CIRCLE_TIMER *= 0.6;
+  CIRCLE_TIMER *= 0.3;
   if (CIRCLE_TIMER < 0.001) CIRCLE_TIMER = 0;
   REPEL_TIMER *= 0.94;
   if (REPEL_TIMER < 0.001) REPEL_TIMER = 0;
