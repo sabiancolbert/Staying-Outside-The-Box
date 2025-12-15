@@ -246,7 +246,7 @@ function createStars() {
 function moveStars() {
   if (!HAS_CANVAS || !STARS.length) return;
   // Interaction ring scales to screen size
-  const RADIUS_EXP = 1.3;                  // <-- increase to make laptop radius bigger
+  const RADIUS_EXP = 2;                  // <-- increase to make laptop radius bigger
 const RING_SCALE = Math.pow(SCREEN_SCALE, RADIUS_EXP);
 const ATTRACT = 35 * BASE_SCREEN * Math.pow(RING_SCALE, -4);
 const REPEL   = 1e5 * BASE_SCREEN * Math.pow(RING_SCALE, -6);
