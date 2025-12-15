@@ -554,4 +554,10 @@ function startStarfield() {
     window.addEventListener('resize', resizeCanvas);
   }
 }
+try {
+  startStarfield();
+} catch (ERR) {
+  console.error('Initialization error in starfield script:', ERR);
+}
+
 //#endregion STARFIELD INITIALIZATION
