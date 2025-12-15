@@ -346,9 +346,9 @@ function drawStarsWithLines() {
   BRUSH.clearRect(0, 0, WIDTH, HEIGHT);
 
  // Colored ring around user
-  const RING_RADIUS = 200;
+  const RING_RADIUS = 20;
   const RING_WIDTH  = 1.5 + USER_SPEED * 0.15;
-  const RING_ALPHA  = Math.min(USER_SPEED * 0.04, 0.6);
+  const RING_ALPHA  = Math.min(USER_SPEED * 0.07, 1);
 
   if (USER_TIME > 0 && RING_ALPHA > 0.001) {
     BRUSH.save();
