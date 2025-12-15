@@ -232,7 +232,7 @@ function createStars() {
 function moveStars() {
   if (!HAS_CANVAS || !STARS.length) return;
       // Scale gravity ring to screen size
-    const INV_SCREEN_SIZE = Math.pow(1100 / SCREEN_SIZE, 0.4);
+    const INV_SCREEN_SIZE = Math.pow(1100 / SCREEN_SIZE, 0.3);
   for (const STAR of STARS) {
  
     // Distance from user
