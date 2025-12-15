@@ -319,20 +319,6 @@ function moveStars() {
   if (USER_SPEED < 0.001) USER_SPEED = 0;
   REPEL_TIMER *= 0.94;
   if (REPEL_TIMER < 0.001) REPEL_TIMER = 0;
-  
-  const DBG_STAR = STARS[0];
-
-document.getElementById('dbgSpeed').textContent =
-  USER_SPEED.toFixed(3);
-
-document.getElementById('dbgRepel').textContent =
-  REPEL_TIMER.toFixed(1);
-
-document.getElementById('dbgFade').textContent =
-  (1 / (Math.hypot(USER_X - DBG_STAR.x, USER_Y - DBG_STAR.y) || 1)).toFixed(5);
-
-document.getElementById('dbgMode').textContent =
-  (USER_SPEED < 0.001 || REPEL_TIMER > 0) ? 'wrap' : 'bounce';
 }
 
 /*---------- Star rendering ----------*/
