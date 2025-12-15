@@ -230,6 +230,14 @@ function createStars() {
 
 
 
+
+
+
+
+
+
+
+
 /*---------- Star animation step ----------*/
 // Move, fade, and wrap stars around user interaction
 function moveStars() {
@@ -248,12 +256,15 @@ function moveStars() {
     STAR.momentumX = Math.max(-5, Math.min(STAR.momentumX, 5));
     STAR.momentumY = Math.max(-5, Math.min(STAR.momentumY, 5));
     
+    // Scale user interaction to screen size
+    const ATTRACT = 4.0e4 /* * SCALE_FACTOR */;
+    const REPEL = 1.25e8 /* * SCALE_FACTOR */;
     // User gravity ring (attract from outside)
-    STAR.momentumX += 4.0e4 * USER_SPEED * X_DISTANCE * (FADE_WITH_DISTANCE ** 4);
-    STAR.momentumY += 4.0e4 * USER_SPEED * Y_DISTANCE * (FADE_WITH_DISTANCE ** 4);
+    STAR.momentumX += ATTRACT * USER_SPEED * X_DISTANCE * (FADE_WITH_DISTANCE ** 4);
+    STAR.momentumY += ATTRACT * USER_SPEED * Y_DISTANCE * (FADE_WITH_DISTANCE ** 4);
     // User gravity ring (repel from inside)
-    STAR.momentumX -= 1.25e8 * USER_SPEED * X_DISTANCE * (FADE_WITH_DISTANCE ** 6);
-    STAR.momentumY -= 1.25e8 * USER_SPEED * Y_DISTANCE * (FADE_WITH_DISTANCE ** 6);
+    STAR.momentumX -= REPEL * USER_SPEED * X_DISTANCE * (FADE_WITH_DISTANCE ** 6);
+    STAR.momentumY -= REPEL * USER_SPEED * Y_DISTANCE * (FADE_WITH_DISTANCE ** 6);
     
     // Global repulsion on pokes
     const GLOBAL_REPULSION_X = -X_DISTANCE * REPEL_TIMER * (FADE_WITH_DISTANCE ** 3);
