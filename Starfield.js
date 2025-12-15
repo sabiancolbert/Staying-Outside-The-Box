@@ -265,14 +265,34 @@ function moveStars() {
     STAR.momentumX *= 0.97;
     STAR.momentumY *= 0.97;
 
-    // Screen wrap
+    // Screen wrap if passive
     if(USER_SPEED > 0) {
       STAR.x = (STAR.x % WIDTH + WIDTH) % WIDTH;
       STAR.y = (STAR.y % HEIGHT + HEIGHT) % HEIGHT;
     }
-    // Screen bounce
+    // Screen bounce if user interacting
     else {
-      //GPT HELP PLEASE
+      // Reflect off left/right walls
+      if (STAR.x < 0) {
+        STAR.x = -STAR.x; // mirror back in
+        STAR.vx = Math.abs(STAR.vx);
+        STAR.momentumX = Math.abs(STAR.momentumX);
+      } else if (STAR.x > WIDTH) {
+        STAR.x = 2 * WIDTH - STAR.x; // mirror back in
+        STAR.vx = -Math.abs(STAR.vx);
+        STAR.momentumX = -Math.abs(STAR.momentumX);
+      }
+    
+      // Reflect off top/bottom walls
+      if (STAR.y < 0) {
+        STAR.y = -STAR.y;
+        STAR.vy = Math.abs(STAR.vy);
+        STAR.momentumY = Math.abs(STAR.momentumY);
+      } else if (STAR.y > HEIGHT) {
+        STAR.y = 2 * HEIGHT - STAR.y;
+        STAR.vy = -Math.abs(STAR.vy);
+        STAR.momentumY = -Math.abs(STAR.momentumY);
+      }
     }
     
     // If the star has white value, decay it
