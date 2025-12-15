@@ -223,12 +223,6 @@ function createStars() {
 
 
 
-
-
-
-
-
-
 /*---------- Star animation step ----------*/
 // Move, fade, and wrap stars around the screen
 function moveStars() {
@@ -329,35 +323,7 @@ function moveStars() {
 
   REPEL_TIMER *= 0.92;
   if (REPEL_TIMER < 0.001) REPEL_TIMER = 0;
-
-  document.getElementById('repulsion').textContent =
-    REPEL_TIMER.toFixed(3);
-  document.getElementById('speed').textContent =
-    USER_SPEED.toFixed(3);
-      document.getElementById('momentum').textContent =
-    STARS[1].momentumX.toFixed(3);
-    document.getElementById('attpt').textContent =
-    (STARS[1].vx * USER_SPEED).toFixed(3);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /*---------- Star rendering ----------*/
 
