@@ -32,10 +32,23 @@ const getSlideDurationSeconds = () => (isHomepage() ? 1.2 : 0.6);
  *  TRANSITION & LAYOUT
  *========================================*/
 
-function lockScrollToContainer(PAGE = getPage()) {
-  document.documentElement.style.overflowY = "hidden";
-  document.body.style.height = "100dvmin";
-  if (PAGE) PAGE.style.overflowY = "auto";
+function freeScrollLayout(PAGE = getPage()) {
+  const HTML = document.documentElement;
+  const BODY = document.body;
+
+  const CURRENT_SCROLL =
+    PAGE?.scrollTop ?? window.scrollY ?? 0;
+
+  HTML.style.overflowY = "auto";
+  BODY.style.height = "auto";
+  if (PAGE) PAGE.style.overflowY = "visible";
+
+  // 🔥 Scrollbar reappeared → viewport width changed
+  if (typeof resizeCanvas === "function") resizeCanvas();
+
+  requestAnimationFrame(() => {
+    try { window.scrollTo(0, CURRENT_SCROLL); } catch {}
+  });
 }
 
 function freeScrollLayout(PAGE = getPage()) {
@@ -48,6 +61,9 @@ function freeScrollLayout(PAGE = getPage()) {
   HTML.style.overflowY = "auto";
   BODY.style.height = "auto";
   if (PAGE) PAGE.style.overflowY = "visible";
+
+  // Resync canvas after scrollbar/layout changes
+  if (typeof resizeCanvas === "function") resizeCanvas();
 
   requestAnimationFrame(() => {
     try { window.scrollTo(0, CURRENT_SCROLL); } catch {}
