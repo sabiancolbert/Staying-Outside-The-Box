@@ -514,15 +514,6 @@ window.addEventListener('touchmove', (E) => {
  *  STARFIELD INITIALIZATION
  *========================================*/
 
-function lockScrollToContainer(PAGE = getPage()) {
-  document.documentElement.style.overflowY = "hidden";
-  document.body.style.height = "100dvh";   // dvh is safer here
-  if (PAGE) PAGE.style.overflowY = "auto";
-
-  // Force canvas to resync after scrollbar disappears
-  if (typeof resizeCanvas === "function") resizeCanvas();
-}
-
 function sizesReady() {
   return (
     Number.isFinite(WIDTH) &&
