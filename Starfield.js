@@ -224,10 +224,9 @@ function createStars() {
 
 
 /*---------- Star animation step ----------*/
-// Move, fade, and wrap stars around the screen
+// Move, fade, and wrap stars around user interaction
 function moveStars() {
   if (!HAS_CANVAS || !STARS.length) return;
-  
   for (const STAR of STARS) {
  
     // Distance from user
@@ -235,11 +234,8 @@ function moveStars() {
     const Y_DISTANCE = USER_Y - STAR.y;
     // Almost 1 when close, rapidly approaches 0 with distance
     const INVERTED_DISTANCE = 1 / (Math.hypot(X_DISTANCE, Y_DISTANCE) || 1);
-
-    /*--------------------------------------*
-     *  FORM RING AROUND USER
-     *--------------------------------------*/
-    // Increase all star speed (clamped) with user interaction
+    
+    // Increase all star speed (clamped low) with user interaction
     STAR.momentumX += 0.03 * USER_SPEED * STAR.vx;
     STAR.momentumY += 0.03 * USER_SPEED * STAR.vy;
     STAR.momentumX = Math.max(-5, Math.min(STAR.momentumX, 5));
@@ -253,15 +249,15 @@ function moveStars() {
     STAR.momentumX -= REPEL * USER_SPEED * X_DISTANCE * (INVERTED_DISTANCE ** 6);
     STAR.momentumY -= REPEL * USER_SPEED * Y_DISTANCE * (INVERTED_DISTANCE ** 6);
     
-    // Clamp ring momentum high, and make it form a circle
+    // Global repulsion on pokes
+    const GLOBAL_REPULSION_X = X_DISTANCE * REPEL_TIMER * (INVERTED_DISTANCE ** 3));
+    const GLOBAL_REPULSION_Y = Y_DISTANCE * REPEL_TIMER * (INVERTED_DISTANCE ** 3));
+
+    // Make momentum form a circle (clamped high)
     const LIMIT = 10;
     const HYPOT = Math.hypot(STAR.momentumX, STAR.momentumY);
     if (HYPOT > LIMIT) { STAR.momentumX *= LIMIT / HYPOT; STAR.momentumY *= LIMIT / HYPOT; }
     
-    // Add global repulsion on pokes
-    const GLOBAL_REPULSION_X = X_DISTANCE * Math.min(3, REPEL_TIMER * (INVERTED_DISTANCE ** 3));
-    const GLOBAL_REPULSION_Y = Y_DISTANCE * Math.min(3, REPEL_TIMER * (INVERTED_DISTANCE ** 3));
-
     // Add all vectors up and apply them
     STAR.x += STAR.vx + STAR.momentumX - GLOBAL_REPULSION_X;
     STAR.y += STAR.vy + STAR.momentumY - GLOBAL_REPULSION_Y;
@@ -270,35 +266,15 @@ function moveStars() {
     STAR.momentumX *= 0.97;
     STAR.momentumY *= 0.97;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    /*--------------------------------------*
-     *  SCREEN WRAP
-     *--------------------------------------*/
+    // Screen wrap
     STAR.x = (STAR.x % WIDTH + WIDTH) % WIDTH;
     STAR.y = (STAR.y % HEIGHT + HEIGHT) % HEIGHT;
-    /*--------------------------------------*
-     *  TWINKLE & LIFE CYCLE
-     *--------------------------------------*/
-// If the star has white value, decay it
+    
+    // If the star has white value, decay it
     if (STAR.whiteValue > 0) {
       STAR.whiteValue *= 0.98;
-      if (STAR.whiteValue < 0.001) STAR.whiteValue = 0;
-    }
-// If the star has been hidden for a while, flicker the star back on
+      if (STAR.whiteValue < 0.001) STAR.whiteValue = 0;}
+    // If the star has been hidden for a while, flicker the star back on
     if (STAR.opacity <= 0.005) {
       STAR.opacity = 1;
       if (Math.random() < 0.07) STAR.whiteValue = 1;
@@ -311,12 +287,9 @@ function moveStars() {
     }
   }
 
-  /*--------------------------------------*
-   *  GLOBAL DECAY
-   *--------------------------------------*/
+  // Global variable decay
   USER_SPEED *= 0.85;
   if (USER_SPEED < 0.001) USER_SPEED = 0;
-
   REPEL_TIMER *= 0.92;
   if (REPEL_TIMER < 0.001) REPEL_TIMER = 0;
 }
