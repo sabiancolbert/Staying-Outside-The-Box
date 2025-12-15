@@ -245,46 +245,29 @@ function createStars() {
 // Move, fade, and wrap stars around user interaction
 function moveStars() {
   if (!HAS_CANVAS || !STARS.length) return;
-  // Interaction ring scales to screen size
-  // Two different radii (in pixels), both scale with screen size
-  const ATTRACT_RADIUS_PX = 0.28 * SCREEN_SIZE;  // big ring
-  const REPEL_RADIUS_PX   = 0.12 * SCREEN_SIZE;  // small inner ring (smaller than attract)
-  
-  // Distance once
-  const DIST = Math.hypot(X_DISTANCE, Y_DISTANCE) || 1;
-  
-  // Two fades (same shape, different reach)
-  const FADE_ATTRACT = ATTRACT_RADIUS_PX / DIST;
-  const FADE_REPEL   = REPEL_RADIUS_PX   / DIST;
-  
-  // Optional: keep “feel” consistent vs phone by canceling the power scaling
+
+  // radii scale with screen, repel stays smaller than attract
+  const ATTRACT_RADIUS_PX = 0.28 * SCREEN_SIZE;
+  const REPEL_RADIUS_PX   = 0.12 * SCREEN_SIZE;
+
+  // baseline radii (your phone “feel”)
   const BASE_ATTRACT_RADIUS = 0.28 * BASE_SCREEN;
   const BASE_REPEL_RADIUS   = 0.12 * BASE_SCREEN;
-  
+
   const ATTRACT_RADIUS_RATIO = ATTRACT_RADIUS_PX / BASE_ATTRACT_RADIUS;
   const REPEL_RADIUS_RATIO   = REPEL_RADIUS_PX   / BASE_REPEL_RADIUS;
-  
-  // Strengths (baseline matches phone)
+
+  // strengths adjusted so phone stays the same
   const ATTRACT = 35 * BASE_SCREEN * Math.pow(ATTRACT_RADIUS_RATIO, -4);
   const REPEL   = 1e5 * BASE_SCREEN * Math.pow(REPEL_RADIUS_RATIO,   -6);
-  
-  // Apply forces
-  STAR.momentumX += ATTRACT * USER_SPEED * X_DISTANCE * (FADE_ATTRACT ** 4);
-  STAR.momentumY += ATTRACT * USER_SPEED * Y_DISTANCE * (FADE_ATTRACT ** 4);
-  
-  STAR.momentumX -= REPEL   * USER_SPEED * X_DISTANCE * (FADE_REPEL   ** 6);
-  STAR.momentumY -= REPEL   * USER_SPEED * Y_DISTANCE * (FADE_REPEL   ** 6);
+
   for (const STAR of STARS) {
-   
-      // Distance from user
-      const X_DISTANCE = USER_X - STAR.x;
-      const Y_DISTANCE = USER_Y - STAR.y;
-      // Almost 1 when close, rapidly approaches 0 with distance
-      // Baseline: on your phone SCREEN_SIZE ~= BASE_SCREEN, so this becomes ~350px
-      const DISTANCE = Math.hypot(X_DISTANCE, Y_DISTANCE) || 1;
-      
-      // Fade = 1 at center, falls off with distance relative to ring radius
-      const FADE_WITH_DISTANCE = RING_RADIUS_PX / DISTANCE;
+    const X_DISTANCE = USER_X - STAR.x;
+    const Y_DISTANCE = USER_Y - STAR.y;
+    const DIST = Math.hypot(X_DISTANCE, Y_DISTANCE) || 1;
+
+    const FADE_ATTRACT = ATTRACT_RADIUS_PX / DIST;
+    const FADE_REPEL   = REPEL_RADIUS_PX   / DIST;
       // Increase all star speed (clamped low) with user interaction
       STAR.momentumX += 0.03 * USER_SPEED * STAR.vx;
       STAR.momentumY += 0.03 * USER_SPEED * STAR.vy;
