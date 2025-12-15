@@ -527,29 +527,32 @@ function sizesReady() {
   );
 }
 
+let ANIMATION_STARTED = false;
+let RESIZE_WIRED = false;
+let STARS_INITIALIZED = false;
+
 function startStarfield() {
-  // Always size first
   resizeCanvas();
 
-  // Chromebook / first-load guard: wait until layout is real
+  // Chromebook / first-load guard
   if (!sizesReady()) {
     requestAnimationFrame(startStarfield);
     return;
   }
 
-  // Now it is safe to create or restore stars
-  initStars();
+  if (!STARS_INITIALIZED) {
+    STARS_INITIALIZED = true;
+    initStars();
+  }
 
-  // Start animation loop once
-  animate();
+  if (!ANIMATION_STARTED) {
+    ANIMATION_STARTED = true;
+    animate();
+  }
 
-  // Keep canvas matched to viewport
-  window.addEventListener('resize', resizeCanvas);
-}
-
-try {
-  startStarfield();
-} catch (ERR) {
-  console.error('Initialization error in starfield script:', ERR);
+  if (!RESIZE_WIRED) {
+    RESIZE_WIRED = true;
+    window.addEventListener('resize', resizeCanvas);
+  }
 }
 //#endregion STARFIELD INITIALIZATION
