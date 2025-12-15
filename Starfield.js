@@ -233,7 +233,7 @@ function moveStars() {
     // Distance from user
     const X_DISTANCE = USER_X - STAR.x;
     const Y_DISTANCE = USER_Y - STAR.y;
-    // Close = 1, Far = 0
+    // Almost 1 when close, rapidly approaches 0 with distance
     const INVERTED_DISTANCE = 1 / (Math.hypot(X_DISTANCE, Y_DISTANCE) || 1);
 
     /*--------------------------------------*
@@ -259,8 +259,8 @@ function moveStars() {
     if (HYPOT > LIMIT) { STAR.momentumX *= LIMIT / HYPOT; STAR.momentumY *= LIMIT / HYPOT; }
     
     // Add global repulsion on pokes
-    const GLOBAL_REPULSION_X = Math.min(3, REPEL_TIMER * (INVERTED_DISTANCE ** 3));
-    const GLOBAL_REPULSION_Y = Math.min(3, REPEL_TIMER * (INVERTED_DISTANCE ** 3));
+    const GLOBAL_REPULSION_X = X_DISTANCE * Math.min(3, REPEL_TIMER * (INVERTED_DISTANCE ** 3));
+    const GLOBAL_REPULSION_Y = Y_DISTANCE * Math.min(3, REPEL_TIMER * (INVERTED_DISTANCE ** 3));
 
     // Add all vectors up and apply them
     STAR.x += STAR.vx + STAR.momentumX - GLOBAL_REPULSION_X;
