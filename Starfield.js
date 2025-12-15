@@ -243,8 +243,8 @@ function moveStars() {
     
     // User gravity ring & repel ball
     const ATTRACT = 50000;
-              //  1000
-    const REPEL = 5000 * ATTRACT;
+              //  1000 - 5000
+    const REPEL = 2500 * ATTRACT;
     STAR.momentumX += ATTRACT * USER_SPEED * X_DISTANCE * (FADE_WITH_DISTANCE ** 4);
     STAR.momentumY += ATTRACT * USER_SPEED * Y_DISTANCE * (FADE_WITH_DISTANCE ** 4);
     STAR.momentumX -= REPEL * USER_SPEED * X_DISTANCE * (FADE_WITH_DISTANCE ** 6);
