@@ -258,8 +258,8 @@ function moveStars() {
   const REPEL_RADIUS_RATIO   = REPEL_RADIUS_PX   / BASE_REPEL_RADIUS;
 
   // strengths adjusted so phone stays the same
-  const ATTRACT = 35 * BASE_SCREEN * Math.pow(ATTRACT_RADIUS_RATIO, -4);
-  const REPEL   = 1e5 * BASE_SCREEN * Math.pow(REPEL_RADIUS_RATIO,   -6);
+  const ATTRACT = 35 * SCREEN_SIZE * Math.pow(ATTRACT_RADIUS_RATIO, -4);
+const REPEL   = 1e5 * SCREEN_SIZE * Math.pow(REPEL_RADIUS_RATIO,   -6);
 
   for (const STAR of STARS) {
     const X_DISTANCE = USER_X - STAR.x;
