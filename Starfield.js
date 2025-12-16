@@ -244,8 +244,8 @@ function moveStars() {
     // Increase all star speed (clamped low) with user interaction
     STAR.momentumX += 0.03 * USER_SPEED * STAR.vx;
     STAR.momentumY += 0.03 * USER_SPEED * STAR.vy;
-    STAR.momentumX = Math.max(-5, Math.min(STAR.momentumX, 5));
-    STAR.momentumY = Math.max(-5, Math.min(STAR.momentumY, 5));
+    STAR.momentumX = Math.max(-3, Math.min(STAR.momentumX, 3));
+    STAR.momentumY = Math.max(-3, Math.min(STAR.momentumY, 3));
     
     // User gravity ring (attract from outside)
     //STAR.momentumX += 4.0e4 * USER_SPEED * X_DISTANCE * (SCREEN_SIZE * ?) * (FADE_WITH_DISTANCE ** (INV_SCREEN_SIZE * 4));
