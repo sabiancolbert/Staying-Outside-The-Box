@@ -327,7 +327,7 @@ function moveStars() {
   // Global variable decay
   USER_SPEED *= 0.85;
   if (USER_SPEED < 0.001) USER_SPEED = 0;
-  CIRCLE_TIMER *= 0.3;
+  CIRCLE_TIMER *= 0.99;
   if (CIRCLE_TIMER < 0.001) CIRCLE_TIMER = 0;
   REPEL_TIMER *= 0.94;
   if (REPEL_TIMER < 0.001) REPEL_TIMER = 0;
@@ -358,7 +358,7 @@ function drawStarsWithLines() {
   BRUSH.clearRect(0, 0, WIDTH, HEIGHT);
 
  // Colored ring around user
-  const RING_RADIUS = 40;
+  const RING_RADIUS = 0.0324 * SCREEN_SIZE;
   const RING_WIDTH  = 1.5 + CIRCLE_TIMER * 0.15;
   const RING_ALPHA  = Math.min(CIRCLE_TIMER * 0.07, 1);
 
