@@ -297,7 +297,7 @@ function moveStars() {
     STAR.momentumY *= 0.98;
 
     // Screen wrap if passive
-    if(USER_SPEED < 0.5 || FADE_WITH_DISTANCE < 0.003 || REPEL_TIMER > 1000) {
+    if(CIRCLE_TIMER < 0.5 || FADE_WITH_DISTANCE < 0.003 || REPEL_TIMER > 1000) {
       STAR.x = (STAR.x % WIDTH + WIDTH) % WIDTH;
       STAR.y = (STAR.y % HEIGHT + HEIGHT) % HEIGHT;
     }
