@@ -280,18 +280,18 @@ STAR.momentumY +=
 
 // User gravity ring (repel from inside)
 STAR.momentumX -=
-  1.2e7 *
+  1.0e7 *
   USER_SPEED *
   X_DISTANCE *
   (INV_SCREEN_SIZE ** 5) *
-  (FADE_WITH_DISTANCE ** (INV_SCREEN_SIZE * 5.2));
+  (FADE_WITH_DISTANCE ** (INV_SCREEN_SIZE * 5.35));
 
 STAR.momentumY -=
-  1.2e7 *
+  1.0e7 *
   USER_SPEED *
   Y_DISTANCE *
   (INV_SCREEN_SIZE ** 5) *
-  (FADE_WITH_DISTANCE ** (INV_SCREEN_SIZE * 5.2)); 
+  (FADE_WITH_DISTANCE ** (INV_SCREEN_SIZE * 5.35)); 
   
   
   
