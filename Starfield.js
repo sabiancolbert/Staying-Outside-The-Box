@@ -296,10 +296,13 @@ function moveStars() {
     STAR.momentumX *= 0.98;
     STAR.momentumY *= 0.98;
 
-    // Screen wrap if passive
-    if(CIRCLE_TIMER < 0.5 || FADE_WITH_DISTANCE < 0.003 || REPEL_TIMER > 1000) {
-      STAR.x = (STAR.x % WIDTH + WIDTH) % WIDTH;
-      STAR.y = (STAR.y % HEIGHT + HEIGHT) % HEIGHT;
+    // Screen wrap if passive (wait until full star is off-screen)
+    if (CIRCLE_TIMER < 0.5 || FADE_WITH_DISTANCE < 0.003 || REPEL_TIMER > 1000) {
+      const R = (STAR.whiteValue * 2 + STAR.size) || 0; // same radius you draw with
+      if (STAR.x < -R) STAR.x = WIDTH + R;
+      else if (STAR.x > WIDTH + R) STAR.x = -R;
+      if (STAR.y < -R) STAR.y = HEIGHT + R;
+      else if (STAR.y > HEIGHT + R) STAR.y = -R;
     }
     // Screen bounce if user interacting
     else {
@@ -410,10 +413,12 @@ function drawStarsWithLines() {
       const DIST = Math.hypot(X_DISTANCE, Y_DISTANCE);
 
       if (DIST < MAX_LINK_DISTANCE) {
+        // Dimmer with distance
         const ALPHA =
           (1 - DIST / MAX_LINK_DISTANCE) *
           ((A.opacity + B.opacity) / 2);
-
+        // Dimmer near edges for screen wrapping
+        ALPHA = ALPHA;
         BRUSH.strokeStyle = `rgba(0, 0, 0, ${ALPHA})`;
         BRUSH.beginPath();
         BRUSH.moveTo(A.x, A.y);
