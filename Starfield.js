@@ -291,7 +291,7 @@ STAR.momentumY -=
   USER_SPEED *
   Y_DISTANCE *
   (INV_SCREEN_SIZE ** 5) *
-  (FADE_WITH_DISTANCE ** (INV_SCREEN_SIZE * 6));6));
+  (FADE_WITH_DISTANCE ** (INV_SCREEN_SIZE * 6));
   
   
   
