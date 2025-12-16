@@ -256,8 +256,8 @@ function moveStars() {
     
     // Repel on poke
     if ((Math.hypot(X_DISTANCE, Y_DISTANCE)) < SCREEN_SIZE * 0.25) {
-      STAR.momentumX = -X_DISTANCE * REPEL_TIMER * (FADE_WITH_DISTANCE ** (INV_SCREEN_SIZE * 8));
-      STAR.momentumY = -Y_DISTANCE * REPEL_TIMER * (FADE_WITH_DISTANCE ** (INV_SCREEN_SIZE * 8));
+      STAR.momentumX += -X_DISTANCE * REPEL_TIMER * (FADE_WITH_DISTANCE ** (INV_SCREEN_SIZE * 8));
+      STAR.momentumY += -Y_DISTANCE * REPEL_TIMER * (FADE_WITH_DISTANCE ** (INV_SCREEN_SIZE * 8));
     }
 
     // Make momentum form a circle (clamped high)
