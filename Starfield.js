@@ -40,8 +40,11 @@ let USER_X = 0;
 let USER_Y = 0;
 let USER_TIME = 0;
 let USER_SPEED = 0;
-let CIRCLE_TIMER =0;
 let REPEL_TIMER = 0;
+let CIRCLE_TIMER =0;
+window.USER_CIRCLE = {
+  circle_active: true;
+};
 
 // Canvas size and star scaling
 let WIDTH = 0;
@@ -386,7 +389,7 @@ function drawStarsWithLines() {
   const RING_WIDTH  = 1.5 + CIRCLE_TIMER * 0.15;
   const RING_ALPHA  = Math.min(CIRCLE_TIMER * 0.07, 1);
 
-  if (USER_TIME > 0 && RING_ALPHA > 0.001) {
+  if (CIRCLE_TIMER > 0 && RING_ALPHA > 0.001 && window.USER_CIRCLE.circle_active == true) {
     BRUSH.save();
   
     BRUSH.lineWidth = RING_WIDTH;
