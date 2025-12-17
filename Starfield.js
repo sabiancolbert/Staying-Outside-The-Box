@@ -227,10 +227,10 @@ function moveStars() {
     STAR.momentumX = Math.max(-3, Math.min(STAR.momentumX, 3));
     STAR.momentumY = Math.max(-3, Math.min(STAR.momentumY, 3));
 
-    const ATTRACT_STRENGTH = 300;
+    const ATTRACT_STRENGTH = 310;
     const ATTRACT_RADIUS = 200;
-    const REPEL_STRENGTH = 200;
-    const REPEL_RADIUS = 250;
+    const REPEL_STRENGTH = 240;
+    const REPEL_RADIUS = 260;
 
     // User gravity ring (attract from outside)
     STAR.momentumX += (ATTRACT_STRENGTH * 1000) * USER_SPEED * X_DISTANCE * (INV_SCREEN_SIZE ** 5) * (FADE_WITH_DISTANCE ** (INV_SCREEN_SIZE * (1 / ATTRACT_RADIUS * 882)));
