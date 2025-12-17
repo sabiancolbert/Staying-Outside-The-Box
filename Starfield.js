@@ -24,17 +24,6 @@
 const CANVAS = document.getElementById('constellations');
 const BRUSH = CANVAS && CANVAS.getContext ? CANVAS.getContext('2d') : null;
 const HAS_CANVAS = !!(CANVAS && BRUSH);
-// --- STARFIELD PUBLIC API (cross-script safe) ---
-window.STARFIELD = window.STARFIELD || {};
-window.STARFIELD.userCircle = window.STARFIELD.userCircle || { circle_active: true };
-
-// Expose controls (Layout.js can call these)
-window.STARFIELD.setCircleActive = (v = true) => {
-  window.STARFIELD.userCircle.circle_active = !!v;
-};
-window.STARFIELD.freeze = (v = true) => {
-  FREEZE_CONSTELLATION = !!v;
-};
 
 if (!HAS_CANVAS) {
   console.warn('Constellation canvas not found or unsupported; starfield disabled.');
@@ -51,11 +40,8 @@ let USER_X = 0;
 let USER_Y = 0;
 let USER_TIME = 0;
 let USER_SPEED = 0;
-let REPEL_TIMER = 0;
 let CIRCLE_TIMER =0;
-window.USER_CIRCLE = {
-  circle_active: true;
-};
+let REPEL_TIMER = 0;
 
 // Canvas size and star scaling
 let WIDTH = 0;
@@ -311,8 +297,7 @@ function moveStars() {
     STAR.momentumY *= 0.98;
 
     // Screen wrap if passive (wait until full star is off-screen)
-const CIRCLE_ACTIVE = window.USER_CIRCLE?.circle_active ?? true;
-if (CIRCLE_TIMER > 0 && RING_ALPHA > 0.001 && CIRCLE_ACTIVE) {
+    if (CIRCLE_TIMER < 0.5 || FADE_WITH_DISTANCE < 0.003 || REPEL_TIMER > 1000) {
       const R = (STAR.whiteValue * 2 + STAR.size) || 0; // same radius you draw with
       if (STAR.x < -R) STAR.x = WIDTH + R;
       else if (STAR.x > WIDTH + R) STAR.x = -R;
@@ -389,6 +374,37 @@ document.getElementById('dbgMode').textContent =
 
 /*---------- Star rendering ----------*/
 
+// Draw all lines and star bodies for the current frame
+function drawStarsWithLines() {
+  if (!HAS_CANVAS || !BRUSH) return;
+
+  // Clear entire canvas
+  BRUSH.clearRect(0, 0, WIDTH, HEIGHT);
+
+ // Colored ring around user
+  const RING_RADIUS = 0.04 * SCREEN_SIZE;
+  const RING_WIDTH  = 1.5 + CIRCLE_TIMER * 0.15;
+  const RING_ALPHA  = Math.min(CIRCLE_TIMER * 0.07, 1);
+
+  if (USER_TIME > 0 && RING_ALPHA > 0.001) {
+    BRUSH.save();
+  
+    BRUSH.lineWidth = RING_WIDTH;
+    BRUSH.strokeStyle = 'rgba(0, 0, 0, 1)';
+    BRUSH.globalAlpha = RING_ALPHA;
+  
+    BRUSH.beginPath();
+    BRUSH.arc(USER_X, USER_Y, RING_RADIUS, 0, Math.PI * 2);
+    BRUSH.stroke();
+  
+    BRUSH.restore();
+  }
+
+  // Lines between nearby stars
+  BRUSH.lineWidth = 1;
+  const COUNT = STARS.length;
+  
+  // 0 at/beyond wrap threshold, 1 when safely away from edges
 function edgeFactor(STAR) {
   const R = (STAR.whiteValue * 2 + STAR.size) || 0;
 
@@ -410,37 +426,6 @@ function edgeFactor(STAR) {
   // smoothstep (soft fade)
   return t * t * (3 - 2 * t);
 }
-
-// Draw all lines and star bodies for the current frame
-function drawStarsWithLines() {
-  if (!HAS_CANVAS || !BRUSH) return;
-
-  // Clear entire canvas
-  BRUSH.clearRect(0, 0, WIDTH, HEIGHT);
-
- // Colored ring around user
-  const RING_RADIUS = 0.04 * SCREEN_SIZE;
-  const RING_WIDTH  = 1.5 + CIRCLE_TIMER * 0.15;
-  const RING_ALPHA  = Math.min(CIRCLE_TIMER * 0.07, 1);
-
-  if (CIRCLE_TIMER > 0 && RING_ALPHA > 0.001 && window.USER_CIRCLE.circle_active == true) {
-    BRUSH.save();
-  
-    BRUSH.lineWidth = RING_WIDTH;
-    BRUSH.strokeStyle = 'rgba(0, 0, 0, 1)';
-    BRUSH.globalAlpha = RING_ALPHA;
-  
-    BRUSH.beginPath();
-    BRUSH.arc(USER_X, USER_Y, RING_RADIUS, 0, Math.PI * 2);
-    BRUSH.stroke();
-  
-    BRUSH.restore();
-  }
-
-  // Lines between nearby stars
-  BRUSH.lineWidth = 1;
-  const COUNT = STARS.length;
-
 
   for (let I = 0; I < COUNT; I++) {
     for (let J = I + 1; J < COUNT; J++) {
@@ -631,9 +616,5 @@ try {
 } catch (ERR) {
   console.error('Initialization error in starfield script:', ERR);
 }
-
-// Expose starfield controls for other scripts
-window.STARFIELD.resize = resizeCanvas;
-window.STARFIELD.save = saveStarsToStorage;
 
 //#endregion STARFIELD INITIALIZATION
