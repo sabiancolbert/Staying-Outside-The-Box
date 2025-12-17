@@ -1,5 +1,3 @@
-
-
 // thank heavens for chatGPT <3
 
 /*==============================================================*
@@ -12,7 +10,6 @@
  *  - Pointer input (mouse/touch) for repulsion
  *  - Canvas resize & animation loop
  *==============================================================*/
-
 
 //#region STARFIELD GLOBALS
 /*========================================*
@@ -41,7 +38,7 @@ let USER_Y = 0;
 let USER_TIME = 0;
 let USER_SPEED = 0;
 let REPEL_TIMER = 0;
-let CIRCLE_TIMER =0;
+let CIRCLE_TIMER = 0;
 window.REMOVE_CIRCLE = window.REMOVE_CIRCLE ?? false;
 
 // Canvas size and star scaling
@@ -54,8 +51,6 @@ let MAX_LINK_DISTANCE = 0;
 // Starfield data
 let STARS = [];
 //#endregion STARFIELD GLOBALS
-
-
 
 //#region STARFIELD STORAGE
 /*========================================*
@@ -70,14 +65,14 @@ function saveStarsToStorage() {
     localStorage.setItem(
       'constellationMeta',
       JSON.stringify({
-        width:           WIDTH,
-        height:          HEIGHT,
-        scaleFactor:     SCREEN_SIZE,
-        repelTimer:      REPEL_TIMER,
-        userSpeed:       USER_SPEED,
-        userX:           USER_X,
-        userY:           USER_Y,
-        userTime:        USER_TIME
+        width: WIDTH,
+        height: HEIGHT,
+        scaleFactor: SCREEN_SIZE,
+        repelTimer: REPEL_TIMER,
+        userSpeed: USER_SPEED,
+        userX: USER_X,
+        userY: USER_Y,
+        userTime: USER_TIME
       })
     );
   } catch (ERR) {
@@ -89,8 +84,6 @@ function saveStarsToStorage() {
 window.addEventListener('beforeunload', saveStarsToStorage);
 //#endregion STARFIELD STORAGE
 
-
-
 //#region STARFIELD CORE
 /*========================================*
  *  STARFIELD CREATION & MOTION
@@ -101,7 +94,6 @@ window.addEventListener('beforeunload', saveStarsToStorage);
 // Random float in [MIN, MAX)
 const randomBetween = (MIN, MAX) =>
   Math.random() * (MAX - MIN) + MIN;
-
 
 /*---------- Star initialization ----------*/
 
@@ -155,7 +147,7 @@ function initStars() {
           }
 
           // Restore motion state and pointer info
-          REPEL_TIMER   = META.repelTimer    ?? 0;
+          REPEL_TIMER = META.repelTimer ?? 0;
           USER_SPEED = META.userSpeed ?? 0;
 
           if (typeof META.userX === 'number') USER_X = META.userX;
@@ -165,9 +157,9 @@ function initStars() {
           if (typeof META.userTime === 'number' && META.userTime > 0) {
             USER_TIME = META.userTime;
           } else {
-            USER_TIME = (window.performance && performance.now)
-              ? performance.now()
-              : Date.now();
+            USER_TIME = (window.performance && performance.now) ?
+              performance.now() :
+              Date.now();
           }
         } catch (ERR) {
           console.warn(
@@ -219,65 +211,34 @@ function createStars() {
 // Move, fade, and wrap stars around user interaction
 function moveStars() {
   if (!HAS_CANVAS || !STARS.length) return;
-      // Scale gravity ring to screen size
-    const INV_SCREEN_SIZE = Math.pow(1100 / SCREEN_SIZE, 0.2);
+  // Scale gravity ring to screen size
+  const INV_SCREEN_SIZE = Math.pow(1100 / SCREEN_SIZE, 0.2);
   for (const STAR of STARS) {
- 
+
     // Distance from user
     const X_DISTANCE = USER_X - STAR.x;
     const Y_DISTANCE = USER_Y - STAR.y;
     // Almost 1 when close, rapidly approaches 0 with distance
     const FADE_WITH_DISTANCE = 1 / (Math.hypot(X_DISTANCE, Y_DISTANCE) || 1);
-    
+
     // Increase all star speed (clamped low) with user interaction
     STAR.momentumX += 0.03 * USER_SPEED * STAR.vx;
     STAR.momentumY += 0.03 * USER_SPEED * STAR.vy;
     STAR.momentumX = Math.max(-3, Math.min(STAR.momentumX, 3));
     STAR.momentumY = Math.max(-3, Math.min(STAR.momentumY, 3));
-    
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     const ATTRACT_STRENGTH = 180;
-    const ATTRACT_RADIUS   = 210;
-    const REPEL_STRENGTH   = 200;
-    const REPEL_RADIUS     = 260;
+    const ATTRACT_RADIUS = 210;
+    const REPEL_STRENGTH = 200;
+    const REPEL_RADIUS = 260;
 
     // User gravity ring (attract from outside)
     STAR.momentumX += (ATTRACT_STRENGTH * 1000) * USER_SPEED * X_DISTANCE * (INV_SCREEN_SIZE ** 5) * (FADE_WITH_DISTANCE ** (INV_SCREEN_SIZE * (1 / ATTRACT_RADIUS * 882)));
     STAR.momentumY += (ATTRACT_STRENGTH * 1000) * USER_SPEED * Y_DISTANCE * (INV_SCREEN_SIZE ** 5) * (FADE_WITH_DISTANCE ** (INV_SCREEN_SIZE * (1 / ATTRACT_RADIUS * 882)));
     // User gravity ring (repel from inside)
     STAR.momentumX -= (REPEL_STRENGTH * 50000) * USER_SPEED * X_DISTANCE * (INV_SCREEN_SIZE ** 5) * (FADE_WITH_DISTANCE ** (INV_SCREEN_SIZE * (1 / REPEL_RADIUS * 1352)));
-    STAR.momentumY -= (REPEL_STRENGTH * 50000) * USER_SPEED * Y_DISTANCE * (INV_SCREEN_SIZE ** 5) * (FADE_WITH_DISTANCE ** (INV_SCREEN_SIZE * (1 / REPEL_RADIUS * 1352))); 
-      
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+    STAR.momentumY -= (REPEL_STRENGTH * 50000) * USER_SPEED * Y_DISTANCE * (INV_SCREEN_SIZE ** 5) * (FADE_WITH_DISTANCE ** (INV_SCREEN_SIZE * (1 / REPEL_RADIUS * 1352)));
+
     // Repel on poke
     if ((Math.hypot(X_DISTANCE, Y_DISTANCE)) < SCREEN_SIZE * 0.4) {
       STAR.momentumX += -X_DISTANCE * REPEL_TIMER * (FADE_WITH_DISTANCE ** (INV_SCREEN_SIZE * 3.5));
@@ -287,8 +248,11 @@ function moveStars() {
     // Make momentum form a circle (clamped high)
     const LIMIT = 13;
     const HYPOT = Math.hypot(STAR.momentumX, STAR.momentumY);
-    if (HYPOT > LIMIT) { STAR.momentumX *= LIMIT / HYPOT; STAR.momentumY *= LIMIT / HYPOT; }
-    
+    if (HYPOT > LIMIT) {
+      STAR.momentumX *= LIMIT / HYPOT;
+      STAR.momentumY *= LIMIT / HYPOT;
+    }
+
     // Apply momentum and passive movement
     STAR.x += STAR.vx + STAR.momentumX;
     STAR.y += STAR.vy + STAR.momentumY;
@@ -297,7 +261,6 @@ function moveStars() {
     STAR.momentumX *= 0.98;
     STAR.momentumY *= 0.98;
 
-    
     // Screen wrap if passive (wait until full star is off-screen)
     if (CIRCLE_TIMER < 0.5 || FADE_WITH_DISTANCE < 0.003 || REPEL_TIMER > 1000) {
       const R = (STAR.whiteValue * 2 + STAR.size) || 0; // same radius you draw with
@@ -320,7 +283,7 @@ function moveStars() {
         STAR.vx = -Math.abs(STAR.vx);
         STAR.momentumX = -Math.abs(STAR.momentumX);
       }
-      
+
       // Reflect off top/bottom walls (radius-aware)
       if (STAR.y < R) {
         STAR.y = 2 * R - STAR.y;
@@ -332,11 +295,12 @@ function moveStars() {
         STAR.momentumY = -Math.abs(STAR.momentumY);
       }
     }
-    
+
     // If the star has white value, decay it
     if (STAR.whiteValue > 0) {
       STAR.whiteValue *= 0.98;
-      if (STAR.whiteValue < 0.001) STAR.whiteValue = 0;}
+      if (STAR.whiteValue < 0.001) STAR.whiteValue = 0;
+    }
     // If the star has been hidden for a while, flicker the star back on
     if (STAR.opacity <= 0.005) {
       STAR.opacity = 1;
@@ -376,45 +340,14 @@ document.getElementById('dbgMode').textContent =
 
 /*---------- Star rendering ----------*/
 
-// Draw all lines and star bodies for the current frame
-function drawStarsWithLines() {
-  // If not finished loading, or loading another page, then cancel
-  if (window.REMOVE_CIRCLE || !HAS_CANVAS || !BRUSH) return;
-
-  // Clear entire canvas
-  BRUSH.clearRect(0, 0, WIDTH, HEIGHT);
-
- // Colored ring around user
-  const RING_RADIUS = 0.04 * SCREEN_SIZE;
-  const RING_WIDTH  = 1.5 + CIRCLE_TIMER * 0.15;
-  const RING_ALPHA  = Math.min(CIRCLE_TIMER * 0.07, 1);
-
-  if (USER_TIME > 0 && RING_ALPHA > 0.001) {
-    BRUSH.save();
-  
-    BRUSH.lineWidth = RING_WIDTH;
-    BRUSH.strokeStyle = 'rgba(0, 0, 0, 1)';
-    BRUSH.globalAlpha = RING_ALPHA;
-  
-    BRUSH.beginPath();
-    BRUSH.arc(USER_X, USER_Y, RING_RADIUS, 0, Math.PI * 2);
-    BRUSH.stroke();
-  
-    BRUSH.restore();
-  }
-
-  // Lines between nearby stars
-  BRUSH.lineWidth = 1;
-  const COUNT = STARS.length;
-  
-  // 0 at/beyond wrap threshold, 1 when safely away from edges
+// 0 at/beyond wrap threshold, 1 when safely away from edges
 function edgeFactor(STAR) {
   const R = (STAR.whiteValue * 2 + STAR.size) || 0;
 
   // distance from the "fully off-screen" threshold on each side
-  const left   = STAR.x + R;          // 0 when x == -R
-  const right  = WIDTH  + R - STAR.x; // 0 when x == WIDTH + R
-  const top    = STAR.y + R;          // 0 when y == -R
+  const left = STAR.x + R; // 0 when x == -R
+  const right = WIDTH + R - STAR.x; // 0 when x == WIDTH + R
+  const top = STAR.y + R; // 0 when y == -R
   const bottom = HEIGHT + R - STAR.y; // 0 when y == HEIGHT + R
 
   const d = Math.min(left, right, top, bottom);
@@ -430,6 +363,37 @@ function edgeFactor(STAR) {
   return t * t * (3 - 2 * t);
 }
 
+// Draw all lines and star bodies for the current frame
+function drawStarsWithLines() {
+  // If not finished loading, or loading another page, then cancel
+  if (window.REMOVE_CIRCLE || !HAS_CANVAS || !BRUSH) return;
+
+  // Clear entire canvas
+  BRUSH.clearRect(0, 0, WIDTH, HEIGHT);
+
+  // Colored ring around user
+  const RING_RADIUS = 0.04 * SCREEN_SIZE;
+  const RING_WIDTH = 1.5 + CIRCLE_TIMER * 0.15;
+  const RING_ALPHA = Math.min(CIRCLE_TIMER * 0.07, 1);
+
+  if (USER_TIME > 0 && RING_ALPHA > 0.001) {
+    BRUSH.save();
+
+    BRUSH.lineWidth = RING_WIDTH;
+    BRUSH.strokeStyle = 'rgba(0, 0, 0, 1)';
+    BRUSH.globalAlpha = RING_ALPHA;
+
+    BRUSH.beginPath();
+    BRUSH.arc(USER_X, USER_Y, RING_RADIUS, 0, Math.PI * 2);
+    BRUSH.stroke();
+
+    BRUSH.restore();
+  }
+
+  // Lines between nearby stars
+  BRUSH.lineWidth = 1;
+  const COUNT = STARS.length;
+
   for (let I = 0; I < COUNT; I++) {
     for (let J = I + 1; J < COUNT; J++) {
       const A = STARS[I];
@@ -440,12 +404,12 @@ function edgeFactor(STAR) {
 
       if (DIST < MAX_LINK_DISTANCE) {
         // Dimmer with distance
-let ALPHA =
-  (1 - DIST / MAX_LINK_DISTANCE) *
-  ((A.opacity + B.opacity) / 2);
+        let ALPHA =
+          (1 - DIST / MAX_LINK_DISTANCE) *
+          ((A.opacity + B.opacity) / 2);
 
-// Dimmer near edges for screen wrapping (fade out before teleport)
-ALPHA *= Math.min(edgeFactor(A), edgeFactor(B));
+        // Dimmer near edges for screen wrapping (fade out before teleport)
+        ALPHA *= Math.min(edgeFactor(A), edgeFactor(B));
 
         BRUSH.strokeStyle = `rgba(0, 0, 0, ${ALPHA})`;
         BRUSH.beginPath();
@@ -475,6 +439,13 @@ ALPHA *= Math.min(edgeFactor(A), edgeFactor(B));
     BRUSH.fill();
   }
 }
+
+// Redraw without user circle on page leave
+window.forceStarfieldRedraw = () => {
+  if (!BRUSH || !CANVAS) return;
+  BRUSH.clearRect(0, 0, CANVAS.width, CANVAS.height);
+  drawStarsWithLines();
+};
 
 /*---------- Canvas resize & animation loop ----------*/
 
@@ -519,8 +490,6 @@ function animate() {
 }
 //#endregion STARFIELD CORE
 
-
-
 //#region POINTER INPUT
 /*========================================*
  *  POINTER INPUT (MOUSE / TOUCH)
@@ -530,11 +499,11 @@ function animate() {
 function updateSpeed(X, Y, TIME) {
   if (!Number.isFinite(TIME)) TIME = performance.now ? performance.now() : Date.now();
 
-  const DT = Math.max(1, TIME - USER_TIME);           
+  const DT = Math.max(1, TIME - USER_TIME);
   const DX = X - USER_X;
   const DY = Y - USER_Y;
-  const RAW_USER_SPEED = Math.hypot(DX, DY) / DT;            
-  
+  const RAW_USER_SPEED = Math.hypot(DX, DY) / DT;
+
   USER_SPEED = Math.min(RAW_USER_SPEED * 50, 50);
   CIRCLE_TIMER = USER_SPEED;
   USER_X = X;
@@ -573,8 +542,6 @@ window.addEventListener('touchmove', (E) => {
 });
 
 //#endregion POINTER INPUT
-
-
 
 //#region STARFIELD INITIALIZATION
 /*========================================*
