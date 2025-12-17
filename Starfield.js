@@ -267,9 +267,11 @@ function moveStars() {
 
     const X_DISTANCE = USER_X - STAR.x;
     const Y_DISTANCE = USER_Y - STAR.y;
-    const DISTANCE = Math.hypot(X_DISTANCE, Y_DISTANCE);
-    const INV_X_DIST = (X_DISTANCE / (X_DISTANCE * X_DISTANCE);
-    const INV_Y_DIST = (Y_DISTANCE / (Y_DISTANCE * Y_DISTANCE);
+    const DISTANCE = Math.hypot(X_DISTANCE, Y_DISTANCE) + 0.0001;
+    const INV_DIST = 1 / DISTANCE;
+    const TO_USER_X = X_DISTANCE / DISTANCE;
+    const TO_USER_Y = Y_DISTANCE / DISTANCE;
+    
     // Increase all star speed (clamped low) with user interaction
     STAR.momentumX += 0.03 * USER_SPEED * STAR.vx + randomBetween(-0.8, 0.8);
     STAR.momentumY += 0.03 * USER_SPEED * STAR.vy + randomBetween(-0.8, 0.8);
