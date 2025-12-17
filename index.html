@@ -44,34 +44,94 @@
   <div>FADE: <span id="dbgFade">0</span></div>
   <div>MODE: <span id="dbgMode">wrap</span></div>
   
-  <div id="gravityControls" style="position:fixed;bottom:12px;left:12px;
-  background:rgba(0,0,0,0.6);padding:10px;border-radius:8px;
-  font:12px monospace;z-index:9999;color:white">
-
-  <label>Attract Strength
-    <input type="range" min="1" max="1000" value="180" id="ATTRACT_STRENGTH">
-  </label><br>
-
-  <label>Attract Radius
-    <input type="range" min="1" max="1000" value="210" id="ATTRACT_RADIUS">
-  </label><br>
-
-  <label>Attract Scale
-    <input type="range" min="1" max="100" value="100" id="ATTRACT_SCALE">
-  </label><br><br>
-
-  <label>Repel Strength
-    <input type="range" min="1" max="1000" value="200" id="REPEL_STRENGTH">
-  </label><br>
-
-  <label>Repel Radius
-    <input type="range" min="1" max="1000" value="260" id="REPEL_RADIUS">
-  </label><br>
-
-  <label>Repel Scale
-    <input type="range" min="1" max="100" value="100" id="REPEL_SCALE">
-  </label>
-</div>
+                    <div id="gravityControls"
+                       style="
+                         position:fixed;
+                         bottom:12px;
+                         left:12px;
+                         background:rgba(0,0,0,0.65);
+                         padding:12px;
+                         border-radius:10px;
+                         font:12px monospace;
+                         color:#fff;
+                         z-index:9999;
+                         max-width:260px;
+                       ">
+                  
+                    <style>
+                      #gravityControls .ctl {
+                        display:grid;
+                        grid-template-columns: 1fr auto;
+                        grid-gap:4px 8px;
+                        margin-bottom:8px;
+                        align-items:center;
+                      }
+                      #gravityControls label {
+                        grid-column:1 / -1;
+                        opacity:0.85;
+                      }
+                      #gravityControls input[type="range"] {
+                        grid-column:1 / -1;
+                      }
+                      #gravityControls input[type="number"] {
+                        width:70px;
+                        background:#111;
+                        color:#fff;
+                        border:1px solid #444;
+                      }
+                      #gravityControls span {
+                        text-align:right;
+                        opacity:0.7;
+                      }
+                    </style>
+                  
+                    <!-- ATTRACT -->
+                    <div class="ctl">
+                      <label>Attract Strength</label>
+                      <input id="ATTRACT_STRENGTH" type="range" min="1" max="1000" step="1" value="300">
+                      <input id="ATTRACT_STRENGTH_num" type="number" min="1" max="1000" step="1" value="300">
+                      <span id="ATTRACT_STRENGTH_val">300</span>
+                    </div>
+                  
+                    <div class="ctl">
+                      <label>Attract Radius</label>
+                      <input id="ATTRACT_RADIUS" type="range" min="1" max="1000" step="1" value="205">
+                      <input id="ATTRACT_RADIUS_num" type="number" min="1" max="1000" step="1" value="205">
+                      <span id="ATTRACT_RADIUS_val">205</span>
+                    </div>
+                  
+                    <div class="ctl">
+                      <label>Attract Scale</label>
+                      <input id="ATTRACT_SCALE" type="range" min="1" max="20" step="0.1" value="6.5">
+                      <input id="ATTRACT_SCALE_num" type="number" min="1" max="20" step="0.1" value="6.5">
+                      <span id="ATTRACT_SCALE_val">6.5</span>
+                    </div>
+                  
+                    <hr style="border:none;border-top:1px solid #333;margin:8px 0">
+                  
+                    <!-- REPEL -->
+                    <div class="ctl">
+                      <label>Repel Strength</label>
+                      <input id="REPEL_STRENGTH" type="range" min="1" max="1000" step="1" value="380">
+                      <input id="REPEL_STRENGTH_num" type="number" min="1" max="1000" step="1" value="380">
+                      <span id="REPEL_STRENGTH_val">380</span>
+                    </div>
+                  
+                    <div class="ctl">
+                      <label>Repel Radius</label>
+                      <input id="REPEL_RADIUS" type="range" min="1" max="1000" step="1" value="250">
+                      <input id="REPEL_RADIUS_num" type="number" min="1" max="1000" step="1" value="250">
+                      <span id="REPEL_RADIUS_val">250</span>
+                    </div>
+                  
+                    <div class="ctl">
+                      <label>Repel Scale</label>
+                      <input id="REPEL_SCALE" type="range" min="1" max="20" step="0.1" value="5">
+                      <input id="REPEL_SCALE_num" type="number" min="1" max="20" step="0.1" value="5">
+                      <span id="REPEL_SCALE_val">5</span>
+                    </div>
+                  
+                  </div>
 </div>
 
       <!-- Apple has to be first to legally use the image -->
