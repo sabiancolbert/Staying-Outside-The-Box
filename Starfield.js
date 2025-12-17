@@ -227,7 +227,7 @@ function moveStars() {
     STAR.momentumX = Math.max(-3, Math.min(STAR.momentumX, 3));
     STAR.momentumY = Math.max(-3, Math.min(STAR.momentumY, 3));
 
-    const ATTRACT_STRENGTH = 375;
+    const ATTRACT_STRENGTH = 350;
     const ATTRACT_RADIUS = 210;
     const REPEL_STRENGTH = 240;
     const REPEL_RADIUS = 260;
