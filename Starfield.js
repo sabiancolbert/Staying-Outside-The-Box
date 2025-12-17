@@ -279,15 +279,15 @@ function moveStars() {
     STAR.momentumX = Math.max(-3, Math.min(STAR.momentumX, 3));
     STAR.momentumY = Math.max(-3, Math.min(STAR.momentumY, 3));
 
-    // User gravity ring (attract from outside)
-    STAR.momentumX += (ATTRACT_STRENGTH * 1000) * USER_SPEED * X_DISTANCE * (INV_SCREEN_SIZE ** ATTRACT_SCALE) * (FADE_WITH_DISTANCE ** (INV_SCREEN_SIZE * (1 / ATTRACT_RADIUS * 882)));
-    STAR.momentumY += (ATTRACT_STRENGTH * 1000) * USER_SPEED * Y_DISTANCE * (INV_SCREEN_SIZE ** ATTRACT_SCALE) * (FADE_WITH_DISTANCE ** (INV_SCREEN_SIZE * (1 / ATTRACT_RADIUS * 882)));
-    // User gravity ring (repel from inside)
-    STAR.momentumX -= (REPEL_STRENGTH * 50000) * USER_SPEED * X_DISTANCE * (INV_SCREEN_SIZE ** REPEL_SCALE) * (FADE_WITH_DISTANCE ** (INV_SCREEN_SIZE * (1 / REPEL_RADIUS * 1352)));
-    STAR.momentumY -= (REPEL_STRENGTH * 50000) * USER_SPEED * Y_DISTANCE * (INV_SCREEN_SIZE ** REPEL_SCALE) * (FADE_WITH_DISTANCE ** (INV_SCREEN_SIZE * (1 / REPEL_RADIUS * 1352)));
-
-    // Repel on poke
     if ((Math.hypot(X_DISTANCE, Y_DISTANCE)) < SCREEN_SIZE * 0.4) {
+      // User gravity ring (attract from outside)
+      STAR.momentumX += (ATTRACT_STRENGTH * 1000) * USER_SPEED * X_DISTANCE * (INV_SCREEN_SIZE ** ATTRACT_SCALE) * (FADE_WITH_DISTANCE ** (INV_SCREEN_SIZE * (1 / ATTRACT_RADIUS * 882)));
+      STAR.momentumY += (ATTRACT_STRENGTH * 1000) * USER_SPEED * Y_DISTANCE * (INV_SCREEN_SIZE ** ATTRACT_SCALE) * (FADE_WITH_DISTANCE ** (INV_SCREEN_SIZE * (1 / ATTRACT_RADIUS * 882)));
+      // User gravity ring (repel from inside)
+      STAR.momentumX -= (REPEL_STRENGTH * 50000) * USER_SPEED * X_DISTANCE * (INV_SCREEN_SIZE ** REPEL_SCALE) * (FADE_WITH_DISTANCE ** (INV_SCREEN_SIZE * (1 / REPEL_RADIUS * 1352)));
+      STAR.momentumY -= (REPEL_STRENGTH * 50000) * USER_SPEED * Y_DISTANCE * (INV_SCREEN_SIZE ** REPEL_SCALE) * (FADE_WITH_DISTANCE ** (INV_SCREEN_SIZE * (1 / REPEL_RADIUS * 1352)));
+  
+      // Repel on poke
       STAR.momentumX += -1.3 * X_DISTANCE * REPEL_TIMER * (FADE_WITH_DISTANCE ** (INV_SCREEN_SIZE * 3.7));
       STAR.momentumY += -1.3 * Y_DISTANCE * REPEL_TIMER * (FADE_WITH_DISTANCE ** (INV_SCREEN_SIZE * 3.7));
     }
