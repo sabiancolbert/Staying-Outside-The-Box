@@ -251,14 +251,7 @@ function bindControl(id, setter) {
   }
 }
 
-bindSlider('ATTRACT_STRENGTH', v => ATTRACT_STRENGTH = v);
-bindSlider('ATTRACT_RADIUS',   v => ATTRACT_RADIUS   = v);
-bindSlider('ATTRACT_SCALE',    v => ATTRACT_SCALE    = v);
 
-bindSlider('REPEL_STRENGTH',   v => REPEL_STRENGTH   = v);
-bindSlider('REPEL_RADIUS',     v => REPEL_RADIUS     = v);
-bindSlider('REPEL_SCALE',      v => REPEL_SCALE      = v);
-     
  bindControl('ATTRACT_STRENGTH', v => ATTRACT_STRENGTH = v);
   bindControl('ATTRACT_RADIUS',   v => ATTRACT_RADIUS   = v);
   bindControl('ATTRACT_SCALE',    v => ATTRACT_SCALE    = v);
