@@ -398,25 +398,25 @@ function drawStarsWithLines() {
 
   for (let I = 0; I < COUNT; I++) {
     for (let J = I + 1; J < COUNT; J++) {
-      const A = STARS[I];
-      const B = STARS[J];
-      const X_DISTANCE = A.x - B.x;
-      const Y_DISTANCE = A.y - B.y;
-      const DIST = Math.hypot(X_DISTANCE, Y_DISTANCE);
+      const STAR_A = STARS[I];
+      const STAR_B = STARS[J];
+      const X_DISTANCE = STAR_A.x - STAR_B.x;
+      const Y_DISTANCE = STAR_A.y - STAR_B.y;
+      const DISTANCE= Math.hypot(X_DISTANCE, Y_DISTANCE) / 1100 * SCREEN_SIZE;
 
-      if (DIST < MAX_LINK_DISTANCE) {
+      if (DISTANCE< MAX_LINK_DISTANCE) {
         // Dimmer with distance
         let ALPHA =
-          (1 - DIST / MAX_LINK_DISTANCE) *
-          ((A.opacity + B.opacity) / 2);
+          (1 - DISTANCE/ MAX_LINK_DISTANCE) *
+          ((STAR_A.opacity + STAR_B.opacity) / 2);
 
         // Dimmer near edges for screen wrapping (fade out before teleport)
-        ALPHA *= Math.min(edgeFactor(A), edgeFactor(B));
+        ALPHA *= Math.min(edgeFactor(STAR_A), edgeFactor(STAR_B));
 
         BRUSH.strokeStyle = `rgba(0, 0, 0, ${ALPHA})`;
         BRUSH.beginPath();
-        BRUSH.moveTo(A.x, A.y);
-        BRUSH.lineTo(B.x, B.y);
+        BRUSH.moveTo(STAR_A.x, STAR_A.y);
+        BRUSH.lineTo(STAR_B.x, STAR_B.y);
         BRUSH.stroke();
       }
     }
