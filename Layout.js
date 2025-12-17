@@ -140,7 +140,7 @@ window.addEventListener("pageshow", (event) => {
 
 
 /*---------- TRANSITION TO NEW PAGE ----------*/
-function transitionTo(URL, IS_MENU = false) {
+function transitionTo(URL) {
   if (IS_TRANSITIONING) return;
   if (!URL) return;
   IS_TRANSITIONING = true;
