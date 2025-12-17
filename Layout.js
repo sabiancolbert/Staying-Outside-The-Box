@@ -191,9 +191,8 @@ requestAnimationFrame(() => window.forceStarfieldRedraw?.());
  *  TOUCH NAVIGATION HANDLING
  *========================================*/
 
-document.addEventListener("touchend", () => {
-  try { document.activeElement?.blur(); } catch {}
-});
+
+
 
 // Toggle an element's visibility via the [hidden] attribute
 function toggleElement(ID) {
