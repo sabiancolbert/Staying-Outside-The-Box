@@ -317,7 +317,7 @@ function moveStars() {
   // Global variable decay
   USER_SPEED *= 0.85;
   if (USER_SPEED < 0.001) USER_SPEED = 0;
-  CIRCLE_TIMER *= 0.95;
+  CIRCLE_TIMER *= 0.9;
   if (CIRCLE_TIMER < 0.001) CIRCLE_TIMER = 0;
   REPEL_TIMER *= 0.91;
   if (REPEL_TIMER < 0.001) REPEL_TIMER = 0;
@@ -366,28 +366,30 @@ function edgeFactor(STAR) {
 // Draw all lines and star bodies for the current frame
 function drawStarsWithLines() {
   // If not finished loading, or loading another page, then cancel
-  if (window.REMOVE_CIRCLE || !HAS_CANVAS || !BRUSH) return;
+  if (!HAS_CANVAS || !BRUSH) return;
 
   // Clear entire canvas
   BRUSH.clearRect(0, 0, WIDTH, HEIGHT);
 
   // Colored ring around user
-  const RING_RADIUS = 0.04 * SCREEN_SIZE;
-  const RING_WIDTH = 1.5 + CIRCLE_TIMER * 0.15;
-  const RING_ALPHA = Math.min(CIRCLE_TIMER * 0.07, 1);
-
-  if (USER_TIME > 0 && RING_ALPHA > 0.001) {
-    BRUSH.save();
-
-    BRUSH.lineWidth = RING_WIDTH;
-    BRUSH.strokeStyle = 'rgba(0, 0, 0, 1)';
-    BRUSH.globalAlpha = RING_ALPHA;
-
-    BRUSH.beginPath();
-    BRUSH.arc(USER_X, USER_Y, RING_RADIUS, 0, Math.PI * 2);
-    BRUSH.stroke();
-
-    BRUSH.restore();
+  if (!window.REMOVE_CIRCLE) {
+    const RING_RADIUS = 0.04 * SCREEN_SIZE;
+    const RING_WIDTH = 1.5 + CIRCLE_TIMER * 0.15;
+    const RING_ALPHA = Math.min(CIRCLE_TIMER * 0.07, 1);
+  
+    if (USER_TIME > 0 && RING_ALPHA > 0.001) {
+      BRUSH.save();
+  
+      BRUSH.lineWidth = RING_WIDTH;
+      BRUSH.strokeStyle = 'rgba(0, 0, 0, 1)';
+      BRUSH.globalAlpha = RING_ALPHA;
+  
+      BRUSH.beginPath();
+      BRUSH.arc(USER_X, USER_Y, RING_RADIUS, 0, Math.PI * 2);
+      BRUSH.stroke();
+  
+      BRUSH.restore();
+    }
   }
 
   // Lines between nearby stars
