@@ -51,7 +51,24 @@ function freeScrollLayout(PAGE = getPage()) {
   });
 }
 
+// Lock vertical scrolling to #transitionContainer only
+function lockScrollToContainer(PAGE = getPage()) {
+  const HTML = document.documentElement;
+  const BODY = document.body;
 
+  if (!HTML || !BODY || !PAGE) return;
+
+  // Prevent window-level scrolling
+  HTML.style.overflowY = "hidden";
+
+  // Keep body pinned to viewport height
+  BODY.style.height = "100dvh";
+  BODY.style.overflow = "hidden";
+
+  // Allow scrolling only inside the page container
+  PAGE.style.overflowY = "auto";
+  PAGE.style.webkitOverflowScrolling = "touch"; // smooth iOS momentum
+}
 
 /*---------- PAGE LOAD ----------*/
 window.addEventListener("load", () => {
@@ -83,7 +100,7 @@ window.addEventListener("load", () => {
   // Trigger slide-in
   requestAnimationFrame(() => {
     PAGE.classList.add("ready");
-    //PAGE.addEventListener("transitionend", () => lockScrollToContainer(PAGE), { once: true });
+    PAGE.addEventListener("transitionend", () => lockScrollToContainer(PAGE), { once: true });
   });
 
   // Back button visibility:
@@ -114,7 +131,7 @@ window.addEventListener("pageshow", (event) => {
   if (event.persisted || performance?.getEntriesByType("navigation")[0]?.type === "back_forward") {
     PAGE.classList.remove("slide-out");
     PAGE.classList.add("ready");
-    //lockScrollToContainer(PAGE);
+    lockScrollToContainer(PAGE);
     IS_TRANSITIONING = false;
     PAGE.scrollTop = 0;
   }
