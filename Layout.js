@@ -63,7 +63,6 @@ function lockScrollToContainer(PAGE = getPage()) {
 
   // Keep body pinned to viewport height
   BODY.style.height = "100dvh";
-  BODY.style.overflow = "hidden";
 
   // Allow scrolling only inside the page container
   PAGE.style.overflowY = "auto";
