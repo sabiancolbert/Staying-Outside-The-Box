@@ -44,7 +44,7 @@ function freeScrollLayout(PAGE = getPage()) {
   if (PAGE) PAGE.style.overflowY = "visible";
 
   // Resync canvas after scrollbar/layout changes
-  if (typeof resizeCanvas === "function") resizeCanvas();
+  if (typeof resizeCanvas === "function") window.STARFIELD?.resize?.();
 
   requestAnimationFrame(() => {
     try { window.scrollTo(0, CURRENT_SCROLL); } catch {}
@@ -142,8 +142,10 @@ window.USER_CIRCLE.circle_active = true;
   if (!PAGE) return (location.href = URL);
 
   // Pause starfield safely if Starfield.js is loaded
-  if (typeof FREEZE_CONSTELLATION !== "undefined") FREEZE_CONSTELLATION = true;
-  if (typeof saveStarsToStorage === "function") saveStarsToStorage();
+  if (typeof FREEZE_CONSTELLATION !== "undefined") window.STARFIELD?.freeze(true);
+  if (typeof saveStarsToStorage === "function") window.STARFIELD?.save?.();
+  
+
 
   // Compute slide distance
   const DIST = window.innerHeight + (PAGE.scrollTop ?? 0);
