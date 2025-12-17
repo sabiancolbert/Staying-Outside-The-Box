@@ -257,7 +257,7 @@ function moveStars() {
 
 
 
-    const ATTRACT_STRENGTH = 500;
+    const ATTRACT_STRENGTH = 300;
     const REPEL_STRENGTH = 380;
     
     
