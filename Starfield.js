@@ -448,17 +448,21 @@ function moveStars() {
     STAR.momentumX += 0.05 * USER_SPEED * STAR.vx;
     STAR.momentumY += 0.05 * USER_SPEED * STAR.vy;
 
+    // Make a variable we can clamp without lowering momentum
+    let FORCE_X = STAR.momentumX + randomBetween(-0.2, 0.2);
+    let FORCE_Y = STAR.momentumY + randomBetween(-0.2, 0.2);
+
     // Clamp momentum magnitude
     const LIMIT = 9;
     const HYPOT = Math.hypot(STAR.momentumX, STAR.momentumY);
     if (HYPOT > LIMIT) {
-      STAR.momentumX *= LIMIT / HYPOT;
-      STAR.momentumY *= LIMIT / HYPOT;
+      FORCE_X *= LIMIT / HYPOT;
+      FORCE_Y *= LIMIT / HYPOT;
     }
 
     // Apply motion (passive velocity + momentum + tiny jitter)
-    STAR.x += STAR.vx + STAR.momentumX + randomBetween(-0.2, 0.2);
-    STAR.y += STAR.vy + STAR.momentumY + randomBetween(-0.2, 0.2);
+    STAR.x += STAR.vx + FORCE_X;
+    STAR.y += STAR.vy + FORCE_Y;
 
     // Momentum decay
     STAR.momentumX *= 0.98;
