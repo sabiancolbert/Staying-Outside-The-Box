@@ -73,12 +73,12 @@ function saveStarsToStorage() {
         userX: USER_X,
         userY: USER_Y,
         userTime: USER_TIME,
-        META.attractStrength: ATTRACT_STRENGTH,
-        META.attractRadius: ATTRACT_RADIUS,
-        META.attractScale: ATTRACT_SCALE,
-        META.repelStrength: REPEL_STRENGTH,
-        META.repelRadius: REPEL_RADIUS,
-        META.repelScale: REPEL_SCALE
+        attractStrength: ATTRACT_STRENGTH,
+        attractRadius: ATTRACT_RADIUS,
+        attractScale: ATTRACT_SCALE,
+        repelStrength: REPEL_STRENGTH,
+        repelRadius: REPEL_RADIUS,
+        repelScale: REPEL_SCALE
       })
     );
   } catch (ERR) {
@@ -155,12 +155,13 @@ function initStars() {
           // Restore motion state and pointer info
           REPEL_TIMER = META.repelTimer ?? 0;
           USER_SPEED = META.userSpeed ?? 0;
-          ATTRACT_STRENGTH = META.attractStrength;
-          ATTRACT_RADIUS   = META.attractRadius;
-          ATTRACT_SCALE    = META.attractScale;
-          REPEL_STRENGTH   = META.repelStrength;
-          REPEL_RADIUS     = META.repelRadius;
-          REPEL_SCALE      = META.repelScale;
+          ATTRACT_STRENGTH = META.attractStrength ?? ATTRACT_STRENGTH;
+          ATTRACT_RADIUS   = META.attractRadius   ?? ATTRACT_RADIUS;
+          ATTRACT_SCALE    = META.attractScale    ?? ATTRACT_SCALE;
+          
+          REPEL_STRENGTH   = META.repelStrength   ?? REPEL_STRENGTH;
+          REPEL_RADIUS     = META.repelRadius     ?? REPEL_RADIUS;
+          REPEL_SCALE      = META.repelScale      ?? REPEL_SCALE;
 
           if (typeof META.userX === 'number') USER_X = META.userX;
           if (typeof META.userY === 'number') USER_Y = META.userY;
@@ -233,10 +234,16 @@ function createStars() {
 
 
 
-
-
-
-/*---------- Star animation step ----------*/
+ 
+/*==============================================================*
+ *                 GRAVITY CONTROL BINDING SYSTEM
+ *==============================================================*
+ *  Purpose:
+ *   - Bind range + number inputs + label text to JS state vars
+ *   - Initialize UI from existing JS values (NOT HTML defaults)
+ *   - Stay safe on pages where controls do not exist
+ *   - Keep custom slider fill visuals in sync
+ *==============================================================*/
 
 let ATTRACT_STRENGTH = 0.35;   // was 50
 let ATTRACT_RADIUS   = 260;    // pixels
@@ -245,14 +252,24 @@ let ATTRACT_SCALE    = 2.2;    // curve shaping
 let REPEL_STRENGTH   = 0.85;   // was 126
 let REPEL_RADIUS     = 160;    // pixels (tighter than attract usually feels nicer)
 let REPEL_SCALE      = 2.6;
-    
-// Debugging tool
-function bindControl(id, setter) {
+   
+
+/**
+ * Bind a gravity control trio:
+ *   slider  (#ID)
+ *   number  (#ID_num)
+ *   label   (#ID_val)
+ *
+ * @param {string} id             Base control ID
+ * @param {function} setter      Function to update JS variable
+ * @param {number} initialValue  JS-side value to seed the UI
+ */
+function bindControl(id, setter, initialValue) {
   const slider = document.getElementById(id);
+  if (!slider) return false; // page does not have this control
+
   const number = document.getElementById(id + '_num');
   const label  = document.getElementById(id + '_val');
-
-  if (!slider) return;
 
   const min = Number(slider.min || (number && number.min) || 0);
   const max = Number(slider.max || (number && number.max) || 10);
@@ -265,29 +282,69 @@ function bindControl(id, setter) {
 
     slider.value = String(v);
     if (number) number.value = String(v);
-    if (label) label.textContent = String(v);
+    if (label)  label.textContent = String(v);
+
     setter(v);
+
+    // Nudge styled sliders to repaint their fill
+    slider.dispatchEvent(new Event('input', { bubbles: true }));
   };
 
-  // init from slider's current value
-  apply(slider.value);
+  // ------------------------------------------------------------
+  // INITIALIZATION
+  // ------------------------------------------------------------
+  // IMPORTANT:
+  // We seed from the JS variable, NOT the HTML attribute.
+  // This allows values restored from storage to win.
+  // ------------------------------------------------------------
+  apply(initialValue ?? slider.value);
+
+  // ------------------------------------------------------------
+  // EVENT WIRING
+  // ------------------------------------------------------------
 
   slider.addEventListener('input', () => apply(slider.value));
 
   if (number) {
-    number.addEventListener('input', () => apply(number.value)); // live typing
-    number.addEventListener('change', () => apply(number.value)); // on blur/enter
+    number.addEventListener('input', () => apply(number.value));
+    number.addEventListener('change', () => apply(number.value));
   }
+
+  return true;
 }
 
+/*==============================================================*
+ *              INITIALIZE CONTROLS (IF PRESENT)
+ *==============================================================*/
 
-  bindControl('ATTRACT_STRENGTH', v => ATTRACT_STRENGTH = v);
-  bindControl('ATTRACT_RADIUS',   v => ATTRACT_RADIUS   = v);
-  bindControl('ATTRACT_SCALE',    v => ATTRACT_SCALE    = v);
+function initGravityControlsIfPresent() {
+  // Quick escape on pages without the UI
+  if (!document.getElementById('ATTRACT_STRENGTH') &&
+      !document.getElementById('REPEL_STRENGTH')) {
+    return;
+  }
 
-  bindControl('REPEL_STRENGTH',   v => REPEL_STRENGTH   = v);
-  bindControl('REPEL_RADIUS',     v => REPEL_RADIUS     = v);
-  bindControl('REPEL_SCALE',      v => REPEL_SCALE      = v);
+  // ---- ATTRACT ----
+  bindControl('ATTRACT_STRENGTH', v => ATTRACT_STRENGTH = v, ATTRACT_STRENGTH);
+  bindControl('ATTRACT_RADIUS',   v => ATTRACT_RADIUS   = v, ATTRACT_RADIUS);
+  bindControl('ATTRACT_SCALE',    v => ATTRACT_SCALE    = v, ATTRACT_SCALE);
+
+  // ---- REPEL ----
+  bindControl('REPEL_STRENGTH',   v => REPEL_STRENGTH   = v, REPEL_STRENGTH);
+  bindControl('REPEL_RADIUS',     v => REPEL_RADIUS     = v, REPEL_RADIUS);
+  bindControl('REPEL_SCALE',      v => REPEL_SCALE      = v, REPEL_SCALE);
+}
+
+// Safe to call once DOM exists
+document.addEventListener('DOMContentLoaded', initGravityControlsIfPresent);
+
+
+
+
+
+
+
+/*---------- Star animation step ----------*/
 
 // Move, fade, and wrap stars around user interaction
 function moveStars() {
