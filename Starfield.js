@@ -465,8 +465,8 @@ function moveStars() {
     }
     
     // Global boost: user interaction increases baseline drift speed
-    STAR.momentumX += STAR.vx * Math.min(20, 0.05 * USER_SPEED);
-    STAR.momentumY += STAR.vy * Math.min(20, 0.05 * USER_SPEED);
+    STAR.momentumX += STAR.vx * Math.min(10, 0.05 * USER_SPEED);
+    STAR.momentumY += STAR.vy * Math.min(10, 0.05 * USER_SPEED);
 
     // Make a variable we can clamp without lowering momentum
     let FORCE_X = STAR.momentumX;
