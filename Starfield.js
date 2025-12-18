@@ -238,38 +238,23 @@ function createStars() {
 /*==============================================================*
  *                 GRAVITY CONTROL BINDING SYSTEM
  *==============================================================*
- *  Purpose:
- *   - Bind range + number inputs + label text to JS state vars
- *   - Initialize UI from existing JS values (NOT HTML defaults)
- *   - Stay safe on pages where controls do not exist
- *   - Keep custom slider fill visuals in sync
+ *  Binds:
+ *   - slider  (#ID)
+ *   - number  (#ID_num)
+ *   - stepper buttons inside same .ctl: .stepBtn[data-step="-1|1"]
+ *
+ *  Initializes UI from JS values (restored values win).
  *==============================================================*/
 
-let ATTRACT_STRENGTH = 0.35;   // was 50
-let ATTRACT_RADIUS   = 260;    // pixels
-let ATTRACT_SCALE    = 2.2;    // curve shaping
-
-let REPEL_STRENGTH   = 0.85;   // was 126
-let REPEL_RADIUS     = 160;    // pixels (tighter than attract usually feels nicer)
-let REPEL_SCALE      = 2.6;
-   
-
-/**
- * Bind a gravity control trio:
- *   slider  (#ID)
- *   number  (#ID_num)
- *   label   (#ID_val)
- *
- * @param {string} id             Base control ID
- * @param {function} setter      Function to update JS variable
- * @param {number} initialValue  JS-side value to seed the UI
- */
 function bindControl(id, setter, initialValue) {
   const slider = document.getElementById(id);
-  if (!slider) return false; // page does not have this control
+  if (!slider) return false;
 
   const number = document.getElementById(id + '_num');
-  const label  = document.getElementById(id + '_val');
+
+  // Find the nearest .ctl container, then the stepper buttons
+  const ctl = slider.closest('.ctl') || slider.parentElement;
+  const stepBtns = ctl ? ctl.querySelectorAll('.stepBtn[data-step]') : [];
 
   const min = Number(slider.min || (number && number.min) || 0);
   const max = Number(slider.max || (number && number.max) || 10);
@@ -282,61 +267,75 @@ function bindControl(id, setter, initialValue) {
 
     slider.value = String(v);
     if (number) number.value = String(v);
-    if (label)  label.textContent = String(v);
 
     setter(v);
 
-    // Nudge styled sliders to repaint their fill
+    // Keep your slider gradient fill in sync (if you use that)
     slider.dispatchEvent(new Event('input', { bubbles: true }));
   };
 
-  // ------------------------------------------------------------
-  // INITIALIZATION
-  // ------------------------------------------------------------
-  // IMPORTANT:
-  // We seed from the JS variable, NOT the HTML attribute.
-  // This allows values restored from storage to win.
-  // ------------------------------------------------------------
+  // Step size: prefer slider.step, else number.step, else 1
+  const rawStep = Number(slider.step || (number && number.step) || 1);
+  const step = Number.isFinite(rawStep) && rawStep > 0 ? rawStep : 1;
+
+  const nudge = (dir) => {
+    const current = Number(slider.value);
+    const next = current + dir * step;
+    apply(next);
+  };
+
+  // Initialize from JS value (NOT HTML)
   apply(initialValue ?? slider.value);
 
-  // ------------------------------------------------------------
-  // EVENT WIRING
-  // ------------------------------------------------------------
-
+  // Slider drag
   slider.addEventListener('input', () => apply(slider.value));
 
+  // Number typing
   if (number) {
     number.addEventListener('input', () => apply(number.value));
     number.addEventListener('change', () => apply(number.value));
   }
 
+  // +/- buttons
+  stepBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const dir = Number(btn.dataset.step) || 0; // -1 or 1
+      if (!dir) return;
+      nudge(dir);
+    });
+  });
+
   return true;
 }
 
-/*==============================================================*
- *              INITIALIZE CONTROLS (IF PRESENT)
- *==============================================================*/
-
 function initGravityControlsIfPresent() {
-  // Quick escape on pages without the UI
+  // Bail quickly if page has none
   if (!document.getElementById('ATTRACT_STRENGTH') &&
       !document.getElementById('REPEL_STRENGTH')) {
     return;
   }
 
-  // ---- ATTRACT ----
+  // ATTRACT
   bindControl('ATTRACT_STRENGTH', v => ATTRACT_STRENGTH = v, ATTRACT_STRENGTH);
   bindControl('ATTRACT_RADIUS',   v => ATTRACT_RADIUS   = v, ATTRACT_RADIUS);
   bindControl('ATTRACT_SCALE',    v => ATTRACT_SCALE    = v, ATTRACT_SCALE);
 
-  // ---- REPEL ----
+  // REPEL
   bindControl('REPEL_STRENGTH',   v => REPEL_STRENGTH   = v, REPEL_STRENGTH);
   bindControl('REPEL_RADIUS',     v => REPEL_RADIUS     = v, REPEL_RADIUS);
   bindControl('REPEL_SCALE',      v => REPEL_SCALE      = v, REPEL_SCALE);
 }
 
-// Safe to call once DOM exists
 document.addEventListener('DOMContentLoaded', initGravityControlsIfPresent);
+
+
+
+
+
+
+
+
+
 
 
 
