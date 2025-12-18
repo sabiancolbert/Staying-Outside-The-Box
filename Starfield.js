@@ -226,14 +226,14 @@ function createStars() {
 
 /*---------- Star animation step ----------*/
 
-    let ATTRACT_STRENGTH = 50;
-    let ATTRACT_RADIUS = 245;
-    let ATTRACT_SCALE = 5.5;
-    
-    let REPEL_STRENGTH = 126;
-    let REPEL_RADIUS = 277;
-    let REPEL_SCALE = 3.8;
+let ATTRACT_STRENGTH = 0.35;   // was 50
+let ATTRACT_RADIUS   = 260;    // pixels
+let ATTRACT_SCALE    = 2.2;    // curve shaping
 
+let REPEL_STRENGTH   = 0.85;   // was 126
+let REPEL_RADIUS     = 160;    // pixels (tighter than attract usually feels nicer)
+let REPEL_SCALE      = 2.6;
+    
 // Debugging tool
 function bindControl(id, setter) {
   const slider = document.getElementById(id);
