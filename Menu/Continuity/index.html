@@ -61,7 +61,7 @@
         flex:1;
 
         background: transparent;
-        color: inherit;
+        color: var(--LINK_LIGHT);
 
         line-height: 1;
         font: 3dvmin Arial;
@@ -83,6 +83,7 @@
         transition:
           transform var(--SLOW_TRANSFORM),
           box-shadow var(--SLOW_SHADOW),
+          color var(--SLOW_COLOR),
           border-color var(--SLOW_BORDER);
       }
 
@@ -96,6 +97,7 @@
       input:active {
         transform: scale(1.05);
         box-shadow: var(--SHADOW);
+        text-shadow: var(--SHADOW);
       }
 
       .stepBtn:focus-visible,
