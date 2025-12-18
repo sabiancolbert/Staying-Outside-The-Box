@@ -477,8 +477,8 @@ function moveStars() {
     }
     
     // Global boost: user interaction increases baseline drift speed
-    const BOOST_X += Math.min(20 * STAR.vx, 0.05 * USER_SPEED * STAR.vx);
-    const BOOST_Y += Math.min(20 * STAR.vy, 0.05 * USER_SPEED * STAR.vy);
+    const BOOST_X = Math.min(20 * STAR.vx, 0.05 * USER_SPEED * STAR.vx);
+    const BOOST_Y = Math.min(20 * STAR.vy, 0.05 * USER_SPEED * STAR.vy);
 
     // Apply motion (passive velocity + momentum + tiny jitter)
     STAR.x += STAR.vx + FORCE_X + BOOST_X;
