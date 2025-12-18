@@ -30,8 +30,8 @@
      *   - Focus behavior (no default blue ring)
      *==============================================================*/
     
-    /*==============================================================*
- *                 0 STEPPER BUTTONS (+ / -)
+/*==============================================================*
+ *                  STEPPER BUTTONS ( + / - )
  *==============================================================*/
 
 footer .stepper{
@@ -41,20 +41,28 @@ footer .stepper{
 }
 
 footer .stepBtn{
-  position: relative;
   display: inline-grid;
   place-items: center;
 
-  width: auto;
+  margin: 0 5%;
+  width: 15%;
   height: 10dvmin;
 
   background: transparent;
   color: inherit;
 
   font: 6dvmin Arial;
-  border-radius: 50%;
   border: none;
+  border-radius: 50%;
   object-fit: cover;
+
+  /* SAME BACKGROUND LOGIC AS NUMBER INPUT */
+  background-image: url("/Resources/Button Border.webp");
+  background-size: 110% 110%;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  box-sizing: border-box;
 
   transition:
     transform var(--SLOW_TRANSFORM),
@@ -62,25 +70,15 @@ footer .stepBtn{
     border-color var(--SLOW_BORDER);
 }
 
-footer .stepBtn::before{
-  content: "";
-  position: absolute;
-  inset: -2dvmin;                         /* Thickness of border frame */
-  background-image: url("/Resources/Button Border.webp");
-  background-size: 100% 100%;
-  background-repeat: no-repeat;
-  background-position: center;
-  border-radius: 50%;
-  z-index: -1;
-  pointer-events: none;
-}
+/*==============================================================*
+ *                INTERACTION STATES (SHARED)
+ *==============================================================*/
 
 footer .stepBtn:hover,
 footer .stepBtn:active,
 footer input:hover,
 footer input:active{
   transform: scale(1.05);
-  border-color: var(--LINK_DARK);
   box-shadow: var(--SHADOW);
 }
 
@@ -88,7 +86,6 @@ footer .stepBtn:focus-visible,
 footer input:focus-visible{
   outline: none;
   box-shadow: var(--SHADOW);
-  border-color: var(--LINK_DARK);
 }
     
     /*==============================*
@@ -139,18 +136,15 @@ footer input:focus-visible{
       grid-column: 1 / -1;
     }
     
-    footer span{
-      text-align: right;
-    }
-    
     
     /*==============================*
      *  4) NUMBER INPUTS (PILL BUTTON LOOK)
      *==============================*/
     
     footer input[type="number"]{
-      padding: 0.2em 0.6em;
-      width: 8em;
+      margin: 0 5%;
+      width: 40%;
+      height: 10dvmin;
       font-size: 6dvmin;
       text-align: center;
     
