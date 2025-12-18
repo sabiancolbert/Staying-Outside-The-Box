@@ -514,10 +514,10 @@ function moveStars() {
   if (USER_SPEED < 0.001) USER_SPEED = 0;
 
   CIRCLE_TIMER *= 0.9;
-  if (CIRCLE_TIMER < 0.001) CIRCLE_TIMER = 0;
+  if (CIRCLE_TIMER < 0.1) CIRCLE_TIMER = 0;
 
   POKE_TIMER *= 0.85;
-  if (POKE_TIMER < 0.001) POKE_TIMER = 0;
+  if (POKE_TIMER < 1) POKE_TIMER = 0;
 
   // Debug readouts (optional; only updates if elements exist)
   const DBG_CIRCLE = document.getElementById('dbgCircle');
