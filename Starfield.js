@@ -438,25 +438,36 @@ function moveStars() {
     if (DISTANCE < RANGE) {
 
       // Linear gradient: 1 at center -> 0 at radius -> stays 0 beyond radius
-      let ATTR_GRADIENT = 1 - (DISTANCE / (ATTRACT_RADIUS || 1));
-      let REPEL_GRADIENT = 1 - (DISTANCE / (REPEL_RADIUS  || 1));
-      // Clamp
-      ATTR_GRADIENT = Math.max(0, ATTR_GRADIENT);
-      REPEL_GRADIENT = Math.max(0, REPEL_GRADIENT);
+let ATTR_GRADIENT =
+  1 - (DISTANCE / ((ATTRACT_RADIUS * (SCALE_TO_SCREEN ** 1.1074846678)) || 1));
 
-      // Shape curve: higher scale = tighter near center, weaker at edge
-      const ATTR_SHAPE = Math.pow(ATTR_GRADIENT, Math.max(0.1, ATTRACT_SCALE));
-      const REPEL_SHAPE = Math.pow(REPEL_GRADIENT, Math.max(0.1, REPEL_SCALE));
+let REPEL_GRADIENT =
+  1 - (DISTANCE / ((REPEL_RADIUS  * (SCALE_TO_SCREEN ** 0.6627301982)) || 1));
 
-      // Attraction (toward user)
-      const ATTRACT = (ATTRACT_STRENGTH * (SCALE_TO_SCREEN ** 2)) * USER_SPEED * ATTR_SHAPE;
-      STAR.momentumX += ATTRACT * TO_USER_X;
-      STAR.momentumY += ATTRACT * TO_USER_Y;
+// Clamp
+ATTR_GRADIENT = Math.max(0, ATTR_GRADIENT);
+REPEL_GRADIENT = Math.max(0, REPEL_GRADIENT);
 
-      // Repulsion (away from user)
-      const REPEL = (REPEL_STRENGTH * (SCALE_TO_SCREEN ** 2)) * USER_SPEED * REPEL_SHAPE;
-      STAR.momentumX += REPEL * -TO_USER_X;
-      STAR.momentumY += REPEL * -TO_USER_Y;
+// Shape curve: higher scale = tighter near center, weaker at edge
+const ATTR_SHAPE =
+  Math.pow(ATTR_GRADIENT, Math.max(0.1, (ATTRACT_SCALE * (SCALE_TO_SCREEN ** -8.8926887145))));
+
+const REPEL_SHAPE =
+  Math.pow(REPEL_GRADIENT, Math.max(0.1, REPEL_SCALE)); // unchanged
+
+// Attraction (toward user)
+const ATTRACT =
+  (ATTRACT_STRENGTH * (SCALE_TO_SCREEN ** -4.1338146581)) * USER_SPEED * ATTR_SHAPE;
+
+STAR.momentumX += ATTRACT * TO_USER_X;
+STAR.momentumY += ATTRACT * TO_USER_Y;
+
+// Repulsion (away from user)
+const REPEL =
+  (REPEL_STRENGTH * (SCALE_TO_SCREEN ** -0.8939849088)) * USER_SPEED * REPEL_SHAPE;
+
+STAR.momentumX += REPEL * -TO_USER_X;
+STAR.momentumY += REPEL * -TO_USER_Y;
 
       // Poke: extra kick away (also respects repel radius)
       const POKE = 0.05 * POKE_TIMER * REPEL_SHAPE;
