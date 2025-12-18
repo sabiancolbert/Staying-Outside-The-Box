@@ -339,18 +339,33 @@ function bindControl(ID, setter, INITIAL_VALUE) {
 
   const clamp = (v) => Math.min(MAX, Math.max(MIN, v));
 
-  const apply = (v) => {
-    v = clamp(Number(v));
-    if (!Number.isFinite(v)) return;
+  const snapToStep = (v) => {
+  // If step is "any" or 0, don't snap
+  if (!Number.isFinite(STEP) || STEP <= 0) return v;
 
-    SLIDER.value = String(v);
-    if (HTML_ELEMENT) HTML_ELEMENT.value = String(v);
+  // Snap relative to MIN so 0.1 works properly even if min isn't 0
+  const snapped = MIN + Math.round((v - MIN) / STEP) * STEP;
 
-    setter(v);
+  // Kill float fuzz based on step decimals (0.1 -> 1 decimal, 0.01 -> 2, etc.)
+  const decimals = (String(STEP).split('.')[1] || '').length;
+  return Number(snapped.toFixed(decimals));
+};
 
-    // Keep your SLIDER gradient fill in sync (if you use that)
-    SLIDER.dispatchEvent(new Event('input', { bubbles: true }));
-  };
+const apply = (v) => {
+  v = Number(v);
+  if (!Number.isFinite(v)) return;
+
+  v = clamp(v);
+  v = snapToStep(v);
+
+  SLIDER.value = String(v);
+  if (HTML_ELEMENT) HTML_ELEMENT.value = String(v);
+
+  setter(v);
+
+  // Keep your SLIDER gradient fill in sync (if you use that)
+  SLIDER.dispatchEvent(new Event('input', { bubbles: true }));
+};
 
   // Step size: prefer slider.step, else number.step, else 1
   const RAW_STEP = Number(SLIDER.step || (HTML_ELEMENT && HTML_ELEMENT.step) || 1);
