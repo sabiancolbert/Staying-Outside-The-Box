@@ -473,7 +473,7 @@ function moveStars() {
     let FORCE_Y = STAR.momentumY;
 
     // Clamp force magnitude
-    const LIMIT = 5;
+    const LIMIT = 5 * (SCALE_TO_SCREEN ** 2);
     const HYPOT = Math.hypot(FORCE_X, FORCE_Y);
     if (HYPOT > LIMIT) {
       FORCE_X *= LIMIT / HYPOT;
