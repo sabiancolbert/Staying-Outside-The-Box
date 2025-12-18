@@ -468,8 +468,8 @@ function moveStars() {
     STAR.momentumY += 0.05 * USER_SPEED * STAR.vy;
 
     // Make a variable we can clamp without lowering momentum
-    let FORCE_X = STAR.momentumX + randomBetween(-0.2, 0.2);
-    let FORCE_Y = STAR.momentumY + randomBetween(-0.2, 0.2);
+    let FORCE_X = STAR.momentumX;// + randomBetween(-0.2, 0.2);
+    let FORCE_Y = STAR.momentumY;// + randomBetween(-0.2, 0.2);
 
     // Clamp force magnitude
     const LIMIT = 5;
