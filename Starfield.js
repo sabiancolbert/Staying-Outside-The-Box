@@ -578,7 +578,7 @@ STAR.momentumY += REPEL * -TO_USER_Y;
   if (POKE_TIMER < 1) POKE_TIMER = 0;
 
   // Debug readouts
-  const MISC_DEBUG = STARS[0].momentumX;
+  const MISC_DEBUG = 0; //<-- Hey there! Change this to a variable to see live updates
   const DBG = document.getElementById('miscDbg');
   if (DBG) DBG.textContent = MISC_DEBUG.toFixed(3);
 
