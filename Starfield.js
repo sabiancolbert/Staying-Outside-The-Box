@@ -311,12 +311,12 @@ function enableStepperHold(button, onStep) {
  *   - Dispatches 'input' on slider after apply to keep fill sync.
  *==============================================================*/
 
-let ATTRACT_STRENGTH = 0;
-let ATTRACT_RADIUS = 0;
-let ATTRACT_SCALE = 0;
-let REPEL_STRENGTH = 0;
-let REPEL_RADIUS = 0;
-let REPEL_SCALE = 0;
+let ATTRACT_STRENGTH = 1.2;
+let ATTRACT_RADIUS = 260;
+let ATTRACT_SCALE = 2.4;
+let REPEL_STRENGTH = 2.4;
+let REPEL_RADIUS = 140;
+let REPEL_SCALE = 3.2;
 
 function bindControl(id, setter, initialValue) {
   const slider = document.getElementById(id);
