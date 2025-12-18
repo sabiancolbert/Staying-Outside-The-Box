@@ -467,41 +467,6 @@ function moveStars() {
     STAR.momentumX += 0.05 * USER_SPEED * STAR.vx;
     STAR.momentumY += 0.05 * USER_SPEED * STAR.vy;
     
-    // Wrap when passive OR far OR heavy poke (radius-aware, fully off-screen)
-    if (CIRCLE_TIMER == 0 || DISTANCE > 200 || POKE_TIMER > 1000) {
-      const R = (STAR.whiteValue * 2 + STAR.size) || 0; // draw radius
-      if (STAR.x < -R) STAR.x = WIDTH + R;
-      else if (STAR.x > WIDTH + R) STAR.x = -R;
-      if (STAR.y < -R) STAR.y = HEIGHT + R;
-      else if (STAR.y > HEIGHT + R) STAR.y = -R;
-    }
-    // Otherwise bounce (interactive mode, radius-aware reflection)
-    else {
-      const R = (STAR.whiteValue * 2 + STAR.size) || 0;
-
-      // Left/right walls
-      if (STAR.x < R) {
-        STAR.x = 2 * R - STAR.x;
-        STAR.vx = Math.abs(STAR.vx);
-        STAR.momentumX = Math.abs(STAR.momentumX);
-      } else if (STAR.x > WIDTH - R) {
-        STAR.x = 2 * (WIDTH - R) - STAR.x;
-        STAR.vx = -Math.abs(STAR.vx);
-        STAR.momentumX = -Math.abs(STAR.momentumX);
-      }
-
-      // Top/bottom walls
-      if (STAR.y < R) {
-        STAR.y = 2 * R - STAR.y;
-        STAR.vy = Math.abs(STAR.vy);
-        STAR.momentumY = Math.abs(STAR.momentumY);
-      } else if (STAR.y > HEIGHT - R) {
-        STAR.y = 2 * (HEIGHT - R) - STAR.y;
-        STAR.vy = -Math.abs(STAR.vy);
-        STAR.momentumY = -Math.abs(STAR.momentumY);
-      }
-    }
-    
     // Make a variable we can clamp without lowering momentum
     let FORCE_X = STAR.momentumX;
     let FORCE_Y = STAR.momentumY;
@@ -521,7 +486,50 @@ function moveStars() {
     // Momentum decay
     STAR.momentumX *= 0.98;
     STAR.momentumY *= 0.98;
-
+    
+    // Wrap when passive OR far OR heavy poke (radius-aware, fully off-screen)
+    if (CIRCLE_TIMER == 0 || DISTANCE > 200 || POKE_TIMER > 1000) {
+      const R = (STAR.whiteValue * 2 + STAR.size) || 0; // draw radius
+      if (STAR.x < -R) STAR.x = WIDTH + R;
+      else if (STAR.x > WIDTH + R) STAR.x = -R;
+      if (STAR.y < -R) STAR.y = HEIGHT + R;
+      else if (STAR.y > HEIGHT + R) STAR.y = -R;
+    }
+    // Otherwise bounce (interactive mode, radius-aware reflection)
+    else {
+      const R = (STAR.whiteValue * 2 + STAR.size) || 0;
+    
+      // Left/right walls
+      if (STAR.x < R) {
+        STAR.x = 2 * R - STAR.x;
+    
+        // True reflection: flip direction (no sign-forcing)
+        STAR.vx = -STAR.vx;
+        STAR.momentumX = -STAR.momentumX;
+      } else if (STAR.x > WIDTH - R) {
+        STAR.x = 2 * (WIDTH - R) - STAR.x;
+    
+        // True reflection
+        STAR.vx = -STAR.vx;
+        STAR.momentumX = -STAR.momentumX;
+      }
+    
+      // Top/bottom walls
+      if (STAR.y < R) {
+        STAR.y = 2 * R - STAR.y;
+    
+        // True reflection
+        STAR.vy = -STAR.vy;
+        STAR.momentumY = -STAR.momentumY;
+      } else if (STAR.y > HEIGHT - R) {
+        STAR.y = 2 * (HEIGHT - R) - STAR.y;
+    
+        // True reflection
+        STAR.vy = -STAR.vy;
+        STAR.momentumY = -STAR.momentumY;
+      }
+    }
+    
     // White flash decay
     if (STAR.whiteValue > 0) {
       STAR.whiteValue *= 0.98;
