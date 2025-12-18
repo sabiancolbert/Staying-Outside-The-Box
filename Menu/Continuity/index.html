@@ -19,84 +19,233 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=New+Rocker&display=swap" rel="stylesheet">
     <style>
-      footer {
-        position: absolute;
-        max-width: 100dvw;
-        margin-top: 100dvh;
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-end;
-      }
+    /*==============================================================*
+     *                 GRAVITY CONTROLS (FOOTER UI)
+     *==============================================================*
+     *  This block styles the hidden-scroll footer panel + its controls:
+     *   - Footer placement (off-screen reveal space)
+     *   - Two-column attract/repel layout (stacks on narrow screens)
+     *   - Slider styling (black fill, grey empty, red thumb)
+     *   - Number inputs styled like your pill buttons
+     *   - Focus behavior (no default blue ring)
+     *==============================================================*/
     
-      footer .ctl {
-        display:grid;
-        grid-template-columns: 1fr auto;
-        grid-gap:4px 8px;
-        margin-bottom:8px;
-        align-items:center;
-      }
-      footer label {
-        grid-column:1 / -1;
-      }
-      footer input[type="range"] {
-        grid-column:1 / -1;
-      }
-      
-      
-      footer input[type="number"] {
-        padding: 0.5em 1.5em;
-        width:8em;
-        font-size:6dvmin;
-        text-align:center;
-
-  border: none;
-  border-radius: 9999px;
-  background: transparent;
-
-  font-family: 'New Rocker';
-  color:inherit;
-  
-
-  background-image: url("/Resources/Button Border.webp");
-  background-size: 110% 110%;
-  background-position: center;
-  background-repeat: no-repeat;
-      }
-      footer span {
-        text-align:right;
-      }
+    
+    /*==============================*
+     *  1) FOOTER PANEL POSITIONING
+     *==============================*/
+    
+    footer{
+      position: absolute;
+      width: 100%;
+      max-width: 100%;
+      margin-top: 100dvh;           /* keeps footer below first viewport */
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+    
+    
+    /*==============================*
+     *  2) GRID LAYOUT (ATTRACT/REPEL)
+     *==============================*/
+    
+    .gravityGrid{
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    
+      width: min(900px, 96vw);
+      margin: 50dvw auto 0;         /* your “play space” based on viewport width */
+      padding: 12px;
+    
+      box-sizing: border-box;
+    }
+    
+    
+    /*==============================*
+     *  3) CONTROL ROWS (LABEL + INPUTS)
+     *==============================*/
+    
+    footer .ctl{
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 4px 8px;
+      margin-bottom: 8px;
+      align-items: center;
+    }
+    
+    footer label{
+      grid-column: 1 / -1;
+    }
+    
+    footer span{
+      text-align: right;
+    }
+    
+    
+    /*==============================*
+     *  4) NUMBER INPUTS (PILL BUTTON LOOK)
+     *==============================*/
+    
+    footer input[type="number"]{
+      padding: 0.5em 1.5em;
+      width: 8em;
+      font-size: 6dvmin;
+      text-align: center;
+    
+      border: none;
+      border-radius: 9999px;
+      background: transparent;
+    
+      font-family: 'New Rocker';
+      color: inherit;
+    
+      background-image: url("/Resources/Button Border.webp");
+      background-size: 110% 110%;
+      background-position: center;
+      background-repeat: no-repeat;
+    
+      box-sizing: border-box;
+    }
+    
+    /* Keep the little up/down steppers where supported */
+    input[type="number"]{
+      appearance: auto;
+    }
+    
+    
+    /*==============================*
+     *  5) CREEPY SLIDERS (RANGE INPUTS)
+     *     - Filled track: black
+     *     - Empty track: #bdbdbd
+     *     - Thumb: #ee0000
+     *==============================*/
+    
+    /* Base slider reset + default track (WebKit uses background on the input) */
+    footer input[type="range"]{
+      -webkit-appearance: none;
+      appearance: none;
+    
+      grid-column: 1 / -1;
+      width: 100%;
+      height: 10px;
+      border-radius: 999px;
+    
+      /* Default split (50/50). Optional JS can update this live. */
+      background: linear-gradient(
+        to right,
+        #000 0%,
+        #000 50%,
+        #bdbdbd 50%,
+        #bdbdbd 100%
+      );
+    
+      outline: none;
+      cursor: pointer;
+    }
+    
+    /* WebKit track */
+    footer input[type="range"]::-webkit-slider-runnable-track{
+      height: 10px;
+      border-radius: 999px;
+    }
+    
+    /* WebKit thumb (Chrome/Edge/Safari/iOS) */
+    footer input[type="range"]::-webkit-slider-thumb{
+      -webkit-appearance: none;
+      appearance: none;
+    
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+    
+      background: #ee0000;
+      border: 2px solid #000;
+    
+      box-shadow:
+        0 0 6px rgba(238, 0, 0, 0.9),
+        inset 0 0 4px rgba(0, 0, 0, 0.8);
+    
+      margin-top: -6px; /* centers thumb on 10px track */
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    
+    /* Thumb feedback */
+    footer input[type="range"]:hover::-webkit-slider-thumb{
+      box-shadow:
+        0 0 10px rgba(238, 0, 0, 1),
+        inset 0 0 4px rgba(0, 0, 0, 0.9);
+    }
+    
+    footer input[type="range"]:active::-webkit-slider-thumb{
+      transform: scale(1.15);
+    }
+    
+    /* Keyboard focus (replace the browser blue ring) */
+    footer input[type="range"]:focus-visible::-webkit-slider-thumb{
+      box-shadow:
+        0 0 0 3px rgba(0, 0, 0, 0.9),
+        0 0 0 6px rgba(238, 0, 0, 0.9);
+    }
+    
+    /* Firefox track + progress */
+    footer input[type="range"]::-moz-range-track{
+      height: 10px;
+      border-radius: 999px;
+      background: #bdbdbd;
+    }
+    
+    footer input[type="range"]::-moz-range-progress{
+      height: 10px;
+      border-radius: 999px;
+      background: #000;
+    }
+    
+    footer input[type="range"]::-moz-range-thumb{
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+    
+      background: #ee0000;
+      border: 2px solid #000;
+    
+      box-shadow:
+        0 0 6px rgba(238, 0, 0, 0.9),
+        inset 0 0 4px rgba(0, 0, 0, 0.8);
+    
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    
+    footer input[type="range"]:hover::-moz-range-thumb{
+      box-shadow:
+        0 0 10px rgba(238, 0, 0, 1),
+        inset 0 0 4px rgba(0, 0, 0, 0.9);
+    }
+    
+    footer input[type="range"]:active::-moz-range-thumb{
+      transform: scale(1.15);
+    }
+    
+    
+    /*==============================*
+     *  6) FOCUS: DISABLE DEFAULT OUTLINE
+     *==============================*/
+    
+    input:focus{
+      outline: none;
+    }
+    
+    
+    /*==============================*
+     *  7) RESPONSIVE: STACK WHEN NARROW
+     *==============================*/
+    
+    @media (max-width: 500px){
       .gravityGrid{
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
-  width: min(900px, 96vw);
-  margin: 50dvw auto 0;
-}
-input[type="range"]::-webkit-slider-thumb{
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-input[type="range"]:active::-webkit-slider-thumb{
-  transform: scale(1.15);
-}
-
-/* Force number input arrows */
-input[type="number"] {
-  appearance: auto;
-  -webkit-appearance: number-input;
-  -moz-appearance: number-input;
-}
-
-input:focus{
-  outline: none;
-}
-
-/* stack columns on small screens */
-@media (max-width: 500px){
-  .gravityGrid{
-    grid-template-columns: 1fr;
-  }
-}
+        grid-template-columns: 1fr;
+      }
+    }
     </style>
   </head>
   <body>
