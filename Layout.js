@@ -39,11 +39,17 @@ function freeScrollLayout(PAGE = getPage()) {
   const CURRENT_SCROLL =
     PAGE?.scrollTop ?? window.scrollY ?? 0;
 
+  // Document becomes scroller
   HTML.style.overflowY = "auto";
+  BODY.style.overflow = "visible";
   BODY.style.height = "auto";
-  if (PAGE) PAGE.style.overflowY = "visible";
 
-  // Resync canvas after scrollbar/layout changes
+  // Container is NOT scrollable
+  if (PAGE) {
+    PAGE.style.overflow = "visible";
+    PAGE.style.height = "auto";
+  }
+
   if (typeof resizeCanvas === "function") resizeCanvas();
 
   requestAnimationFrame(() => {
@@ -55,18 +61,20 @@ function freeScrollLayout(PAGE = getPage()) {
 function lockScrollToContainer(PAGE = getPage()) {
   const HTML = document.documentElement;
   const BODY = document.body;
-
   if (!HTML || !BODY || !PAGE) return;
 
-  // Prevent window-level scrolling
-  HTML.style.overflowY = "hidden";
+  // Kill document scroll
+  HTML.style.overflow = "hidden";
+  BODY.style.overflow = "hidden";
+  HTML.style.height = "100%";
+  BODY.style.height = "100%";
 
-  // Keep body pinned to viewport height
-  BODY.style.height = "100dvh";
-
-  // Allow scrolling only inside the page container
+  // Single scroll surface
+  PAGE.style.height = "100dvh";
   PAGE.style.overflowY = "auto";
-  PAGE.style.webkitOverflowScrolling = "touch"; // smooth iOS momentum
+  PAGE.style.overflowX = "hidden";
+  PAGE.style.webkitOverflowScrolling = "touch";
+  PAGE.style.overscrollBehavior = "contain";
 }
 
 /*---------- PAGE LOAD ----------*/
