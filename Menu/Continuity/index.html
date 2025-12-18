@@ -361,7 +361,7 @@
           ========================= -->
           <section>
             <h3>Attract</h3>
-
+            <!-- ATTRACT STRENGTH -->
             <div class="controlBlock">
               <label>Strength</label>
               <input id="ATTRACT_STRENGTH" type="range" min="0" max="100" step="1" value="50">
@@ -371,7 +371,7 @@
                 <button class="stepBtn" type="button" data-step="1" aria-label="Increase ATTRACT_STRENGTH">+</button>
               </div>
             </div>
-
+            <!-- ATTRACT RADIUS -->
             <div class="controlBlock">
               <label>Radius</label>
               <input id="ATTRACT_RADIUS" type="range" min="0" max="100" step="1" value="50">
@@ -381,7 +381,7 @@
                 <button class="stepBtn" type="button" data-step="1" aria-label="Increase ATTRACT_RADIUS">+</button>
               </div>
             </div>
-
+            <!-- ATTRACT SCALE -->
             <div class="controlBlock">
               <label>Scale</label>
               <input id="ATTRACT_SCALE" type="range" min="0" max="10" step="0.1" value="5">
@@ -391,6 +391,16 @@
                 <button class="stepBtn" type="button" data-step="1" aria-label="Increase ATTRACT_SCALE">+</button>
               </div>
             </div>
+            <!-- CLAMP -->
+            <div class="controlBlock">
+              <label>Clamp</label>
+              <input id="CLAMP" type="range" min="0" max="10" step="0.1" value="5">
+              <input id="CLAMP_num" type="number" min="0" max="10" step="0.1" value="5">
+              <div class="stepper" role="group" aria-label="CLAMP stepper">
+                <button class="stepBtn" type="button" data-step="-1" aria-label="Decrease CLAMP">-</button>
+                <button class="stepBtn" type="button" data-step="1" aria-label="Increase CLAMP">+</button>
+              </div>
+            </div>
           </section>
 
           <!-- =========================
@@ -398,7 +408,7 @@
           ========================= -->
           <section>
             <h3>Repel</h3>
-
+            <!-- REPEL STRENGTH -->
             <div class="controlBlock">
               <label>Strength</label>
               <input id="REPEL_STRENGTH" type="range" min="0" max="100" step="1" value="50">
@@ -408,7 +418,7 @@
                 <button class="stepBtn" type="button" data-step="1" aria-label="Increase REPEL_STRENGTH">+</button>
               </div>
             </div>
-
+            <!-- REPEL RADIUS -->
             <div class="controlBlock">
               <label>Radius</label>
               <input id="REPEL_RADIUS" type="range" min="0" max="100" step="1" value="50">
@@ -418,7 +428,7 @@
                 <button class="stepBtn" type="button" data-step="1" aria-label="Increase REPEL_RADIUS">+</button>
               </div>
             </div>
-
+            <!-- REPEL SCALE -->
             <div class="controlBlock">
               <label>Scale</label>
               <input id="REPEL_SCALE" type="range" min="0" max="10" step="0.1" value="5">
@@ -426,6 +436,16 @@
               <div class="stepper" role="group" aria-label="REPEL_SCALE stepper">
                 <button class="stepBtn" type="button" data-step="-1" aria-label="Decrease REPEL_SCALE">-</button>
                 <button class="stepBtn" type="button" data-step="1" aria-label="Increase REPEL_SCALE">+</button>
+              </div>
+            </div>
+            <!-- POKE STRENGTH -->
+            <div class="controlBlock">
+              <label>Poke</label>
+              <input id="POKE_STRENGTH" type="range" min="0" max="10" step="0.1" value="5">
+              <input id="POKE_STRENGTH_num" type="number" min="0" max="10" step="0.1" value="5">
+              <div class="stepper" role="group" aria-label="POKE_STRENGTH stepper">
+                <button class="stepBtn" type="button" data-step="-1" aria-label="Decrease POKE_STRENGTH">-</button>
+                <button class="stepBtn" type="button" data-step="1" aria-label="Increase POKE_STRENGTH">+</button>
               </div>
             </div>
           </section>
