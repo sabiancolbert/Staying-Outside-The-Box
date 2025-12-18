@@ -312,12 +312,12 @@ function enableStepperHold(button, onStep) {
  *   - Dispatches 'input' on slider after apply to keep fill sync.
  *==============================================================*/
 
-let ATTRACT_STRENGTH = 0.3;
-let ATTRACT_RADIUS = 260;
-let ATTRACT_SCALE = 2.4;
-let REPEL_STRENGTH = 0.91;
-let REPEL_RADIUS = 140;
-let REPEL_SCALE = 3.2;
+let ATTRACT_STRENGTH = 50;
+let ATTRACT_RADIUS = 50;
+let ATTRACT_SCALE = 5;
+let REPEL_STRENGTH = 50;
+let REPEL_RADIUS = 50;
+let REPEL_SCALE = 5;
 
 function bindControl(ID, setter, INITIAL_VALUE) {
   const SLIDER = document.getElementById(ID);
@@ -458,13 +458,13 @@ REPEL_GRADIENT = Math.max(0, REPEL_GRADIENT);
 const ATTR_SHAPE =
   Math.pow(
     ATTR_GRADIENT,
-    Math.max(0.1, ((ATTRACT_SCALE * 0.048) * (SCALE_TO_SCREEN ** -8.89)))
+    Math.max(0.1, ((ATTRACT_SCALE * 0.48) * (SCALE_TO_SCREEN ** -8.89)))
   );
 
 const REPEL_SHAPE =
   Math.pow(
     REPEL_GRADIENT,
-    Math.max(0.1, (REPEL_SCALE * 0.064))
+    Math.max(0.1, (REPEL_SCALE * 0.64))
   );
   
 // Attraction
