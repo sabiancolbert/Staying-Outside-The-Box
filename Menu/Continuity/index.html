@@ -44,14 +44,14 @@
        *                 STEPPER BUTTONS ( + / - )
        *==============================================================*/
 
-      footer .stepper{
+      .stepper{
         width: 100%;
         justify-self: stretch;
         display: flex;
         justify-content: space-between;
       }
 
-      footer .stepBtn{
+      .stepBtn{
         display: inline-grid;
         text-align: center;
 
@@ -90,16 +90,16 @@
        *           INTERACTION STATES (BUTTONS + INPUTS)
        *==============================================================*/
 
-      footer .stepBtn:hover,
-      footer .stepBtn:active,
-      footer input:hover,
-      footer input:active{
+      .stepBtn:hover,
+      .stepBtn:active,
+      input:hover,
+      input:active{
         transform: scale(1.05);
         box-shadow: var(--SHADOW);
       }
 
-      footer .stepBtn:focus-visible,
-      footer input:focus-visible{
+      .stepBtn:focus-visible,
+      input:focus-visible{
         outline: none;
         box-shadow: var(--SHADOW);
       }
@@ -140,14 +140,14 @@
        *  3) CONTROL ROWS (LABEL + INPUTS)
        *==============================*/
 
-      footer .ctl{
+      .ctl{
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 6dvmin 0;
         align-items: center;
       }
 
-      footer label{
+      label{
         grid-column: 1 / -1;
       }
 
@@ -155,7 +155,7 @@
        *  4) NUMBER INPUTS (PILL BUTTON LOOK)
        *==============================*/
 
-      footer input[type="number"]{
+      input[type="number"]{
         width: 100%;
         height: 10dvmin;
         font-size: 6dvmin;
@@ -175,11 +175,18 @@
         background-repeat: no-repeat;
 
         box-sizing: border-box;
+        -moz-appearance: textfield;
 
         transition:
           transform var(--SLOW_TRANSFORM),
           box-shadow var(--SLOW_SHADOW),
           border-color var(--SLOW_BORDER);
+      }
+      
+      input[type="number"]::-webkit-inner-spin-button,
+      input[type="number"]::-webkit-outer-spin-button{
+        -webkit-appearance: none;
+        margin: 0;
       }
 
       /*==============================*
