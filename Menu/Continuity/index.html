@@ -30,6 +30,63 @@
      *   - Focus behavior (no default blue ring)
      *==============================================================*/
     
+    /*==============================================================*
+ *                 0 STEPPER BUTTONS (+ / -)
+ *==============================================================*/
+
+footer .stepper{
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+footer .stepBtn{
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+
+  width: 10dvmin;
+  height: 10dvmin;
+
+  background: transparent;
+  color: inherit;
+
+  font: 1dvmin Arial;
+  border-radius: 50%;
+  border: 3px solid var(--NO_LINK);
+  object-fit: cover;
+
+  transition:
+    transform var(--SLOW_TRANSFORM),
+    box-shadow var(--SLOW_SHADOW),
+    border-color var(--SLOW_BORDER);
+}
+
+footer .stepBtn::before{
+  content: "";
+  position: absolute;
+  inset: -2dvmin;                         /* Thickness of border frame */
+  background-image: url("/Resources/Image Border.webp");
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  border-radius: 50%;
+  z-index: -1;
+  pointer-events: none;
+}
+
+footer .stepBtn:hover,
+footer .stepBtn:active{
+  transform: scale(1.05);
+  border-color: var(--LINK_DARK);
+  box-shadow: var(--SHADOW);
+}
+
+footer .stepBtn:focus-visible{
+  outline: none;
+  box-shadow: var(--SHADOW);
+  border-color: var(--LINK_DARK);
+}
     
     /*==============================*
      *  1) FOOTER PANEL POSITIONING
