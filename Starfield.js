@@ -82,7 +82,7 @@ function saveStarsToStorage() {
       JSON.stringify({
         width: WIDTH,
         height: HEIGHT,
-        repelTimer: POKE_TIMER,
+        pokeTimer: POKE_TIMER,
         userSpeed: USER_SPEED,
         userX: USER_X,
         userY: USER_Y,
@@ -166,7 +166,7 @@ function initStars() {
           }
 
           // Restore timers + pointer state + gravity control values
-          POKE_TIMER = META.repelTimer ?? 0;
+          POKE_TIMER = META.pokeTimer ?? 0;
           USER_SPEED = META.userSpeed ?? 0;
           ATTRACT_STRENGTH = META.attractStrength ?? ATTRACT_STRENGTH;
           ATTRACT_RADIUS   = META.attractRadius   ?? ATTRACT_RADIUS;
