@@ -55,88 +55,88 @@
   <body>
     <canvas id="constellations"></canvas>
     <div id="transitionContainer">
-    <header>
-      <h1>Continuity</h1>
-      <h2>The "I" Collection</h2>
-      <hr>
-      <nav class="navButtons">
-        <a onclick="transitionTo(this.href); return false;" href="../">
-          <img src="/Resources/Back.png" alt="Back">
-        </a>
-        <a onclick="transitionTo(this.href); return false;" href="/">
-          <img src="/Resources/Home.png" alt="Home">
-        </a>
-      </nav>
-      <hr>
-    </header>
-    <main>
-      <article>
-      <a class="dead">(Redacted)</a>
-      <a onclick="transitionTo(this.href); return false;" href="./Characters">Characters</a>
-      <a onclick="transitionTo(this.href); return false;" href="./Images">Images</a>
-      </article>
-    </main>
+      <header>
+        <h1>Continuity</h1>
+        <h2>The "I" Collection</h2>
+        <hr>
+        <nav class="navButtons">
+          <a onclick="transitionTo(this.href); return false;" href="../">
+            <img src="/Resources/Back.png" alt="Back">
+          </a>
+          <a onclick="transitionTo(this.href); return false;" href="/">
+            <img src="/Resources/Home.png" alt="Home">
+          </a>
+        </nav>
+        <hr>
+      </header>
+      <main>
+        <article>
+        <a class="dead">(Redacted)</a>
+        <a onclick="transitionTo(this.href); return false;" href="./Characters">Characters</a>
+        <a onclick="transitionTo(this.href); return false;" href="./Images">Images</a>
+        </article>
+      </main>
     </div>
+    <footer>           
+      <!-- ATTRACT -->
+      <div class="ctl">
+        <label>Attract Strength</label>
+        <input id="ATTRACT_STRENGTH" type="range"
+               min="0" max="3" step="0.01" value="0.35">
+        <input id="ATTRACT_STRENGTH_num" type="number"
+               min="0" max="3" step="0.01" value="0.35">
+        <span id="ATTRACT_STRENGTH_val">0.35</span>
+      </div>
+      
+      <div class="ctl">
+        <label>Attract Radius (px)</label>
+        <input id="ATTRACT_RADIUS" type="range"
+               min="40" max="600" step="5" value="260">
+        <input id="ATTRACT_RADIUS_num" type="number"
+               min="40" max="600" step="5" value="260">
+        <span id="ATTRACT_RADIUS_val">260</span>
+      </div>
+      
+      <div class="ctl">
+        <label>Attract Scale</label>
+        <input id="ATTRACT_SCALE" type="range"
+               min="0.2" max="6" step="0.1" value="2.2">
+        <input id="ATTRACT_SCALE_num" type="number"
+               min="0.2" max="6" step="0.1" value="2.2">
+        <span id="ATTRACT_SCALE_val">2.2</span>
+      </div>
+      
+      <hr class="divider">
+      
+      <!-- REPEL -->
+      <div class="ctl">
+        <label>Repel Strength</label>
+        <input id="REPEL_STRENGTH" type="range"
+               min="0" max="6" step="0.01" value="0.85">
+        <input id="REPEL_STRENGTH_num" type="number"
+               min="0" max="6" step="0.01" value="0.85">
+        <span id="REPEL_STRENGTH_val">0.85</span>
+      </div>
+      
+      <div class="ctl">
+        <label>Repel Radius (px)</label>
+        <input id="REPEL_RADIUS" type="range"
+               min="20" max="400" step="5" value="160">
+        <input id="REPEL_RADIUS_num" type="number"
+               min="20" max="400" step="5" value="160">
+        <span id="REPEL_RADIUS_val">160</span>
+      </div>
+      
+      <div class="ctl">
+        <label>Repel Scale</label>
+        <input id="REPEL_SCALE" type="range"
+               min="0.2" max="6" step="0.1" value="2.6">
+        <input id="REPEL_SCALE_num" type="number"
+               min="0.2" max="6" step="0.1" value="2.6">
+        <span id="REPEL_SCALE_val">2.6</span>
+      </div>
+    </footer>
     <script src="/Starfield.js"></script>
     <script src="/Layout.js"></script>
   </body>
-  <footer>           
-    <!-- ATTRACT -->
-    <div class="ctl">
-      <label>Attract Strength</label>
-      <input id="ATTRACT_STRENGTH" type="range"
-             min="0" max="3" step="0.01" value="0.35">
-      <input id="ATTRACT_STRENGTH_num" type="number"
-             min="0" max="3" step="0.01" value="0.35">
-      <span id="ATTRACT_STRENGTH_val">0.35</span>
-    </div>
-    
-    <div class="ctl">
-      <label>Attract Radius (px)</label>
-      <input id="ATTRACT_RADIUS" type="range"
-             min="40" max="600" step="5" value="260">
-      <input id="ATTRACT_RADIUS_num" type="number"
-             min="40" max="600" step="5" value="260">
-      <span id="ATTRACT_RADIUS_val">260</span>
-    </div>
-    
-    <div class="ctl">
-      <label>Attract Scale</label>
-      <input id="ATTRACT_SCALE" type="range"
-             min="0.2" max="6" step="0.1" value="2.2">
-      <input id="ATTRACT_SCALE_num" type="number"
-             min="0.2" max="6" step="0.1" value="2.2">
-      <span id="ATTRACT_SCALE_val">2.2</span>
-    </div>
-    
-    <hr style="border:none;border-top:1px solid #333;margin:8px 0">
-    
-    <!-- REPEL -->
-    <div class="ctl">
-      <label>Repel Strength</label>
-      <input id="REPEL_STRENGTH" type="range"
-             min="0" max="6" step="0.01" value="0.85">
-      <input id="REPEL_STRENGTH_num" type="number"
-             min="0" max="6" step="0.01" value="0.85">
-      <span id="REPEL_STRENGTH_val">0.85</span>
-    </div>
-    
-    <div class="ctl">
-      <label>Repel Radius (px)</label>
-      <input id="REPEL_RADIUS" type="range"
-             min="20" max="400" step="5" value="160">
-      <input id="REPEL_RADIUS_num" type="number"
-             min="20" max="400" step="5" value="160">
-      <span id="REPEL_RADIUS_val">160</span>
-    </div>
-    
-    <div class="ctl">
-      <label>Repel Scale</label>
-      <input id="REPEL_SCALE" type="range"
-             min="0.2" max="6" step="0.1" value="2.6">
-      <input id="REPEL_SCALE_num" type="number"
-             min="0.2" max="6" step="0.1" value="2.6">
-      <span id="REPEL_SCALE_val">2.6</span>
-    </div>
-  </footer>
 </html>
