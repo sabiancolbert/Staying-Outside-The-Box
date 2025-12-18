@@ -51,6 +51,35 @@
         text-align:right;
         opacity:0.7;
       }
+      .gravityGrid{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  width: min(900px, 96vw);
+  margin: 0 auto;
+  padding: 12px;
+}
+
+.gravityCol{
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 10px;
+  padding: 10px;
+  background: rgba(0,0,0,0.35);
+}
+
+.gravityTitle{
+  margin: 0 0 8px;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  opacity: 0.9;
+}
+
+/* stack columns on small screens */
+@media (max-width: 650px){
+  .gravityGrid{
+    grid-template-columns: 1fr;
+  }
+}
     </style>
   </head>
   <body>
@@ -77,63 +106,58 @@
         <a onclick="transitionTo(this.href); return false;" href="./Images">Images</a>
         </article>
       </main>
-      <footer>           
-        <!-- ATTRACT -->
-        <div class="ctl">
-          <label>Attract Strength</label>
-          <input id="ATTRACT_STRENGTH" type="range"
-                 min="0" max="3" step="0.01" value="0.35">
-          <input id="ATTRACT_STRENGTH_num" type="number"
-                 min="0" max="3" step="0.01" value="0.35">
-          <span id="ATTRACT_STRENGTH_val">0.35</span>
-        </div>
-        
-        <div class="ctl">
-          <label>Attract Radius (px)</label>
-          <input id="ATTRACT_RADIUS" type="range"
-                 min="40" max="600" step="5" value="260">
-          <input id="ATTRACT_RADIUS_num" type="number"
-                 min="40" max="600" step="5" value="260">
-          <span id="ATTRACT_RADIUS_val">260</span>
-        </div>
-        
-        <div class="ctl">
-          <label>Attract Scale</label>
-          <input id="ATTRACT_SCALE" type="range"
-                 min="0.2" max="6" step="0.1" value="2.2">
-          <input id="ATTRACT_SCALE_num" type="number"
-                 min="0.2" max="6" step="0.1" value="2.2">
-          <span id="ATTRACT_SCALE_val">2.2</span>
-        </div>
-        
-        <hr class="divider">
-        
-        <!-- REPEL -->
-        <div class="ctl">
-          <label>Repel Strength</label>
-          <input id="REPEL_STRENGTH" type="range"
-                 min="0" max="6" step="0.01" value="0.85">
-          <input id="REPEL_STRENGTH_num" type="number"
-                 min="0" max="6" step="0.01" value="0.85">
-          <span id="REPEL_STRENGTH_val">0.85</span>
-        </div>
-        
-        <div class="ctl">
-          <label>Repel Radius (px)</label>
-          <input id="REPEL_RADIUS" type="range"
-                 min="20" max="400" step="5" value="160">
-          <input id="REPEL_RADIUS_num" type="number"
-                 min="20" max="400" step="5" value="160">
-          <span id="REPEL_RADIUS_val">160</span>
-        </div>
-        
-        <div class="ctl">
-          <label>Repel Scale</label>
-          <input id="REPEL_SCALE" type="range"
-                 min="0.2" max="6" step="0.1" value="2.6">
-          <input id="REPEL_SCALE_num" type="number"
-                 min="0.2" max="6" step="0.1" value="2.6">
-          <span id="REPEL_SCALE_val">2.6</span>
+        <footer>
+        <div class="gravityGrid">
+          <!-- Attract -->
+          <section class="gravityCol">
+            <h3 class="gravityTitle">Attract</h3>
+      
+            <div class="ctl">
+              <label>Strength</label>
+              <input id="ATTRACT_STRENGTH" type="range" min="0" max="3" step="0.01" value="0.35">
+              <input id="ATTRACT_STRENGTH_num" type="number" min="0" max="3" step="0.01" value="0.35">
+              <span id="ATTRACT_STRENGTH_val">0.35</span>
+            </div>
+      
+            <div class="ctl">
+              <label>Radius (px)</label>
+              <input id="ATTRACT_RADIUS" type="range" min="40" max="600" step="5" value="260">
+              <input id="ATTRACT_RADIUS_num" type="number" min="40" max="600" step="5" value="260">
+              <span id="ATTRACT_RADIUS_val">260</span>
+            </div>
+      
+            <div class="ctl">
+              <label>Scale</label>
+              <input id="ATTRACT_SCALE" type="range" min="0.2" max="6" step="0.1" value="2.2">
+              <input id="ATTRACT_SCALE_num" type="number" min="0.2" max="6" step="0.1" value="2.2">
+              <span id="ATTRACT_SCALE_val">2.2</span>
+            </div>
+          </section>
+          <!-- Repel -->
+          <section class="gravityCol">
+            <h3 class="gravityTitle">Repel</h3>
+      
+            <div class="ctl">
+              <label>Strength</label>
+              <input id="REPEL_STRENGTH" type="range" min="0" max="6" step="0.01" value="0.85">
+              <input id="REPEL_STRENGTH_num" type="number" min="0" max="6" step="0.01" value="0.85">
+              <span id="REPEL_STRENGTH_val">0.85</span>
+            </div>
+      
+            <div class="ctl">
+              <label>Radius (px)</label>
+              <input id="REPEL_RADIUS" type="range" min="20" max="400" step="5" value="160">
+              <input id="REPEL_RADIUS_num" type="number" min="20" max="400" step="5" value="160">
+              <span id="REPEL_RADIUS_val">160</span>
+            </div>
+      
+            <div class="ctl">
+              <label>Scale</label>
+              <input id="REPEL_SCALE" type="range" min="0.2" max="6" step="0.1" value="2.6">
+              <input id="REPEL_SCALE_num" type="number" min="0.2" max="6" step="0.1" value="2.6">
+              <span id="REPEL_SCALE_val">2.6</span>
+            </div>
+          </section>
         </div>
       </footer>
     </div>
