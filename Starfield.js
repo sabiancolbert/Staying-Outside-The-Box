@@ -72,7 +72,13 @@ function saveStarsToStorage() {
         userSpeed: USER_SPEED,
         userX: USER_X,
         userY: USER_Y,
-        userTime: USER_TIME
+        userTime: USER_TIME,
+        META.attractStrength: ATTRACT_STRENGTH,
+        META.attractRadius: ATTRACT_RADIUS,
+        META.attractScale: ATTRACT_SCALE,
+        META.repelStrength: REPEL_STRENGTH,
+        META.repelRadius: REPEL_RADIUS,
+        META.repelScale: REPEL_SCALE
       })
     );
   } catch (ERR) {
@@ -149,6 +155,12 @@ function initStars() {
           // Restore motion state and pointer info
           REPEL_TIMER = META.repelTimer ?? 0;
           USER_SPEED = META.userSpeed ?? 0;
+          ATTRACT_STRENGTH = META.attractStrength;
+          ATTRACT_RADIUS   = META.attractRadius;
+          ATTRACT_SCALE    = META.attractScale;
+          REPEL_STRENGTH   = META.repelStrength;
+          REPEL_RADIUS     = META.repelRadius;
+          REPEL_SCALE      = META.repelScale;
 
           if (typeof META.userX === 'number') USER_X = META.userX;
           if (typeof META.userY === 'number') USER_Y = META.userY;
