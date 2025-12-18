@@ -76,13 +76,16 @@ footer .stepBtn::before{
 }
 
 footer .stepBtn:hover,
-footer .stepBtn:active{
+footer .stepBtn:active,
+footer input:hover,
+footer input:active{
   transform: scale(1.05);
   border-color: var(--LINK_DARK);
   box-shadow: var(--SHADOW);
 }
 
-footer .stepBtn:focus-visible{
+footer .stepBtn:focus-visible,
+footer input:focus-visible{
   outline: none;
   box-shadow: var(--SHADOW);
   border-color: var(--LINK_DARK);
@@ -164,6 +167,11 @@ footer .stepBtn:focus-visible{
       background-repeat: no-repeat;
     
       box-sizing: border-box;
+      
+      transition:
+    transform var(--SLOW_TRANSFORM),
+    box-shadow var(--SLOW_SHADOW),
+    border-color var(--SLOW_BORDER);
     }
     
     /* Keep the little up/down steppers where supported */
