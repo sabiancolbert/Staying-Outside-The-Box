@@ -23,11 +23,11 @@
         position: absolute;
         max-width: 100dvw;
         margin-top: 100dvh;
-        padding-top: 50dvw;
         display: flex;
         flex-direction: column;
         justify-content: flex-end;
       }
+    
       footer .ctl {
         display:grid;
         grid-template-columns: 1fr auto;
@@ -70,8 +70,7 @@
   grid-template-columns: 1fr 1fr;
   gap: 14px;
   width: min(900px, 96vw);
-  margin: 0 auto;
-  padding: 12px;
+  margin: 50dvw auto 0;
 }
 
 /* Force number input arrows */
@@ -117,7 +116,6 @@ input[type="number"] {
           <div class="gravityGrid">
             <!-- Attract -->
             <section>
-              <hr>
               <h3>Attract</h3>
         
               <div class="ctl">
@@ -141,9 +139,9 @@ input[type="number"] {
                 <span id="ATTRACT_SCALE_val">2.2</span>
               </div>
             </section>
+            <hr>
             <!-- Repel -->
             <section>
-              <hr>
               <h3>Repel</h3>
         
               <div class="ctl">
