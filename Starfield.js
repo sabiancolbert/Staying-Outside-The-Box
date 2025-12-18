@@ -466,26 +466,6 @@ function moveStars() {
     // Global boost: user interaction increases baseline drift speed
     STAR.momentumX += 0.05 * USER_SPEED * STAR.vx;
     STAR.momentumY += 0.05 * USER_SPEED * STAR.vy;
-
-    // Make a variable we can clamp without lowering momentum
-    let FORCE_X = STAR.momentumX;// + randomBetween(-0.2, 0.2);
-    let FORCE_Y = STAR.momentumY;// + randomBetween(-0.2, 0.2);
-
-    // Clamp force magnitude
-    const LIMIT = 5;
-    const HYPOT = Math.hypot(FORCE_X, FORCE_Y);
-    if (HYPOT > LIMIT) {
-      FORCE_X *= LIMIT / HYPOT;
-      FORCE_Y *= LIMIT / HYPOT;
-    }
-
-    // Apply motion (passive velocity + momentum + tiny jitter)
-    STAR.x += STAR.vx + FORCE_X;
-    STAR.y += STAR.vy + FORCE_Y;
-    
-    // Momentum decay
-    STAR.momentumX *= 0.98;
-    STAR.momentumY *= 0.98;
     
     // Wrap when passive OR far OR heavy poke (radius-aware, fully off-screen)
     if (CIRCLE_TIMER == 0 || DISTANCE > 200 || POKE_TIMER > 1000) {
@@ -521,6 +501,26 @@ function moveStars() {
         STAR.momentumY = -Math.abs(STAR.momentumY);
       }
     }
+    
+    // Make a variable we can clamp without lowering momentum
+    let FORCE_X = STAR.momentumX;
+    let FORCE_Y = STAR.momentumY;
+
+    // Clamp force magnitude
+    const LIMIT = 5;
+    const HYPOT = Math.hypot(FORCE_X, FORCE_Y);
+    if (HYPOT > LIMIT) {
+      FORCE_X *= LIMIT / HYPOT;
+      FORCE_Y *= LIMIT / HYPOT;
+    }
+
+    // Apply motion (passive velocity + momentum + tiny jitter)
+    STAR.x += STAR.vx + FORCE_X;
+    STAR.y += STAR.vy + FORCE_Y;
+    
+    // Momentum decay
+    STAR.momentumX *= 0.98;
+    STAR.momentumY *= 0.98;
 
     // White flash decay
     if (STAR.whiteValue > 0) {
