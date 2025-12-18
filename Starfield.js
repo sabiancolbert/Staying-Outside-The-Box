@@ -95,7 +95,7 @@ function saveStarsToStorage() {
         repelStrength: REPEL_STRENGTH,
         repelRadius: REPEL_RADIUS,
         repelScale: REPEL_SCALE,
-        poke: POKE
+        pokeStrength: POKE_STRENGTH
       })
     );
   } catch (ERR) {
@@ -178,7 +178,7 @@ function initStars() {
           REPEL_STRENGTH   = META.repelStrength   ?? REPEL_STRENGTH;
           REPEL_RADIUS     = META.repelRadius     ?? REPEL_RADIUS;
           REPEL_SCALE      = META.repelScale      ?? REPEL_SCALE;
-          POKE            = META.poke           ?? POKE;
+          POKE_STRENGTH    = META.pokeStrength    ?? POKE_STRENGTH;
           
           if (typeof META.userX === 'number') USER_X = META.userX;
           if (typeof META.userY === 'number') USER_Y = META.userY;
@@ -322,7 +322,7 @@ let CLAMP = 0;
 let REPEL_STRENGTH = 50;
 let REPEL_RADIUS = 50;
 let REPEL_SCALE = 5;
-let POKE = 0;
+let POKE_STRENGTH = 0;
 
 function bindControl(ID, setter, INITIAL_VALUE) {
   const SLIDER = document.getElementById(ID);
@@ -396,11 +396,17 @@ function initGravityControlsIfPresent() {
   bindControl('ATTRACT_STRENGTH', v => ATTRACT_STRENGTH = v, ATTRACT_STRENGTH);
   bindControl('ATTRACT_RADIUS',   v => ATTRACT_RADIUS   = v, ATTRACT_RADIUS);
   bindControl('ATTRACT_SCALE',    v => ATTRACT_SCALE    = v, ATTRACT_SCALE);
-
+  
+  // CLAMP
+  bindControl('CLAMP',            v => CLAMP            = v, CLAMP);
+  
   // REPEL
   bindControl('REPEL_STRENGTH',   v => REPEL_STRENGTH   = v, REPEL_STRENGTH);
   bindControl('REPEL_RADIUS',     v => REPEL_RADIUS     = v, REPEL_RADIUS);
   bindControl('REPEL_SCALE',      v => REPEL_SCALE      = v, REPEL_SCALE);
+  
+  // POKE
+  bindControl('POKE_STRENGTH',             v => POKE_STRENGTH             = v, POKE_STRENGTH);
 }
 
 document.addEventListener('DOMContentLoaded', initGravityControlsIfPresent);
@@ -490,7 +496,7 @@ STAR.momentumX += REPEL * -TO_USER_X;
 STAR.momentumY += REPEL * -TO_USER_Y;
 
       // Poke: extra kick away (also respects repel radius)
-      POKE = 0.05 * POKE_TIMER * REPEL_SHAPE;
+      POKE = (0.01 * POKE_STRENGTH) * POKE_TIMER * REPEL_SHAPE;
       STAR.momentumX += POKE * -TO_USER_X;
       STAR.momentumY += POKE * -TO_USER_Y;
     }
