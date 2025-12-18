@@ -241,45 +241,6 @@
       }
     }
     </style>
-    <script>
-      /*==============================================================*
-       *               RANGE SLIDER FILL SYNC
-       *==============================================================*
-       *  Makes the slider track reflect the current value:
-       *   - Black   = filled portion
-       *   - #bdbdbd = remaining portion
-       *==============================================================*/
-      
-      (function syncRangeSliders(){
-        const sliders = document.querySelectorAll('input[type="range"]');
-      
-        sliders.forEach(slider => {
-          const update = () => {
-            const min = Number(slider.min || 0);
-            const max = Number(slider.max || 100);
-            const val = Number(slider.value);
-      
-            const pct = ((val - min) / (max - min)) * 100;
-      
-            slider.style.background = `
-              linear-gradient(
-                to right,
-                #000 0%,
-                #000 ${pct}%,
-                #bdbdbd ${pct}%,
-                #bdbdbd 100%
-              )
-            `;
-          };
-      
-          // Initial paint
-          update();
-      
-          // Live updates
-          slider.addEventListener('input', update);
-        });
-      })();
-    </script>
   </head>
   <body>
     <canvas id="constellations"></canvas>
@@ -363,5 +324,44 @@
     </div>
     <script src="/Starfield.js"></script>
     <script src="/Layout.js"></script>
+        <script>
+      /*==============================================================*
+       *               RANGE SLIDER FILL SYNC
+       *==============================================================*
+       *  Makes the slider track reflect the current value:
+       *   - Black   = filled portion
+       *   - #bdbdbd = remaining portion
+       *==============================================================*/
+      
+      (function syncRangeSliders(){
+        const sliders = document.querySelectorAll('input[type="range"]');
+      
+        sliders.forEach(slider => {
+          const update = () => {
+            const min = Number(slider.min || 0);
+            const max = Number(slider.max || 100);
+            const val = Number(slider.value);
+      
+            const pct = ((val - min) / (max - min)) * 100;
+      
+            slider.style.background = `
+              linear-gradient(
+                to right,
+                #000 0%,
+                #000 ${pct}%,
+                #bdbdbd ${pct}%,
+                #bdbdbd 100%
+              )
+            `;
+          };
+      
+          // Initial paint
+          update();
+      
+          // Live updates
+          slider.addEventListener('input', update);
+        });
+      })();
+    </script>
   </body>
 </html>
