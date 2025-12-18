@@ -437,8 +437,8 @@ function moveStars() {
     if (DISTANCE < RANGE) {
 
       // Linear gradient: 1 at center -> 0 at radius -> stays 0 beyond radius
-      const ATTR_GRADIENT = 1 - (DISTANCE / (ATTRACT_RADIUS || 1));
-      const REPEL_GRADIENT = 1 - (DISTANCE / (REPEL_RADIUS  || 1));
+      let ATTR_GRADIENT = 1 - (DISTANCE / (ATTRACT_RADIUS || 1));
+      let REPEL_GRADIENT = 1 - (DISTANCE / (REPEL_RADIUS  || 1));
       // Clamp
       ATTR_GRADIENT = Math.max(0, ATTR_GRADIENT);
       REPEL_GRADIENT = Math.max(0, REPEL_GRADIENT);
@@ -552,7 +552,7 @@ function moveStars() {
   if (POKE_TIMER < 1) POKE_TIMER = 0;
 
   // Debug readouts
-  const MISC_DEBUG = STAR[0].momentumX;
+  const MISC_DEBUG = STARS[0].momentumX;
   const DBG = document.getElementById('miscDbg');
   if (DBG) DBG.textContent = MISC_DEBUG.toFixed(3);
 
