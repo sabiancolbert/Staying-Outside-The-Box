@@ -268,7 +268,7 @@ img {
   content: "";
   position: absolute;
   inset: -2dvmin;                         /* Thickness of border frame */
-  background-image: url("/Resources/Accent.webp");
+  background-image: url("/Resources/Image Border.webp");
   background-size: 100% 100%;
   background-repeat: no-repeat;
   background-position: center;
