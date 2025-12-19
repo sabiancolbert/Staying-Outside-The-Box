@@ -237,7 +237,7 @@ a {
   display: inline-block;
   margin: 0 auto;
   padding-bottom: 1dvmin;
-  color: var(--LINK_LIGHT);
+  color: var(--BASE_COLOR);
   transition:
     transform var(--SLOW_TRANSFORM),
     color var(--SLOW_COLOR),
@@ -364,18 +364,17 @@ img {
 button {
   -webkit-appearance: none;
   appearance: none;
-
   display: block;
   margin: 1dvmin auto;
   padding: 0.5em 1.5em;
+  height: auto;
 
   border-radius: 9999px;
   background: transparent;
 
+  color: var(--BASE_COLOR);
   font-family: 'New Rocker';
   font-size: 5dvmin;
-
-  background: transparent;
 
   transition:
     transform var(--SLOW_TRANSFORM),
