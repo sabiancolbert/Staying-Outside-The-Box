@@ -318,6 +318,12 @@ let REPEL_RADIUS = 50;
 let REPEL_SCALE = 5;
 let POKE_STRENGTH = 5;
 
+let SCALED_ATT_GRA = 0;
+let SCALED_REP_GRA =0;
+let SCALED_ATT_SHA =0;
+let SCALED_ATT =0;
+let SCALED_REP =0;
+
 function bindControl(ID, setter, INITIAL_VALUE) {
   const SLIDER = document.getElementById(ID);
   if (!SLIDER) return false;
@@ -436,7 +442,7 @@ const DELAG_RANGE = RANGE * RANGE;
     // Apply gravity ring forces only within influence range
 // Weird variables to help lag
 if (DELAG_DISTANCE < DELAG_RANGE) {
-  const DISTANCE = Math.sqrt(d2);
+  const DISTANCE = Math.sqrt(DELAG_DISTANCE);
   const TO_USER_X = X_DISTANCE / DISTANCE;
     const TO_USER_Y = Y_DISTANCE / DISTANCE;
 // Linear gradient
@@ -479,7 +485,7 @@ STAR.momentumX += REPEL * -TO_USER_X;
 STAR.momentumY += REPEL * -TO_USER_Y;
 
       // Poke: extra kick away (also respects repel radius)
-      POKE = (0.01 * POKE_STRENGTH) * POKE_TIMER * REPEL_SHAPE;
+      const POKE = (0.01 * POKE_STRENGTH) * POKE_TIMER * REPEL_SHAPE;
       STAR.momentumX += POKE * -TO_USER_X;
       STAR.momentumY += POKE * -TO_USER_Y;
     }
@@ -509,7 +515,7 @@ STAR.momentumY += REPEL * -TO_USER_Y;
     STAR.momentumY *= 0.98;
     
     // Wrap when passive OR far OR heavy poke (radius-aware, fully off-screen)
-    if (CIRCLE_TIMER == 0 || DISTANCE > 200 || POKE_TIMER > 1000) {
+if (CIRCLE_TIMER === 0 || DELAG_DISTANCE > 40,000 || POKE_TIMER > 1000)
       const R = (STAR.whiteValue * 2 + STAR.size) || 0; // draw radius
       if (STAR.x < -R) STAR.x = WIDTH + R;
       else if (STAR.x > WIDTH + R) STAR.x = -R;
@@ -571,22 +577,23 @@ STAR.momentumY += REPEL * -TO_USER_Y;
   POKE_TIMER *= 0.85;
   if (POKE_TIMER < 1) POKE_TIMER = 0;
 
-  // Debug readouts
-  let DBG_T = 0;
-  function updateDebug() {
-    const t = nowMs();
-    if (t - DBG_T < 100) return; // 10fps
-    DBG_T = t;
-  
-    const DBG = document.getElementById('miscDbg');
-    if (DBG) DBG.textContent = (0).toFixed(3);
-    const DBG_CIRCLE = document.getElementById('dbgCircle');
-    if (DBG_CIRCLE) DBG_CIRCLE.textContent = CIRCLE_TIMER.toFixed(3);
-    const DBG_SPEED = document.getElementById('dbgSpeed');
-    if (DBG_SPEED) DBG_SPEED.textContent = USER_SPEED.toFixed(3);
-    const DBG_POKE = document.getElementById('dbgPoke');
-    if (DBG_POKE) DBG_POKE.textContent = POKE_TIMER.toFixed(1);
-  }
+  updateDebug();
+}
+
+let DBG_T = 0;
+function updateDebug() {
+  const t = nowMs();
+  if (t - DBG_T < 100) return;
+  DBG_T = t;
+
+  const DBG = document.getElementById('miscDbg');
+  if (DBG) DBG.textContent = (0).toFixed(3); // Hey there! Replase "0" with any variable to see live updates
+  const DBG_CIRCLE = document.getElementById('dbgCircle');
+  if (DBG_CIRCLE) DBG_CIRCLE.textContent = CIRCLE_TIMER.toFixed(3);
+  const DBG_SPEED = document.getElementById('dbgSpeed');
+  if (DBG_SPEED) DBG_SPEED.textContent = USER_SPEED.toFixed(3);
+  const DBG_POKE = document.getElementById('dbgPoke');
+  if (DBG_POKE) DBG_POKE.textContent = POKE_TIMER.toFixed(1);
 }
 
 /*---------- Rendering helpers ----------*/
@@ -689,7 +696,7 @@ function drawStarsWithLines() {
     const A = ST[I];
     const Ax = A.x, Ay = A.y;
     const Aop = A.opacity;
-    const Aedge = A._EDGE;
+    const Aedge = A.edge;
   
     for (let J = I + 1; J < COUNT; J++) {
       const B = ST[J];
@@ -715,7 +722,7 @@ function drawStarsWithLines() {
       let alpha = (1 - dist / MAXD) * ((Aop + B.opacity) * 0.5);
   
       // Edge fade
-      alpha *= Math.min(Aedge, B._EDGE);
+      alpha *= Math.min(Aedge, B.edge);
   
       if (alpha <= 0.002) continue;
   
@@ -783,6 +790,11 @@ function resizeCanvas() {
   SCALE_TO_SCREEN = Math.pow(SCREEN_SIZE / 1200, 0.35);
   MAX_STAR_COUNT = Math.min(450, SCREEN_SIZE / 10);
   MAX_LINK_DISTANCE = SCREEN_SIZE / 10;
+  SCALED_ATT_GRA = SCALE_TO_SCREEN ** 1.11;
+SCALED_REP_GRA = SCALE_TO_SCREEN ** 0.66;
+SCALED_ATT_SHA =SCALE_TO_SCREEN ** -8.89;
+SCALED_ATT =SCALE_TO_SCREEN ** -8.46;
+SCALED_REP =SCALE_TO_SCREEN ** -0.89;
 
   // Rescale existing stars to new canvas
   if (OLD_WIDTH !== 0 && OLD_HEIGHT !== 0) {
@@ -827,7 +839,7 @@ function updateSpeed(X, Y) {
   const DX = X - USER_X;
   const DY = Y - USER_Y;
 
-  const RAW_USER_SPEED = Math.sqrt(DX * DX, DY * DY) / DT;
+  const RAW_USER_SPEED = Math.sqrt(DX * DX + DY * DY) / DT;
 
   USER_SPEED = Math.min(RAW_USER_SPEED * 50, 50);
   CIRCLE_TIMER = Math.max(CIRCLE_TIMER, USER_SPEED);
