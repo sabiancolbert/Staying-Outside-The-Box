@@ -515,7 +515,8 @@ STAR.momentumY += REPEL * -TO_USER_Y;
     STAR.momentumY *= 0.98;
     
     // Wrap when passive OR far OR heavy poke (radius-aware, fully off-screen)
-if (CIRCLE_TIMER === 0 || DELAG_DISTANCE > 40,000 || POKE_TIMER > 1000)
+const TOO_FAR = 200 * 200;
+if (CIRCLE_TIMER === 0 || DELAG_DISTANCE > TOO_FAR || POKE_TIMER > 1000)
       const R = (STAR.whiteValue * 2 + STAR.size) || 0; // draw radius
       if (STAR.x < -R) STAR.x = WIDTH + R;
       else if (STAR.x > WIDTH + R) STAR.x = -R;
