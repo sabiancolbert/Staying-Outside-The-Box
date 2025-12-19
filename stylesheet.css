@@ -225,7 +225,12 @@ a {
   display: inline-block;
   margin: 0 auto;
   padding-bottom: 1dvmin;
-  color: var(--BASE_COLOR);
+  color: var(--LINK_LIGHT);
+  
+  -webkit-text-fill-color: var(--LINK_LIGHT);
+  -webkit-background-clip: border-box;
+  background-clip: border-box;
+  
   transition:
     transform var(--SLOW_TRANSFORM),
     color var(--SLOW_COLOR),
@@ -307,8 +312,17 @@ img {
 /* Basic link hover scaling */
 a:hover {
   transform: scale(1.05);
+
+  background-image: url("/Resources/Button Text.webp");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
   text-shadow: var(--SHADOW);
-  color: var(--LINK_LIGHT);
 }
 
 /* Hover or focus on a group boosts its image button + links */
@@ -320,8 +334,16 @@ a:hover {
 
 .hoverTogether:hover a,
 .hoverTogether:focus-within a {
+  background-image: url("/Resources/Button Text.webp");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
   text-shadow: var(--SHADOW);
-  color: var(--LINK_LIGHT);
 }
 
 /* Active state on touch still gets glow/color */
@@ -467,7 +489,6 @@ button {
 button span {
   display: inline-block;
   
-  /*background-image: none;*/
   -webkit-background-clip: border-box;
   background-clip: border-box;
 
