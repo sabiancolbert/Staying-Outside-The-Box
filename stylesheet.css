@@ -407,7 +407,6 @@ button:active span {
   justify-content: center;
   width: fit-content;
   margin: 0 auto;
-  background: black;
 }
 
 .navButtons img {
@@ -415,6 +414,7 @@ button:active span {
   height: 12dvmin;
   padding: 1dvmin;
   margin: 0 10dvw;
+  background: black;
 
   font: 1dvmin Arial;
   border-radius: 50%;
