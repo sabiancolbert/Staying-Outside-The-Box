@@ -80,7 +80,7 @@
   --BASE_COLOR:   #bdbdbd;
 
   /* Transition easings */
-  --SLOW_TRANSFORM: 0.3s ease-out;
+  --SLOW_TRANSFORM: 0.4 ease-out;
   --SLOW_BORDER:    0.5s ease-out;
   --SLOW_SHADOW:    0.7s ease-out;
   --SLOW_COLOR:     0.5s ease-out;
