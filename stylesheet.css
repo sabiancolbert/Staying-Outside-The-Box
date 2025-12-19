@@ -234,7 +234,8 @@ a {
   transition:
     transform var(--SLOW_TRANSFORM),
     color var(--SLOW_COLOR),
-    text-shadow var(--SLOW_SHADOW);
+    text-shadow var(--SLOW_SHADOW),
+    -webkit-text-fill-color 0.9s ease-out;
 }
 
 /* #endregion 4 ARTICLES & LINK BASICS */
