@@ -183,14 +183,7 @@ function initStars() {
           if (typeof META.userX === 'number') USER_X = META.userX;
           if (typeof META.userY === 'number') USER_Y = META.userY;
 
-          // USER_TIME acts as a “pointer exists” flag in moveStars
-          if (typeof META.userTime === 'number' && META.userTime > 0) {
-            USER_TIME = META.userTime;
-          } else {
-            USER_TIME = (window.performance && performance.now) ?
-              performance.now() :
-              Date.now();
-          }
+          USER_TIME = nowMs();
         } catch (ERR) {
           console.warn(
             'Could not parse constellationMeta, skipping scale.',
@@ -774,50 +767,48 @@ function animate() {
  *   - USER position + timestamp
  *========================================*/
 
-function updateSpeed(X, Y, TIME) {
-  if (!Number.isFinite(TIME)) TIME = performance.now ? performance.now() : Date.now();
+function nowMs() {
+  return (window.performance && performance.now) ? performance.now() : Date.now();
+}
+
+function updateSpeed(X, Y) {
+  const TIME = nowMs();
 
   const DT = Math.max(1, TIME - USER_TIME);
   const DX = X - USER_X;
   const DY = Y - USER_Y;
+
   const RAW_USER_SPEED = Math.hypot(DX, DY) / DT;
 
   USER_SPEED = Math.min(RAW_USER_SPEED * 50, 50);
   CIRCLE_TIMER = Math.max(CIRCLE_TIMER, USER_SPEED);
+
   USER_X = X;
   USER_Y = Y;
   USER_TIME = TIME;
 }
 
-// Shared start handler (mousedown / touchstart)
-function startPointerInteraction(X, Y, TIME) {
-  POKE_TIMER = 2500; // Repel on click/touch
-  updateSpeed(X, Y, TIME);
+function startPointerInteraction(X, Y) {
+  POKE_TIMER = 2500;
+  updateSpeed(X, Y);
 }
 
-// Mouse move updates pointer speed
-window.addEventListener('mousemove', (E) =>
-  updateSpeed(E.clientX, E.clientY, E.timeStamp)
-);
-
-// Mouse down triggers repulsion + speed bump
-window.addEventListener('mousedown', (E) => {
-  startPointerInteraction(E.clientX, E.clientY, E.timeStamp);
-});
-
-// Touch start triggers the same repulsion behavior
+// Mouse move updates speed
+window.addEventListener('mousemove', (E) => updateSpeed(E.clientX, E.clientY));
+// Mouse poke
+window.addEventListener('mousedown', (E) => startPointerInteraction(E.clientX, E.clientY));
+// Touch poke
 window.addEventListener('touchstart', (E) => {
-  const TOUCH_POINT = E.touches[0];
-  if (!TOUCH_POINT) return;
-  startPointerInteraction(TOUCH_POINT.clientX, TOUCH_POINT.clientY, E.timeStamp);
-});
-
+  const T = E.touches[0];
+  if (!T) return;
+  startPointerInteraction(T.clientX, T.clientY);
+}, { passive: true });
 // Touch move updates speed
 window.addEventListener('touchmove', (E) => {
-  const TOUCH_POINT = E.touches[0];
-  if (!TOUCH_POINT) return;
-  updateSpeed(TOUCH_POINT.clientX, TOUCH_POINT.clientY, E.timeStamp);
-});
+  const T = E.touches[0];
+  if (!T) return;
+  updateSpeed(T.clientX, T.clientY);
+}, { passive: true });
 
 //#endregion POINTER INPUT
 
