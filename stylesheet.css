@@ -408,6 +408,8 @@ button:active span {
 .dead:hover {
   transform: scale(1);
   -webkit-text-fill-color: var(--LINK_DARK);
+  -webkit-background-clip: border-box;
+  background-clip: border-box;
 }
 
 /* Highlighted premium text */
