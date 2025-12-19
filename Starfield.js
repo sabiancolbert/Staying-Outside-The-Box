@@ -500,7 +500,7 @@ STAR.momentumY += REPEL * -TO_USER_Y;
 
     // Clamp force magnitude
     const LIMIT = CLAMP * (SCALE_TO_SCREEN ** 2);
-    const HYPOT = Math.hypot(FORCE_X, FORCE_Y);
+    const HYPOT = FORCE_X * FORCE_X + FORCE_Y * FORCE_Y;
     if (HYPOT > LIMIT) {
       FORCE_X *= LIMIT / HYPOT;
       FORCE_Y *= LIMIT / HYPOT;
@@ -580,19 +580,23 @@ if (CIRCLE_TIMER === 0 || DELAG_DISTANCE > 40,000 || POKE_TIMER > 1000)
   updateDebug();
 }
 
+  const DBG = document.getElementById('miscDbg');
+    const DBG_CIRCLE = document.getElementById('dbgCircle');
+      const DBG_SPEED = document.getElementById('dbgSpeed');
+        const DBG_POKE = document.getElementById('dbgPoke');
 let DBG_T = 0;
 function updateDebug() {
   const t = nowMs();
   if (t - DBG_T < 100) return;
   DBG_T = t;
 
-  const DBG = document.getElementById('miscDbg');
+
   if (DBG) DBG.textContent = (0).toFixed(3); // Hey there! Replase "0" with any variable to see live updates
-  const DBG_CIRCLE = document.getElementById('dbgCircle');
+
   if (DBG_CIRCLE) DBG_CIRCLE.textContent = CIRCLE_TIMER.toFixed(3);
-  const DBG_SPEED = document.getElementById('dbgSpeed');
+
   if (DBG_SPEED) DBG_SPEED.textContent = USER_SPEED.toFixed(3);
-  const DBG_POKE = document.getElementById('dbgPoke');
+
   if (DBG_POKE) DBG_POKE.textContent = POKE_TIMER.toFixed(1);
 }
 
