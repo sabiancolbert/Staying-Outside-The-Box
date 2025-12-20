@@ -107,11 +107,9 @@ window.addEventListener("load", () => {
 
   // Trigger slide-in
   // Trigger slide-in
-freeScrollLayout(PAGE);
 requestAnimationFrame(() => {
   PAGE.classList.add("ready");
 
-  const lockOnce = () => lockScrollToContainer(PAGE);
 
   // 1) Normal path: lock when the CSS transition finishes
   PAGE.addEventListener("transitionend", lockOnce, { once: true });
@@ -149,7 +147,7 @@ window.addEventListener("pageshow", (event) => {
   if (event.persisted || performance?.getEntriesByType("navigation")[0]?.type === "back_forward") {
     PAGE.classList.remove("slide-out");
     PAGE.classList.add("ready");
-    lockScrollToContainer(PAGE);
+    
     IS_TRANSITIONING = false;
     PAGE.scrollTop = 0;
   }
@@ -185,7 +183,7 @@ requestAnimationFrame(() => window.forceStarfieldRedraw?.());
 const DIST = (window.innerHeight * 1.1) + (window.scrollY ?? 0);
   document.documentElement.style.setProperty("--SLIDE_DISTANCE", `${DIST}px`);
 
-  freeScrollLayout(PAGE);
+
   PAGE.classList.add("slide-out");
 
   setTimeout(() => {
