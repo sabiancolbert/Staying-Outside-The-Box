@@ -141,7 +141,7 @@ body {
   font-size: 7dvmin;
   color: var(--BASE_COLOR);
   
-    z-index:3;
+    z-index:2;
 }
 
 /* #endregion 2 BASE LAYOUT & BACKGROUND */
@@ -159,7 +159,6 @@ body {
   inset: 0;
   width: 100%;
   height: 100%;
-  z-index: -1;                            /* Above bg, below content */
   pointer-events: none;
 }
 
@@ -311,7 +310,6 @@ img {
   background-repeat: no-repeat;
   background-position: center;
   border-radius: 50%;
-  z-index: -1;
 }
 
 .imgBorder img {
