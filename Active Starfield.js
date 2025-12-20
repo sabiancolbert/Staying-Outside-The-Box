@@ -25,9 +25,8 @@
 
 //#region 1) SHARED HANDLE
 const SF = window.STARFIELD;
-if (!SF) {
-  console.error('StarfieldInteraction.js loaded before StarfieldCore.js');
-}
+window.STARFIELD = window.STARFIELD || {};
+const SF = window.STARFIELD;
 //#endregion
 
 
@@ -68,7 +67,7 @@ if (typeof SF.initControlsIfPresent === 'function') {
  *   - wrap vs bounce
  *   - same global decay
  *========================================*/
-SF.moveStars = function moveStars() {
+SF.moveStars = SF.moveStars || function moveStars() {
   if (!SF.HAS_CANVAS || !SF.STARS.length) return;
 
   const INFLUENCE_RANGE = SF.SCREEN * 0.2;
@@ -240,7 +239,7 @@ function resetLinkPaths() {
   for (let i = 0; i < LINK_BUCKET_COUNT; i++) LINK_PATHS[i] = new Path2D();
 }
 
-SF.drawStarsWithLines = function drawStarsWithLines() {
+SF.drawStarsWithLines = SF.drawStarsWithLines || function drawStarsWithLines() {
   if (!SF.HAS_CANVAS || !SF.BRUSH) return;
 
   const BRUSH = SF.BRUSH;
@@ -342,7 +341,7 @@ window.forceStarfieldRedraw = () => {
 /*========================================*
  *  Uses normalized event timestamps
  *========================================*/
-SF.updateSpeed = function updateSpeed(POINTER_X, POINTER_Y, EVENT_TIME_STAMP) {
+SF.updateSpeed = SF.updateSpeed || function updateSpeed(POINTER_X, POINTER_Y, EVENT_TIME_STAMP) {
   const TIME = SF.normalizeEventTime(EVENT_TIME_STAMP);
 
   const DT = Math.max(1, TIME - SF.USER_TIME);
@@ -359,7 +358,7 @@ SF.updateSpeed = function updateSpeed(POINTER_X, POINTER_Y, EVENT_TIME_STAMP) {
   SF.USER_TIME = TIME;
 };
 
-SF.startPointerInteraction = function startPointerInteraction(POINTER_X, POINTER_Y, EVENT_TIME_STAMP) {
+SF.startPointerInteraction = SF.startPointerInteraction || function startPointerInteraction(POINTER_X, POINTER_Y, EVENT_TIME_STAMP) {
   SF.POKE_TIMER = 2500;
   SF.updateSpeed(POINTER_X, POINTER_Y, EVENT_TIME_STAMP);
 };
