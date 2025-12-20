@@ -1,3 +1,4 @@
+
 /*==============================================================*
  *                           CSS MAP
  *==============================================================*
@@ -94,30 +95,21 @@
 
 /* Root page structure */
 
-/* Fixed background image behind everything *
+/* Fixed background image behind everything */
 html::before{
   content:"";
-  position: fixed;
-
-  /* definitive: safe-area inset *
-  top: calc(-1 * env(safe-area-inset-top, 0px));
-  left: 0;
-  right: 0;
-
-  /* keep full coverage *
-  height: calc(100lvh + env(safe-area-inset-top, 0px) + env(safe-area-inset-bottom, 0px));
-
-  background-image: url("/Resources/Background.webp");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-
-  z-index: -2;
-  pointer-events: none;
-  transform: translateZ(0);
+  position:fixed;
+  inset:0;
+  width:100lvw;
+  height:110lvh;
+  overflow: auto;
+  background-image:url("/Resources/Background.webp");
+  background-size:cover;
+  background-position:center;
+  background-repeat:no-repeat;
+  z-index:-2;
+  pointer-events:none;
 }
-*/
-
 
 html {
   margin: 0;
@@ -127,19 +119,6 @@ html {
   overflow: auto;                         /* JS swaps body/html scroll control */
 
   background-color: black;                /* Edge color */
-
-
-
-
-
-background-color: black;
-  background-image: url("/Resources/Background.webp");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-
-  /* key bit */
-  background-attachment: fixed;
 }
 
 body {
