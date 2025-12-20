@@ -4,65 +4,30 @@
  *                     LAYOUT & TRANSITIONS
  *==============================================================*
  *
- * Drop-in “stability-first” version:
- *  - Does NOT assume Starfield scripts loaded yet
- *  - Creates window.STARFIELD if missing
- *  - Only calls SF functions if they exist
- *  - Uses ONE freeze flag: SF.FREEZE
- *  - Safe on pages with no sliders / no canvas
+ * Starfield lives in Starfield.js
+ * This file controls:
+ *  • Page transitions
+ *  • Back/forward logic
+ *  • Back button visibility
+ *  • Touch navigation fixes
  *==============================================================*/
 
 
-//#region 0) SAFE GLOBALS / STARFIELD HANDLE
-/*========================================*
- *  SAFE GLOBALS
- *========================================*/
-
-// Always safe to run first
-window.STARFIELD = window.STARFIELD || {};
-const SF = window.STARFIELD;
-
-// Stable shared flags
-SF.FREEZE = SF.FREEZE ?? false;
-
-// Cross-script flag you already use
-window.REMOVE_CIRCLE = window.REMOVE_CIRCLE ?? false;
-
-// Helper: get the container
-const getPage = () => document.getElementById("transitionContainer");
-const isHomepage = () => !!document.querySelector("#menuButton");
-const getSlideDurationSeconds = () => (isHomepage() ? 1.2 : 0.6);
-
-// Starfield safe calls (do nothing if missing)
-function sfResizeCanvas() {
-  try { SF.resizeCanvas?.(); } catch {}
-}
-function sfSaveStars() {
-  try { SF.saveToStorage?.(); } catch {}
-}
-function sfFreezeOn() {
-  try { SF.FREEZE = true; } catch {}
-}
-function sfForceRedraw() {
-  try { SF.drawStarsWithLines?.(); } catch {}
-}
-
-//#endregion
-
-
-
-//#region 1) GLOBAL PAGE STATE
+//#region 1. GLOBAL PAGE STATE
 /*========================================*
  *  GLOBAL PAGE STATE
  *========================================*/
 
 let IS_TRANSITIONING = false;
 
+const getPage = () => document.getElementById('transitionContainer');
+const isHomepage = () => !!document.querySelector('#menuButton');
+const getSlideDurationSeconds = () => (isHomepage() ? 1.2 : 0.6);
 //#endregion
 
 
 
-//#region 2) TRANSITION & LAYOUT
+//#region 2. TRANSITION & LAYOUT
 /*========================================*
  *  TRANSITION & LAYOUT
  *========================================*/
@@ -85,8 +50,7 @@ function freeScrollLayout(PAGE = getPage()) {
     PAGE.style.height = "auto";
   }
 
-  // If starfield exists, let it resize
-  sfResizeCanvas();
+  if (typeof resizeCanvas === "function") resizeCanvas();
 
   requestAnimationFrame(() => {
     try { window.scrollTo(0, CURRENT_SCROLL); } catch {}
@@ -140,23 +104,24 @@ window.addEventListener("load", () => {
     `${getSlideDurationSeconds()}s`
   );
 
-  // Trigger slide-in (guard PAGE)
-  requestAnimationFrame(() => {
-    if (!PAGE) return;
+  // Trigger slide-in
+  // Trigger slide-in
+requestAnimationFrame(() => {
+  PAGE.classList.add("ready");
 
-    PAGE.classList.add("ready");
+  const lockOnce = () => lockScrollToContainer(PAGE);
 
-    const lockOnce = () => lockScrollToContainer(PAGE);
+  // 1) Normal path: lock when the CSS transition finishes
+  PAGE.addEventListener("transitionend", lockOnce, { once: true });
 
-    // 1) Normal path: lock when the CSS transition finishes
-    PAGE.addEventListener("transitionend", lockOnce, { once: true });
+  // 2) Safety net: lock even if transitionend never fires
+  const MS = getSlideDurationSeconds() * 1000;
+  setTimeout(lockOnce, MS + 80);
+});
 
-    // 2) Safety net: lock even if transitionend never fires
-    const MS = getSlideDurationSeconds() * 1000;
-    setTimeout(lockOnce, MS + 80);
-  });
-
-  // Back button visibility
+  // Back button visibility:
+  // • If came from Menu → hide
+  // • If came from any other internal page → show
   const BACK_LINK = document.getElementById("homepageBack");
 
   if (BACK_LINK) {
@@ -173,27 +138,21 @@ window.addEventListener("load", () => {
 });
 
 
+
 /*---------- BACK/FORWARD CACHE ----------*/
 window.addEventListener("pageshow", (event) => {
   const PAGE = getPage();
   if (!PAGE) return;
 
-  const NAV = performance?.getEntriesByType?.("navigation")?.[0];
-  const IS_BF =
-    event.persisted ||
-    NAV?.type === "back_forward";
-
-  if (IS_BF) {
+  if (event.persisted || performance?.getEntriesByType("navigation")[0]?.type === "back_forward") {
     PAGE.classList.remove("slide-out");
     PAGE.classList.add("ready");
     lockScrollToContainer(PAGE);
     IS_TRANSITIONING = false;
     PAGE.scrollTop = 0;
-
-    // If starfield is present, redraw once (safe)
-    requestAnimationFrame(() => sfForceRedraw());
   }
 });
+
 
 
 /*---------- TRANSITION TO NEW PAGE ----------*/
@@ -202,6 +161,11 @@ function transitionTo(URL) {
   if (!URL) return;
   IS_TRANSITIONING = true;
 
+window.REMOVE_CIRCLE = true;
+requestAnimationFrame(() => window.forceStarfieldRedraw?.());
+
+  const PAGE = getPage();
+
   // Back keyword → use stored URL
   if (URL === "back") {
     const STORED = localStorage.getItem("homepageBackUrl");
@@ -209,16 +173,11 @@ function transitionTo(URL) {
     URL = STORED;
   }
 
-  // Kill ring immediately before slide
-  window.REMOVE_CIRCLE = true;
-  requestAnimationFrame(() => sfForceRedraw());
-
-  const PAGE = getPage();
   if (!PAGE) return (location.href = URL);
 
-  // Freeze + save if starfield exists (safe no-ops otherwise)
-  sfFreezeOn();
-  sfSaveStars();
+  // Pause starfield safely if Starfield.js is loaded
+  if (typeof FREEZE_CONSTELLATION !== "undefined") FREEZE_CONSTELLATION = true;
+  if (typeof saveStarsToStorage === "function") saveStarsToStorage();
 
   // Compute slide distance
   const DIST = (window.innerHeight * 1.1) + (PAGE.scrollTop ?? 0);
@@ -235,10 +194,13 @@ function transitionTo(URL) {
 
 
 
-//#region 3) TOUCH NAV FIXES
+//#region 3. TOUCH NAV FIXES
 /*========================================*
  *  TOUCH NAVIGATION HANDLING
  *========================================*/
+
+
+
 
 // Toggle an element's visibility via the [hidden] attribute
 function toggleElement(ID) {
@@ -260,6 +222,7 @@ function wirePointerEvent(selector = "a") {
     el.addEventListener(
       "pointerdown",
       (e) => {
+        // Only treat touch like your old touch handlers
         if (e.pointerType !== "touch") return;
 
         pid = e.pointerId;
@@ -267,6 +230,7 @@ function wirePointerEvent(selector = "a") {
         sx = e.clientX;
         sy = e.clientY;
 
+        // Guarantees this element receives pointerup/cancel even if finger drifts
         try { el.setPointerCapture(pid); } catch {}
       },
       { passive: true }
@@ -289,11 +253,13 @@ function wirePointerEvent(selector = "a") {
         try { el.releasePointerCapture(pid); } catch {}
         pid = null;
 
+        // If the finger slid around, do NOT navigate and also unstick styles
         if (moved) {
           try { el.blur(); } catch {}
           return;
         }
 
+        // Take over navigation (like your touchend + preventDefault)
         e.preventDefault();
 
         if (el.id === "homepageBack") {
@@ -321,6 +287,6 @@ function wirePointerEvent(selector = "a") {
 }
 
 document.addEventListener("DOMContentLoaded", () => wirePointerEvent());
-//#endregion
 
-// Joke: This file now treats missing functions like a cat treats commands: politely ignored. 🐈‍⬛
+document.addEventListener("DOMContentLoaded", () => wireTouchEvent());
+//#endregion
