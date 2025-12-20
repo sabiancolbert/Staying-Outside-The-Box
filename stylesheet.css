@@ -97,17 +97,26 @@
 /* Fixed background image behind everything */
 html::before{
   content:"";
-  position:fixed;
-  inset:0;
-  width:100lvw;
-  height:110lvh;
-  overflow: auto;
-  background-image:url("/Resources/Background.webp");
-  background-size:cover;
-  background-position:center;
-  background-repeat:no-repeat;
-  z-index:-2;
-  pointer-events:none;
+  position: fixed;
+
+  /* move “up” a bit (safe-area + extra) */
+  top: calc(-1 * env(safe-area-inset-top, 0px));
+  left: 0;
+  right: 0;
+
+  /* make it taller so it still covers when Safari UI expands */
+  height: calc(110lvh + env(safe-area-inset-top, 0px) + env(safe-area-inset-bottom, 0px));
+
+  background-image: url("/Resources/Background.webp");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  z-index: -2;
+  pointer-events: none;
+
+  /* helps iOS treat it as its own composited layer */
+  transform: translateZ(0);
 }
 
 html {
