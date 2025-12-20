@@ -64,9 +64,9 @@ function lockScrollToContainer(PAGE = getPage()) {
   if (!HTML || !BODY || !PAGE) return;
 
   // Kill document scroll
-  HTML.style.overflow = "hidden";
+  //HTML.style.overflow = "hidden";
   BODY.style.overflow = "hidden";
-  HTML.style.height = "100%";
+  //HTML.style.height = "100%";
   BODY.style.height = "100%";
 
   // Single scroll surface
