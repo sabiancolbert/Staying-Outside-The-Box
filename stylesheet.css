@@ -117,7 +117,7 @@ html {
   /* DONT TOUCH - important for proper scroll transition */
   overflow: auto;                         /* JS swaps body/html scroll control */
 
-  background-color: black;                /* Edge color */
+  background-color: transparent;                /* Edge color */
 }
 
 body {
