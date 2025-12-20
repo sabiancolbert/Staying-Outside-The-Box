@@ -620,6 +620,8 @@ function moveStars() {
  *  DRAWING
  *========================================*/
 
+const IS_IOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+const USE_BUCKETED_PATHS = !IS_IOS; // buckets on Mac/PC, simple strokes on iPhone
 const LINK_BUCKET_COUNT = 18;
 let LINK_PATHS = Array.from({ length: LINK_BUCKET_COUNT }, () => new Path2D());
 
@@ -655,6 +657,7 @@ function drawStarsWithLines() {
   }
 
   // Links
+    // Lines between nearby stars
   BRUSH.lineWidth = 1;
 
   const STAR_COUNT = STARS.length;
@@ -667,38 +670,71 @@ function drawStarsWithLines() {
     const CUTOFF_RAW = MAX_LINK_DISTANCE / DIST_SCALE;
     const CUTOFF2 = CUTOFF_RAW * CUTOFF_RAW;
 
-    resetLinkPaths();
+    if (!USE_BUCKETED_PATHS) {
+      // ✅ iPhone: old-school simple draw (no Path2D allocations)
+      for (let I = 0; I < STAR_COUNT; I++) {
+        const A = STARS[I];
+        for (let J = I + 1; J < STAR_COUNT; J++) {
+          const B = STARS[J];
 
-    for (let STAR_A_INDEX = 0; STAR_A_INDEX < STAR_COUNT; STAR_A_INDEX++) {
-      const STAR_A = STARS[STAR_A_INDEX];
-      const AX = STAR_A.x, AY = STAR_A.y;
-      const A_OPACITY = STAR_A.opacity;
-      const A_EDGE = STAR_A.edge;
+          const DX = A.x - B.x;
+          const DY = A.y - B.y;
+          const D2 = DX * DX + DY * DY;
+          if (D2 > CUTOFF2) continue;
 
-      for (let STAR_B_INDEX = STAR_A_INDEX + 1; STAR_B_INDEX < STAR_COUNT; STAR_B_INDEX++) {
-        const STAR_B = STARS[STAR_B_INDEX];
+          const DIST = Math.sqrt(D2) * DIST_SCALE;
 
-        const DELTA_X = AX - STAR_B.x;
-        const DELTA_Y = AY - STAR_B.y;
-        const DIST_SQ = DELTA_X * DELTA_X + DELTA_Y * DELTA_Y;
+          let ALPHA = (1 - DIST / MAX_LINK_DISTANCE) * ((A.opacity + B.opacity) / 2);
+          ALPHA *= Math.min(A.edge, B.edge);
+          if (ALPHA <= 0.002) continue;
 
-        if (DIST_SQ > CUTOFF2) continue;
+          BRUSH.strokeStyle = `rgba(0, 0, 0, ${ALPHA})`;
+          BRUSH.beginPath();
+          BRUSH.moveTo(A.x, A.y);
+          BRUSH.lineTo(B.x, B.y);
+          BRUSH.stroke();
+        }
+      }
+    } else {
+      // ✅ Desktop: bucketed Path2D (fewer stroke calls)
+      resetLinkPaths();
 
-        const DIST = Math.sqrt(DIST_SQ) * DIST_SCALE;
+      for (let I = 0; I < STAR_COUNT; I++) {
+        const A = STARS[I];
+        const AX = A.x, AY = A.y;
+        const A_OP = A.opacity;
+        const A_EDGE = A.edge;
 
-        let ALPHA = (1 - DIST / MAX_LINK_DISTANCE) * ((A_OPACITY + STAR_B.opacity) / 2);
-        ALPHA *= Math.min(A_EDGE, STAR_B.edge);
+        for (let J = I + 1; J < STAR_COUNT; J++) {
+          const B = STARS[J];
 
-        if (ALPHA <= 0.002) continue;
+          const DX = AX - B.x;
+          const DY = AY - B.y;
+          const D2 = DX * DX + DY * DY;
+          if (D2 > CUTOFF2) continue;
 
-        let BUCKET = (ALPHA * (LINK_BUCKET_COUNT - 1)) | 0;
-        if (BUCKET < 0) BUCKET = 0;
-        if (BUCKET >= LINK_BUCKET_COUNT) BUCKET = LINK_BUCKET_COUNT - 1;
+          const DIST = Math.sqrt(D2) * DIST_SCALE;
 
-        LINK_PATHS[BUCKET].moveTo(AX, AY);
-        LINK_PATHS[BUCKET].lineTo(STAR_B.x, STAR_B.y);
+          let ALPHA = (1 - DIST / MAX_LINK_DISTANCE) * ((A_OP + B.opacity) / 2);
+          ALPHA *= Math.min(A_EDGE, B.edge);
+          if (ALPHA <= 0.002) continue;
+
+          let BUCKET = (ALPHA * (LINK_BUCKET_COUNT - 1)) | 0;
+          if (BUCKET < 0) BUCKET = 0;
+          if (BUCKET >= LINK_BUCKET_COUNT) BUCKET = LINK_BUCKET_COUNT - 1;
+
+          LINK_PATHS[BUCKET].moveTo(AX, AY);
+          LINK_PATHS[BUCKET].lineTo(B.x, B.y);
+        }
+      }
+
+      for (let B = 0; B < LINK_BUCKET_COUNT; B++) {
+        const BUCKET_ALPHA = (B + 1) / LINK_BUCKET_COUNT;
+        BRUSH.strokeStyle = `rgba(0, 0, 0, ${BUCKET_ALPHA})`;
+        BRUSH.stroke(LINK_PATHS[B]);
       }
     }
+  }
 
     for (let BUCKET_INDEX = 0; BUCKET_INDEX < LINK_BUCKET_COUNT; BUCKET_INDEX++) {
       const BUCKET_ALPHA = (BUCKET_INDEX + 1) / LINK_BUCKET_COUNT;
