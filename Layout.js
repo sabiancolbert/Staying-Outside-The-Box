@@ -4,7 +4,6 @@
  *                     LAYOUT & TRANSITIONS
  *==============================================================*
  *
- * Starfield lives in Starfield.js
  * This file controls:
  *  • Page transitions
  *  • Back/forward logic
@@ -23,6 +22,35 @@ let IS_TRANSITIONING = false;
 const getPage = () => document.getElementById('transitionContainer');
 const isHomepage = () => !!document.querySelector('#menuButton');
 const getSlideDurationSeconds = () => (isHomepage() ? 1.2 : 0.6);
+
+function getSF() {
+  return window.STARFIELD || null;
+}
+
+function sfResizeCanvas() {
+  const SF = getSF();
+  if (SF && typeof SF.resizeCanvas === "function") return SF.resizeCanvas();
+  if (typeof resizeCanvas === "function") return resizeCanvas(); // old
+}
+
+function sfSaveStars() {
+  const SF = getSF();
+  if (SF && typeof SF.saveToStorage === "function") return SF.saveToStorage();
+  if (typeof saveStarsToStorage === "function") return saveStarsToStorage(); // old
+}
+
+function sfFreezeOn() {
+  const SF = getSF();
+  if (SF) SF.FREEZE = true;
+  if (typeof FREEZE_CONSTELLATION !== "undefined") FREEZE_CONSTELLATION = true; // old
+}
+
+function sfForceRedraw() {
+  const SF = getSF();
+  if (SF && typeof SF.drawStarsWithLines === "function") return SF.drawStarsWithLines();
+  if (typeof window.forceStarfieldRedraw === "function") return window.forceStarfieldRedraw();
+}
+
 //#endregion
 
 
@@ -50,7 +78,7 @@ function freeScrollLayout(PAGE = getPage()) {
     PAGE.style.height = "auto";
   }
 
-  if (typeof resizeCanvas === "function") resizeCanvas();
+  sfResizeCanvas();
 
   requestAnimationFrame(() => {
     try { window.scrollTo(0, CURRENT_SCROLL); } catch {}
@@ -162,7 +190,7 @@ function transitionTo(URL) {
   IS_TRANSITIONING = true;
 
 window.REMOVE_CIRCLE = true;
-requestAnimationFrame(() => window.forceStarfieldRedraw?.());
+requestAnimationFrame(() => sfForceRedraw());
 
   const PAGE = getPage();
 
@@ -176,8 +204,8 @@ requestAnimationFrame(() => window.forceStarfieldRedraw?.());
   if (!PAGE) return (location.href = URL);
 
   // Pause starfield safely if Starfield.js is loaded
-  if (typeof FREEZE_CONSTELLATION !== "undefined") FREEZE_CONSTELLATION = true;
-  if (typeof saveStarsToStorage === "function") saveStarsToStorage();
+  sfFreezeOn();
+sfSaveStars();
 
   // Compute slide distance
   const DIST = (window.innerHeight * 1.1) + (PAGE.scrollTop ?? 0);
@@ -287,6 +315,4 @@ function wirePointerEvent(selector = "a") {
 }
 
 document.addEventListener("DOMContentLoaded", () => wirePointerEvent());
-
-document.addEventListener("DOMContentLoaded", () => wireTouchEvent());
 //#endregion
