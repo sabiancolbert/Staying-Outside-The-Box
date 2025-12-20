@@ -4,82 +4,65 @@
  *                     LAYOUT & TRANSITIONS
  *==============================================================*
  *
- * This file controls:
- *  • Page transitions
- *  • Back/forward logic
- *  • Back button visibility
- *  • Touch navigation fixes
- *
- * Works with:
- *  - New split Starfield (window.STARFIELD)
- *  - Old single-file Starfield (global functions/lexicals)
+ * Drop-in “stability-first” version:
+ *  - Does NOT assume Starfield scripts loaded yet
+ *  - Creates window.STARFIELD if missing
+ *  - Only calls SF functions if they exist
+ *  - Uses ONE freeze flag: SF.FREEZE
+ *  - Safe on pages with no sliders / no canvas
  *==============================================================*/
 
 
-//#region 1. GLOBAL PAGE STATE
+//#region 0) SAFE GLOBALS / STARFIELD HANDLE
+/*========================================*
+ *  SAFE GLOBALS
+ *========================================*/
+
+// Always safe to run first
+window.STARFIELD = window.STARFIELD || {};
+const SF = window.STARFIELD;
+
+// Stable shared flags
+SF.FREEZE = SF.FREEZE ?? false;
+
+// Cross-script flag you already use
+window.REMOVE_CIRCLE = window.REMOVE_CIRCLE ?? false;
+
+// Helper: get the container
+const getPage = () => document.getElementById("transitionContainer");
+const isHomepage = () => !!document.querySelector("#menuButton");
+const getSlideDurationSeconds = () => (isHomepage() ? 1.2 : 0.6);
+
+// Starfield safe calls (do nothing if missing)
+function sfResizeCanvas() {
+  try { SF.resizeCanvas?.(); } catch {}
+}
+function sfSaveStars() {
+  try { SF.saveToStorage?.(); } catch {}
+}
+function sfFreezeOn() {
+  try { SF.FREEZE = true; } catch {}
+}
+function sfForceRedraw() {
+  try { SF.drawStarsWithLines?.(); } catch {}
+}
+
+//#endregion
+
+
+
+//#region 1) GLOBAL PAGE STATE
 /*========================================*
  *  GLOBAL PAGE STATE
  *========================================*/
 
 let IS_TRANSITIONING = false;
 
-const getPage = () => document.getElementById("transitionContainer");
-const isHomepage = () => !!document.querySelector("#menuButton");
-const getSlideDurationSeconds = () => (isHomepage() ? 1.2 : 0.6);
-
-/*---------- STARFIELD COMPAT LAYER ----------*/
-
-// New split Starfield (preferred)
-function getSF() {
-  return window.STARFIELD || null;
-}
-
-// Old starfield uses top-level `function resizeCanvas(){}` (window property)
-// and top-level `let FREEZE_CONSTELLATION = false;` (NOT a window property).
-function sfResizeCanvas() {
-  const SF = getSF();
-  if (SF && typeof SF.resizeCanvas === "function") return SF.resizeCanvas();
-
-  try {
-    if (typeof resizeCanvas === "function") return resizeCanvas(); // old (lexical/global)
-  } catch {}
-  if (typeof window.resizeCanvas === "function") return window.resizeCanvas(); // old (property)
-}
-
-function sfSaveStars() {
-  const SF = getSF();
-  if (SF && typeof SF.saveToStorage === "function") return SF.saveToStorage();
-
-  try {
-    if (typeof saveStarsToStorage === "function") return saveStarsToStorage(); // old (lexical/global)
-  } catch {}
-  if (typeof window.saveStarsToStorage === "function") return window.saveStarsToStorage(); // old (property)
-}
-
-function sfFreezeOn() {
-  const SF = getSF();
-  if (SF) SF.FREEZE = true; // new
-
-  // old: FREEZE_CONSTELLATION is usually a top-level `let`, so you MUST NOT access via window.
-  try {
-    if (typeof FREEZE_CONSTELLATION !== "undefined") FREEZE_CONSTELLATION = true;
-  } catch {}
-}
-
-function sfForceRedraw() {
-  const SF = getSF();
-  if (SF && typeof SF.drawStarsWithLines === "function") return SF.drawStarsWithLines(); // new
-
-  try {
-    if (typeof forceStarfieldRedraw === "function") return forceStarfieldRedraw(); // old (lexical/global)
-  } catch {}
-  if (typeof window.forceStarfieldRedraw === "function") return window.forceStarfieldRedraw(); // old (property)
-}
 //#endregion
 
 
 
-//#region 2. TRANSITION & LAYOUT
+//#region 2) TRANSITION & LAYOUT
 /*========================================*
  *  TRANSITION & LAYOUT
  *========================================*/
@@ -88,7 +71,8 @@ function freeScrollLayout(PAGE = getPage()) {
   const HTML = document.documentElement;
   const BODY = document.body;
 
-  const CURRENT_SCROLL = PAGE?.scrollTop ?? window.scrollY ?? 0;
+  const CURRENT_SCROLL =
+    PAGE?.scrollTop ?? window.scrollY ?? 0;
 
   // Document becomes scroller
   HTML.style.overflowY = "auto";
@@ -101,6 +85,7 @@ function freeScrollLayout(PAGE = getPage()) {
     PAGE.style.height = "auto";
   }
 
+  // If starfield exists, let it resize
   sfResizeCanvas();
 
   requestAnimationFrame(() => {
@@ -131,11 +116,6 @@ function lockScrollToContainer(PAGE = getPage()) {
 /*---------- PAGE LOAD ----------*/
 window.addEventListener("load", () => {
   const PAGE = getPage();
-
-  // IMPORTANT: you set REMOVE_CIRCLE=true during transitions.
-  // If you never reset it, the ring can stay permanently off after the first navigation.
-  window.REMOVE_CIRCLE = false;
-  requestAnimationFrame(() => sfForceRedraw());
 
   // Determine referrer
   const REF = document.referrer;
@@ -198,18 +178,19 @@ window.addEventListener("pageshow", (event) => {
   const PAGE = getPage();
   if (!PAGE) return;
 
-  const NAV_TYPE = performance?.getEntriesByType?.("navigation")?.[0]?.type;
-  if (event.persisted || NAV_TYPE === "back_forward") {
-    // If we came from bfcache, make sure state is sane.
-    window.REMOVE_CIRCLE = false;
+  const NAV = performance?.getEntriesByType?.("navigation")?.[0];
+  const IS_BF =
+    event.persisted ||
+    NAV?.type === "back_forward";
 
+  if (IS_BF) {
     PAGE.classList.remove("slide-out");
     PAGE.classList.add("ready");
     lockScrollToContainer(PAGE);
-
     IS_TRANSITIONING = false;
     PAGE.scrollTop = 0;
 
+    // If starfield is present, redraw once (safe)
     requestAnimationFrame(() => sfForceRedraw());
   }
 });
@@ -221,12 +202,6 @@ function transitionTo(URL) {
   if (!URL) return;
   IS_TRANSITIONING = true;
 
-  // Kill ring immediately before slide (your cross-script flag)
-  window.REMOVE_CIRCLE = true;
-  requestAnimationFrame(() => sfForceRedraw());
-
-  const PAGE = getPage();
-
   // Back keyword → use stored URL
   if (URL === "back") {
     const STORED = localStorage.getItem("homepageBackUrl");
@@ -234,9 +209,14 @@ function transitionTo(URL) {
     URL = STORED;
   }
 
+  // Kill ring immediately before slide
+  window.REMOVE_CIRCLE = true;
+  requestAnimationFrame(() => sfForceRedraw());
+
+  const PAGE = getPage();
   if (!PAGE) return (location.href = URL);
 
-  // Pause starfield safely + persist positions
+  // Freeze + save if starfield exists (safe no-ops otherwise)
   sfFreezeOn();
   sfSaveStars();
 
@@ -255,7 +235,7 @@ function transitionTo(URL) {
 
 
 
-//#region 3. TOUCH NAV FIXES
+//#region 3) TOUCH NAV FIXES
 /*========================================*
  *  TOUCH NAVIGATION HANDLING
  *========================================*/
@@ -343,5 +323,4 @@ function wirePointerEvent(selector = "a") {
 document.addEventListener("DOMContentLoaded", () => wirePointerEvent());
 //#endregion
 
-// Joke: JavaScript “globals” are like cats. Some come when you call them, some ignore you,
-// and some refuse to live in `window` on principle. 🐈‍⬛
+// Joke: This file now treats missing functions like a cat treats commands: politely ignored. 🐈‍⬛
