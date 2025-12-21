@@ -702,7 +702,7 @@ function drawStarsWithLines() {
 
     for (let BUCKET_INDEX = 0; BUCKET_INDEX < LINK_BUCKET_COUNT; BUCKET_INDEX++) {
       const BUCKET_ALPHA = (BUCKET_INDEX + 1) / LINK_BUCKET_COUNT;
-      BRUSH.strokeStyle = `rgba(189, 189, 189, ${BUCKET_ALPHA})`;
+      BRUSH.strokeStyle = `rgba(100, 100, 100, ${BUCKET_ALPHA})`;
       BRUSH.stroke(LINK_PATHS[BUCKET_INDEX]);
     }
   }
