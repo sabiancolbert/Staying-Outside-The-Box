@@ -145,9 +145,6 @@ function edgeFadeFactor(star) {
  *  Saves:
  *   - constellationStars: star array
  *   - constellationMeta: canvas size + pointer/timers + UI params
- *
- *  Note:
- *   - You said transitions handle saving, so no beforeunload here.
  *========================================*/
 
 function saveStarsToStorage() {
@@ -250,8 +247,6 @@ function initStars() {
 
         POINTER_X = (typeof meta.pointerX === 'number') ? meta.pointerX : POINTER_X;
         POINTER_Y = (typeof meta.pointerY === 'number') ? meta.pointerY : POINTER_Y;
-
-        // You said you're ok with current behavior:
         POINTER_T = (typeof meta.pointerT === 'number' && meta.pointerT > 0) ? meta.pointerT : nowMs();
 
         // UI params
@@ -604,7 +599,7 @@ function moveStars() {
   POINTER_SPEED *= 0.5;
   if (POINTER_SPEED < 0.001) POINTER_SPEED = 0;
 
-  // Ring timing (your behavior preserved)
+  // Ring timing
   RING_T *= 0.9;
   if (RING_T < 0.1) RING_T = 0;
 
@@ -734,12 +729,6 @@ function drawFrame() {
     CTX.fill();
   }
 }
-
-// External helper (used by your transition script if you need it)
-window.forceStarfieldRedraw = () => {
-  if (!HAS_CANVAS) return;
-  drawFrame();
-};
 //#endregion
 
 
