@@ -269,7 +269,7 @@ a:hover {
 }
 
 .premium {
-  text-shadow: var(--SHADOW);
+  text-shadow: 0 0 20px rgba(100, 0, 100, 1);
 }
 
 /* #endregion 6 LINKS (ALL a STYLES) */
