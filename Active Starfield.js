@@ -325,20 +325,20 @@
   };
 
   // Mouse
-  window.addEventListener("mousemove", (e) => SF.updateSpeed(e.clientX, e.clientY, e.timeStamp));
-  window.addEventListener("mousedown", (e) => SF.startPointerInteraction(e.clientX, e.clientY, e.timeStamp));
+  window.addEventListener("mousemove", (e) => SF.updateSpeed(e.clientX, e.clientY));
+  window.addEventListener("mousedown", (e) => SF.startPointerInteraction(e.clientX, e.clientY));
 
   // Touch
   window.addEventListener("touchstart", (e) => {
     const t = e.touches[0];
     if (!t) return;
-    SF.startPointerInteraction(t.clientX, t.clientY, e.timeStamp);
+    SF.startPointerInteraction(t.clientX, t.clientY);
   }, { passive: true });
 
   window.addEventListener("touchmove", (e) => {
     const t = e.touches[0];
     if (!t) return;
-    SF.updateSpeed(t.clientX, t.clientY, e.timeStamp);
+    SF.updateSpeed(t.clientX, t.clientY);
   }, { passive: true });
 })();
 
