@@ -45,9 +45,6 @@ let POKE_TIMER = 0;
 let CIRCLE_TIMER = 0;
 let CIRCLE_SIZE = 0;
 
-// Cross-script flag (preserved across pages if set earlier)
-window.REMOVE_CIRCLE = window.REMOVE_CIRCLE ?? false;
-
 // Canvas sizing + scaling
 let CANVAS_WIDTH = 0;
 let CANVAS_HEIGHT = 0;
@@ -114,8 +111,6 @@ function saveStarsToStorage() {
     console.warn('Could not save stars:', ERR);
   }
 }
-
-window.addEventListener('beforeunload', saveStarsToStorage);
 //#endregion
 
 
@@ -648,7 +643,7 @@ function drawStarsWithLines() {
   BRUSH.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
   // Pointer ring
-  if (!window.REMOVE_CIRCLE) {
+
     const GOAL_RADIUS = SCALE_TO_SCREEN * 100 - 40;
     const RING_RADIUS = GOAL_RADIUS * CIRCLE_SIZE;
     const RING_WIDTH = CIRCLE_TIMER * 0.15 + 1.5;
@@ -666,7 +661,7 @@ function drawStarsWithLines() {
 
       BRUSH.restore();
     }
-  }
+  
 
   // Links
   BRUSH.lineWidth = 1;
