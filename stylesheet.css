@@ -342,8 +342,12 @@ img {
   flex-direction:row;
   align-items:center;
   justify-content:center;
-  width:12dvmin;
-  margin:0 10dvw;
+  width:fit-content;
+  margin: 0 auto;
+}
+
+.navButtons a {
+  margin: 0 10dvw;
 }
 
 .navButtons img {
