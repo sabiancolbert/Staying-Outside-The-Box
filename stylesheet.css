@@ -62,7 +62,6 @@
  *========================================*/
 
 :root {
-  
   /* Slide offset (JS can overwrite this) */
   --SLIDE_DISTANCE: 100vh;
 
@@ -98,22 +97,17 @@
 /* Fixed background image behind everything */
 html::before{
   content:"";
-  position: fixed;
-
-
-  left: 0;
-  right: 0;
-
-  background-image: url("/Resources/Background.webp");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-
-  z-index: -2;
-  pointer-events: none;
-
-  /* helps iOS treat it as its own composited layer */
-  transform: translateZ(0);
+  position:fixed;
+  inset:0;
+  width:100lvw;
+  height:110lvh;
+  overflow: auto;
+  background-image:url("/Resources/Background.webp");
+  background-size:cover;
+  background-position:center;
+  background-repeat:no-repeat;
+  z-index:-2;
+  pointer-events:none;
 }
 
 html {
@@ -122,7 +116,8 @@ html {
 
   /* DONT TOUCH - important for proper scroll transition */
   overflow: auto;                         /* JS swaps body/html scroll control */
-  background: transparent;
+
+  background-color: black;                /* Edge color */
 }
 
 body {
