@@ -643,9 +643,9 @@ function drawStarsWithLines() {
 
   // Pointer ring
   if (!window.REMOVE_CIRCLE) {
-    const RING_RADIUS = SCALE_TO_SCREEN * 100 - 40;
-    const GOAL_WIDTH = CIRCLE_TIMER * 0.15 + 1.5;
-    const RING_WIDTH = GOAL_WIDTH * CIRCLE_SIZE;
+    const GOAL_RADIUS = SCALE_TO_SCREEN * 100 - 40;
+    const RING_RADIUS = GOAL_RADIUS * CIRCLE_SIZE;
+    const RING_WIDTH = CIRCLE_TIMER * 0.15 + 1.5;
     const RING_ALPHA = Math.min(CIRCLE_TIMER * 0.07, 1);
 
     if (USER_TIME > 0 && RING_ALPHA > 0.001) {
