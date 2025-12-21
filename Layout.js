@@ -132,9 +132,6 @@ function transitionTo(URL) {
   if (!URL) return;
   IS_TRANSITIONING = true;
 
-window.REMOVE_CIRCLE = true;
-requestAnimationFrame(() => window.forceStarfieldRedraw?.());
-
   const PAGE = getPage();
 
   // Back keyword → use stored URL
