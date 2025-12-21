@@ -261,9 +261,7 @@ window.STARFIELD = window.STARFIELD || {};
         if (typeof meta.userX === "number") SF.pointerX = meta.userX;
         if (typeof meta.userY === "number") SF.pointerY = meta.userY;
 
-        SF.pointerTime = (typeof meta.userTime === "number" && meta.userTime > 0)
-          ? meta.userTime
-          : SF.nowMs();
+        SF.pointerTime = SF.nowMs();
       } catch (ERR) {
         console.warn("Could not parse constellationMeta; skipping meta restore.", ERR);
       }
