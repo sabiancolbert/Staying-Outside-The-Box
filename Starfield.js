@@ -597,8 +597,8 @@ function moveStars() {
     CIRCLE_TIMER = 0;
     CIRCLE_SIZE = 0;
   }
-  else if (CIRCLE_SIZE < 0.98){
-    CIRCLE_SIZE += 0.03
+  else if (CIRCLE_SIZE < 1){
+    CIRCLE_SIZE += 0.1
   }
 
   POKE_TIMER *= 0.85;
