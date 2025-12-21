@@ -803,7 +803,7 @@ function updateSpeed(POINTER_X, POINTER_Y, EVENT_TIME_STAMP) {
 }
 
 function startPointerInteraction(POINTER_X, POINTER_Y, EVENT_TIME_STAMP) {
-  POKE_TIMER = 2500;
+  POKE_TIMER = 500;
   updateSpeed(POINTER_X, POINTER_Y, EVENT_TIME_STAMP);
 }
 
