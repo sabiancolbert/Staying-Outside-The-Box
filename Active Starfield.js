@@ -311,15 +311,16 @@
   
     const rawSpeed = Math.sqrt(dx*dx + dy*dy) / dt;
     SF.pointerSpeed = Math.min(rawSpeed * 50, 50);
-  
+    SF.ringTimer = Math.max(SF.ringTimer, SF.pointerSpeed);
+    
     SF.pointerX = x;
     SF.pointerY = y;
     SF.pointerTime = time;
   };
 
-  SF.startPointerInteraction = function startPointerInteraction(x, y, eventTimeStamp) {
+  SF.startPointerInteraction = function startPointerInteraction(x, y) {
     SF.pokeTimer = 500;
-    SF.updateSpeed(x, y, eventTimeStamp);
+    SF.updateSpeed(x, y);
   };
 
   // Mouse
