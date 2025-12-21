@@ -595,6 +595,8 @@ function moveStars() {
   CIRCLE_TIMER *= 0.9;
   if (CIRCLE_TIMER < 0.1) {
     CIRCLE_TIMER = 0;
+  }
+  if (CIRCLE_TIMER < 10) {
     CIRCLE_SIZE = 0;
   }
   else if (CIRCLE_SIZE < 1){
