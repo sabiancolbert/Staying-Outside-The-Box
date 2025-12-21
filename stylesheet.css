@@ -81,7 +81,7 @@
  *  2) DOCUMENT BASE + BACKGROUND
  *========================================*
  *  Important: scroll ownership is intentionally unusual.
- *  Your JS swaps between html/body/container as the scroller.
+ *  JS swaps between html/body/container as the scroller.
  *  These “DONT TOUCH” lines are the fragile bones holding it together.
  */
 
@@ -103,8 +103,6 @@ html::before {
   /* Behind canvas + content */
   z-index: -2;
   pointer-events: none;
-
-  /* (Harmless here. Kept since you had it.) */
   overflow: auto;
 }
 
@@ -320,7 +318,7 @@ img {
 }
 
 /*---------- Homepage badge-style image buttons ----------*/
-/* Note: .imgButton shares a block with button here on purpose (your original behavior). */
+/* Note: .imgButton shares a block with button here on purpose */
 .imgButton,
 button {
   display: block;
@@ -575,5 +573,3 @@ button:hover {
 }
 
 /* #endregion 12) REDUCED-MOTION ACCESSIBILITY */
-
-/* Joke: This CSS is “perfectly functional” like a haunted toaster. Works every time, but still watches you. 🍞👁️ */
