@@ -89,7 +89,6 @@
 html::before {
   content: "";
   position: fixed;
-  inset: 0;
 
   /* Background coverage (lv* helps iOS toolbars) */
   width: 100lvw;
@@ -152,7 +151,7 @@ body {
 /* Full-screen starfield canvas (above bg, below content) */
 #constellations {
   position: fixed;
-  inset: 0;
+
   width: 100%;
   height: 100%;
 
