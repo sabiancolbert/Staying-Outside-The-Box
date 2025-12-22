@@ -395,6 +395,7 @@ window.KEYBOARD_FORCE_Y = 0;
     { passive: true }
   );
   
+    // Touch
   window.addEventListener(
     "touchmove",
     (EVENT) => {
@@ -404,5 +405,8 @@ window.KEYBOARD_FORCE_Y = 0;
     },
     { passive: true }
   );
+})();
+ 
+/* #endregion 3) USER INPUT */
 
 /* #endregion 3) POINTER INPUT */
