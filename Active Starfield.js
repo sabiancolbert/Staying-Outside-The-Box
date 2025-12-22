@@ -397,31 +397,4 @@
   );
 })();
 
-window.addEventListener("keydown", (event) => {
-  // Ignore held-down repeats
-  if (event.repeat) return;
-
-  if (TAG === "INPUT" || TAG === "TEXTAREA" || event.target?.isContentEditable) {
-    return;
-  }
-
-  switch (event.key) {
-    case "Escape":
-      // close menus, cancel transitions, etc.
-      break;
-
-    case "Enter":
-      // activate default action
-      break;
-
-    case "ArrowLeft":
-      // navigate left
-      break;
-
-    case "ArrowRight":
-      // navigate right
-      break;
-  }
-});
-
 /* #endregion 3) POINTER INPUT */
