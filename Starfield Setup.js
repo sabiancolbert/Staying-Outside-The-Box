@@ -13,9 +13,9 @@
  *   7) Bootstrap
  *
  *  Active Starfield.js owns:
- *    Physics (moveStars)
- *    Rendering (drawStarsWithLines)
- *    Pointer input (updateSpeed + listeners)
+ *    Physics (updateStarPhysics)
+ *    Rendering (renderStarsAndLinks)
+ *    Pointer input (updatePointerSpeed + listeners)
  *==============================================================*/
 
 
@@ -27,57 +27,65 @@
 window.STARFIELD = window.STARFIELD || {};
 
 (() => {
-  const SF = window.STARFIELD;
+  const STARFIELD = window.STARFIELD;
 
-  // Canvas wiring
-  SF.canvas = document.getElementById("constellations");
-  SF.brush = SF.canvas && SF.canvas.getContext ? SF.canvas.getContext("2d") : null;
-  SF.hasCanvas = !!(SF.canvas && SF.brush);
+  // Step 1: Find the canvas element
+  STARFIELD.constellationCanvas = document.getElementById("constellations");
 
-  if (!SF.hasCanvas) {
+  // Step 2: Get the 2D drawing context (if possible)
+  STARFIELD.drawingContext =
+    STARFIELD.constellationCanvas && STARFIELD.constellationCanvas.getContext
+      ? STARFIELD.constellationCanvas.getContext("2d")
+      : null;
+
+  // Step 3: Record whether canvas drawing is actually available
+  STARFIELD.isCanvasReady = !!(STARFIELD.constellationCanvas && STARFIELD.drawingContext);
+
+  // Step 4: If the canvas is missing, warn and silently disable starfield behavior
+  if (!STARFIELD.isCanvasReady) {
     console.warn("Constellation canvas not found or unsupported; starfield disabled.");
   }
 
-  // Runtime flag
-  SF.freeze = false;
+  // Step 5: Runtime freeze flag (used when navigating away, etc.)
+  STARFIELD.isFrozen = false;
 
-  // Pointer state + timers (Active updates these)
-  SF.pointerX = 0;
-  SF.pointerY = 0;
-  SF.pointerTime = 0; // perf-style timestamp
-  SF.pointerSpeed = 0;
+  // Step 6: Pointer state + interaction timers (Active file updates these)
+  STARFIELD.pointerClientX = 0;
+  STARFIELD.pointerClientY = 0;
+  STARFIELD.lastPointerTimeMs = 0; // perf-style timestamp
+  STARFIELD.pointerSpeedUnits = 0;
 
-  SF.pokeTimer = 0;
-  SF.ringTimer = 0;
+  STARFIELD.pokeImpulseTimer = 0;
+  STARFIELD.pointerRingTimer = 0;
 
-  // Canvas sizing + scaling (Setup owns resize)
-  SF.w = 0;
-  SF.h = 0;
-  SF.screenSum = 0;       // w + h
-  SF.scaleToScreen = 0;   // main scale factor
-  SF.maxStars = 0;
-  SF.maxLinkDist = 0;
+  // Step 7: Canvas sizing + scaling (Setup owns resize)
+  STARFIELD.canvasWidth = 0;
+  STARFIELD.canvasHeight = 0;
+  STARFIELD.screenPerimeter = 0;     // width + height
+  STARFIELD.screenScale = 0;         // main scale factor
+  STARFIELD.starCountLimit = 0;
+  STARFIELD.maxLinkDistance = 0;
 
-  // Precomputed scaling powers (Setup writes, Physics reads)
-  SF.scalePow = {
-    attGrad: 1,
-    repGrad: 1,
-    attShape: 1,
-    att: 1,
-    rep: 1,
-    limit: 1
+  // Step 8: Precomputed scaling powers (Setup writes, Physics reads)
+  STARFIELD.screenScalePowers = {
+    attractionGradient: 1,
+    repulsionGradient: 1,
+    attractionShape: 1,
+    attractionForce: 1,
+    repulsionForce: 1,
+    forceClamp: 1
   };
 
-  // Star data
-  SF.stars = [];
+  // Step 9: Star data (array of star objects)
+  STARFIELD.starList = [];
 
-  // Bootstrap guards
-  SF._animStarted = false;
-  SF._resizeWired = false;
-  SF._starsInit = false;
+  // Step 10: Bootstrap guards (prevent double-wiring)
+  STARFIELD.hasAnimationLoopStarted = false;
+  STARFIELD.hasResizeListenerWired = false;
+  STARFIELD.hasStarsInitialized = false;
 
-  // Debug toggles
-  SF.debug = {
+  // Step 11: Debug toggles
+  STARFIELD.debug = {
     enabled: true
   };
 })();
@@ -92,41 +100,44 @@ window.STARFIELD = window.STARFIELD || {};
  *========================================*/
 
 (() => {
-  const SF = window.STARFIELD;
+  const STARFIELD = window.STARFIELD;
 
-  SF.saveToStorage = function saveToStorage() {
-    if (!SF.hasCanvas) return;
+  STARFIELD.saveStarfieldToStorage = function saveStarfieldToStorage() {
+    // Step 1: If canvas isn't active, do nothing
+    if (!STARFIELD.isCanvasReady) return;
 
     try {
-      localStorage.setItem("constellationStars", JSON.stringify(SF.stars));
+      // Step 2: Save stars (keep key name the same for compatibility)
+      localStorage.setItem("constellationStars", JSON.stringify(STARFIELD.starList));
 
+      // Step 3: Save meta (keep field names the same for compatibility)
       localStorage.setItem(
         "constellationMeta",
         JSON.stringify({
-          width: SF.w,
-          height: SF.h,
+          width: STARFIELD.canvasWidth,
+          height: STARFIELD.canvasHeight,
 
           // pointer + timers
-          pokeTimer: SF.pokeTimer,
-          userSpeed: SF.pointerSpeed,
-          userX: SF.pointerX,
-          userY: SF.pointerY,
-          userTime: SF.pointerTime,
-          ringTimer: SF.ringTimer,
+          pokeTimer: STARFIELD.pokeImpulseTimer,
+          userSpeed: STARFIELD.pointerSpeedUnits,
+          userX: STARFIELD.pointerClientX,
+          userY: STARFIELD.pointerClientY,
+          userTime: STARFIELD.lastPointerTimeMs,
+          ringTimer: STARFIELD.pointerRingTimer,
 
           // UI params
-          attractStrength: SF.params.attractStrength,
-          attractRadius: SF.params.attractRadius,
-          attractScale: SF.params.attractScale,
-          clamp: SF.params.clamp,
-          repelStrength: SF.params.repelStrength,
-          repelRadius: SF.params.repelRadius,
-          repelScale: SF.params.repelScale,
-          pokeStrength: SF.params.pokeStrength
+          attractStrength: STARFIELD.interactionSettings.attractStrength,
+          attractRadius: STARFIELD.interactionSettings.attractRadius,
+          attractScale: STARFIELD.interactionSettings.attractScale,
+          clamp: STARFIELD.interactionSettings.clamp,
+          repelStrength: STARFIELD.interactionSettings.repelStrength,
+          repelRadius: STARFIELD.interactionSettings.repelRadius,
+          repelScale: STARFIELD.interactionSettings.repelScale,
+          pokeStrength: STARFIELD.interactionSettings.pokeStrength
         })
       );
-    } catch (ERR) {
-      console.warn("Could not save stars:", ERR);
+    } catch (ERROR) {
+      console.warn("Could not save stars:", ERROR);
     }
   };
 })();
@@ -141,10 +152,11 @@ window.STARFIELD = window.STARFIELD || {};
  *========================================*/
 
 (() => {
-  const SF = window.STARFIELD;
+  const STARFIELD = window.STARFIELD;
 
-  SF.nowMs = function nowMs() {
-    return (window.performance && performance.now) ? performance.now() : Date.now();
+  STARFIELD.getNowMs = function getNowMs() {
+    // Step 1: Prefer performance.now() when available
+    return window.performance && performance.now ? performance.now() : Date.now();
   };
 
   /**
@@ -152,38 +164,49 @@ window.STARFIELD = window.STARFIELD || {};
    * Some browsers give epoch-ish event.timeStamp, others perf-ish, some 0.
    * Output is always perf.now()-style.
    */
-  SF.normalizeEventTime = function normalizeEventTime(TS) {
-    if (!Number.isFinite(TS) || TS <= 0) return SF.nowMs();
+  STARFIELD.normalizePointerTimestampMs = function normalizePointerTimestampMs(RAW_TIMESTAMP) {
+    // Step 1: If the timestamp is missing/invalid, use "now"
+    if (!Number.isFinite(RAW_TIMESTAMP) || RAW_TIMESTAMP <= 0) return STARFIELD.getNowMs();
 
-    if (TS > 1e12) {
+    // Step 2: If it's epoch-like, convert to perf-style using timeOrigin
+    if (RAW_TIMESTAMP > 1e12) {
       if (performance && Number.isFinite(performance.timeOrigin)) {
-        return TS - performance.timeOrigin;
+        return RAW_TIMESTAMP - performance.timeOrigin;
       }
-      return SF.nowMs();
+      return STARFIELD.getNowMs();
     }
 
-    return TS;
+    // Step 3: Otherwise it already looks perf-ish, return as-is
+    return RAW_TIMESTAMP;
   };
 
-  SF.randBetween = (MIN, MAX) => Math.random() * (MAX - MIN) + MIN;
+  STARFIELD.randomBetween = (MIN_VALUE, MAX_VALUE) =>
+    Math.random() * (MAX_VALUE - MIN_VALUE) + MIN_VALUE;
 
   /** 0 at/beyond wrap threshold, 1 safely away from edges */
-  SF.edgeFactor = function edgeFactor(star) {
-    const r = (star.whiteValue * 2 + star.size) || 0;
+  STARFIELD.getEdgeFadeFactor = function getEdgeFadeFactor(STAR) {
+    // Step 1: Compute a "radius" that roughly matches how big the star draws
+    const STAR_RADIUS = (STAR.whiteValue * 2 + STAR.size) || 0;
 
-    const left = star.x + r;
-    const right = SF.w + r - star.x;
-    const top = star.y + r;
-    const bottom = SF.h + r - star.y;
+    // Step 2: Measure distance to each edge
+    const DIST_LEFT = STAR.x + STAR_RADIUS;
+    const DIST_RIGHT = STARFIELD.canvasWidth + STAR_RADIUS - STAR.x;
+    const DIST_TOP = STAR.y + STAR_RADIUS;
+    const DIST_BOTTOM = STARFIELD.canvasHeight + STAR_RADIUS - STAR.y;
 
-    const minEdgeDist = Math.min(left, right, top, bottom);
-    const fadeBand = Math.min(90, SF.screenSum * 0.03);
+    // Step 3: Find the closest edge distance
+    const MIN_EDGE_DISTANCE = Math.min(DIST_LEFT, DIST_RIGHT, DIST_TOP, DIST_BOTTOM);
 
-    let t = minEdgeDist / fadeBand;
-    if (t < 0) t = 0;
-    if (t > 1) t = 1;
+    // Step 4: Define a fade band (cap at 90px, scale slightly with screen)
+    const FADE_BAND = Math.min(90, STARFIELD.screenPerimeter * 0.03);
 
-    return t * t * (3 - 2 * t); // smoothstep
+    // Step 5: Convert distance into 0..1
+    let T = MIN_EDGE_DISTANCE / FADE_BAND;
+    if (T < 0) T = 0;
+    if (T > 1) T = 1;
+
+    // Step 6: Smoothstep (eases fade)
+    return T * T * (3 - 2 * T);
   };
 })();
 
@@ -197,96 +220,110 @@ window.STARFIELD = window.STARFIELD || {};
  *========================================*/
 
 (() => {
-  const SF = window.STARFIELD;
+  const STARFIELD = window.STARFIELD;
 
-  SF.initStars = function initStars() {
-    if (!SF.hasCanvas) return;
+  STARFIELD.restoreOrCreateStars = function restoreOrCreateStars() {
+    // Step 1: If canvas isn't active, do nothing
+    if (!STARFIELD.isCanvasReady) return;
 
-    let rawStars = null;
-    try { rawStars = localStorage.getItem("constellationStars"); } catch {}
+    // Step 2: Attempt to load saved stars
+    let RAW_STARS_JSON = null;
+    try { RAW_STARS_JSON = localStorage.getItem("constellationStars"); } catch {}
 
-    if (!rawStars) {
-      SF.createStars();
+    // Step 3: If no save exists, create new stars
+    if (!RAW_STARS_JSON) {
+      STARFIELD.createNewStars();
       return;
     }
 
     try {
-      const parsed = JSON.parse(rawStars);
-      if (!Array.isArray(parsed) || !parsed.length) {
-        SF.createStars();
+      // Step 4: Parse saved star list
+      const PARSED_STARS = JSON.parse(RAW_STARS_JSON);
+      if (!Array.isArray(PARSED_STARS) || !PARSED_STARS.length) {
+        STARFIELD.createNewStars();
         return;
       }
 
-      SF.stars = parsed;
+      // Step 5: Adopt saved stars (keep star object shape unchanged for compatibility)
+      STARFIELD.starList = PARSED_STARS;
 
-      let rawMeta = null;
-      try { rawMeta = localStorage.getItem("constellationMeta"); } catch {}
+      // Step 6: Attempt to load saved meta
+      let RAW_META_JSON = null;
+      try { RAW_META_JSON = localStorage.getItem("constellationMeta"); } catch {}
 
-      if (!rawMeta) return;
+      // Step 7: If no meta, keep stars but skip restoring settings/state
+      if (!RAW_META_JSON) return;
 
       try {
-        const meta = JSON.parse(rawMeta);
+        const META = JSON.parse(RAW_META_JSON);
 
-        // Rescale star positions/sizes to the current canvas
-        if (meta.width > 0 && meta.height > 0) {
-          const sx = SF.w / meta.width;
-          const sy = SF.h / meta.height;
-          const sizeScale = (SF.w + SF.h) / (meta.width + meta.height);
+        // Step 8: Rescale stars to the current canvas (prevents “corner spawning” after resize)
+        if (META.width > 0 && META.height > 0) {
+          const SCALE_X = STARFIELD.canvasWidth / META.width;
+          const SCALE_Y = STARFIELD.canvasHeight / META.height;
+          const SIZE_SCALE = (STARFIELD.canvasWidth + STARFIELD.canvasHeight) / (META.width + META.height);
 
-          for (const star of SF.stars) {
-            star.x *= sx;
-            star.y *= sy;
-            star.size *= sizeScale;
+          for (const STAR of STARFIELD.starList) {
+            STAR.x *= SCALE_X;
+            STAR.y *= SCALE_Y;
+            STAR.size *= SIZE_SCALE;
           }
         }
 
-        // Restore interaction state
-        SF.pokeTimer = meta.pokeTimer ?? 0;
-        SF.pointerSpeed = meta.userSpeed ?? 0;
-        SF.ringTimer = meta.ringTimer ?? 0;
+        // Step 9: Restore interaction state
+        STARFIELD.pokeImpulseTimer = META.pokeTimer ?? 0;
+        STARFIELD.pointerSpeedUnits = META.userSpeed ?? 0;
+        STARFIELD.pointerRingTimer = META.ringTimer ?? 0;
 
-        // Restore params
-        SF.params.attractStrength = meta.attractStrength ?? SF.params.attractStrength;
-        SF.params.attractRadius   = meta.attractRadius   ?? SF.params.attractRadius;
-        SF.params.attractScale    = meta.attractScale    ?? SF.params.attractScale;
-        SF.params.clamp           = meta.clamp           ?? SF.params.clamp;
+        // Step 10: Restore UI settings
+        STARFIELD.interactionSettings.attractStrength = META.attractStrength ?? STARFIELD.interactionSettings.attractStrength;
+        STARFIELD.interactionSettings.attractRadius   = META.attractRadius   ?? STARFIELD.interactionSettings.attractRadius;
+        STARFIELD.interactionSettings.attractScale    = META.attractScale    ?? STARFIELD.interactionSettings.attractScale;
+        STARFIELD.interactionSettings.clamp           = META.clamp           ?? STARFIELD.interactionSettings.clamp;
 
-        SF.params.repelStrength   = meta.repelStrength   ?? SF.params.repelStrength;
-        SF.params.repelRadius     = meta.repelRadius     ?? SF.params.repelRadius;
-        SF.params.repelScale      = meta.repelScale      ?? SF.params.repelScale;
-        SF.params.pokeStrength    = meta.pokeStrength    ?? SF.params.pokeStrength;
+        STARFIELD.interactionSettings.repelStrength   = META.repelStrength   ?? STARFIELD.interactionSettings.repelStrength;
+        STARFIELD.interactionSettings.repelRadius     = META.repelRadius     ?? STARFIELD.interactionSettings.repelRadius;
+        STARFIELD.interactionSettings.repelScale      = META.repelScale      ?? STARFIELD.interactionSettings.repelScale;
 
-        if (typeof meta.userX === "number") SF.pointerX = meta.userX;
-        if (typeof meta.userY === "number") SF.pointerY = meta.userY;
+        STARFIELD.interactionSettings.pokeStrength    = META.pokeStrength    ?? STARFIELD.interactionSettings.pokeStrength;
 
-        SF.pointerTime = SF.nowMs();
-      } catch (ERR) {
-        console.warn("Could not parse constellationMeta; skipping meta restore.", ERR);
+        // Step 11: Restore pointer position (if stored)
+        if (typeof META.userX === "number") STARFIELD.pointerClientX = META.userX;
+        if (typeof META.userY === "number") STARFIELD.pointerClientY = META.userY;
+
+        // Step 12: Reset pointer timing baseline to “now”
+        STARFIELD.lastPointerTimeMs = STARFIELD.getNowMs();
+      } catch (ERROR) {
+        console.warn("Could not parse constellationMeta; skipping meta restore.", ERROR);
       }
-    } catch (ERR) {
-      console.warn("Could not parse constellationStars; recreating.", ERR);
-      SF.createStars();
+    } catch (ERROR) {
+      console.warn("Could not parse constellationStars; recreating.", ERROR);
+      STARFIELD.createNewStars();
     }
   };
 
-  SF.createStars = function createStars() {
-    if (!SF.hasCanvas) return;
+  STARFIELD.createNewStars = function createNewStars() {
+    // Step 1: If canvas isn't active, do nothing
+    if (!STARFIELD.isCanvasReady) return;
 
-    SF.stars = [];
+    // Step 2: Clear any existing stars
+    STARFIELD.starList = [];
 
-    const minSize = 3;
-    const maxSize = SF.screenSum / 400 || 3;
+    // Step 3: Choose size range based on screen
+    const MIN_SIZE = 3;
+    const MAX_SIZE = STARFIELD.screenPerimeter / 400 || 3;
 
-    for (let i = 0; i < SF.maxStars; i++) {
-      SF.stars.push({
-        x: Math.random() * SF.w,
-        y: Math.random() * SF.h,
-        vx: SF.randBetween(-0.25, 0.25),
-        vy: SF.randBetween(-0.25, 0.25),
-        size: SF.randBetween(Math.min(minSize, maxSize), Math.max(minSize, maxSize)),
-        opacity: SF.randBetween(0.005, 1.8),
-        fadeSpeed: SF.randBetween(1, 2.1),
-        redValue: SF.randBetween(100, 200),
+    // Step 4: Create stars (keep star object fields unchanged for storage compatibility)
+    for (let STAR_INDEX = 0; STAR_INDEX < STARFIELD.starCountLimit; STAR_INDEX++) {
+      STARFIELD.starList.push({
+        x: Math.random() * STARFIELD.canvasWidth,
+        y: Math.random() * STARFIELD.canvasHeight,
+        vx: STARFIELD.randomBetween(-0.25, 0.25),
+        vy: STARFIELD.randomBetween(-0.25, 0.25),
+        size: STARFIELD.randomBetween(Math.min(MIN_SIZE, MAX_SIZE), Math.max(MIN_SIZE, MAX_SIZE)),
+        opacity: STARFIELD.randomBetween(0.005, 1.8),
+        fadeSpeed: STARFIELD.randomBetween(1, 2.1),
+        redValue: STARFIELD.randomBetween(100, 200),
         whiteValue: 0,
         momentumX: 0,
         momentumY: 0,
@@ -306,9 +343,9 @@ window.STARFIELD = window.STARFIELD || {};
  *========================================*/
 
 (() => {
-  const SF = window.STARFIELD;
+  const STARFIELD = window.STARFIELD;
 
-  SF.params = {
+  STARFIELD.interactionSettings = {
     attractStrength: 50,
     attractRadius: 50,
     attractScale: 5,
@@ -321,9 +358,9 @@ window.STARFIELD = window.STARFIELD || {};
     pokeStrength: 5
   };
 
-  SF.enableStepperHold = function enableStepperHold(button, onStep) {
-    let holdTimer = null;
-    let repeatTimer = null;
+  STARFIELD.enableHoldToRepeat = function enableHoldToRepeat(BUTTON, onStep) {
+    let HOLD_DELAY_TIMER = null;
+    let REPEAT_INTERVAL_TIMER = null;
 
     const INITIAL_DELAY_MS = 350;
     const START_INTERVAL_MS = 120;
@@ -331,112 +368,135 @@ window.STARFIELD = window.STARFIELD || {};
     const ACCELERATION = 0.88;
 
     const startHold = () => {
-      let interval = START_INTERVAL_MS;
+      let CURRENT_INTERVAL_MS = START_INTERVAL_MS;
+
+      // Step 1: fire once immediately
       onStep();
 
-      holdTimer = setTimeout(() => {
-        repeatTimer = setInterval(() => {
+      // Step 2: after a short delay, begin repeating
+      HOLD_DELAY_TIMER = setTimeout(() => {
+        REPEAT_INTERVAL_TIMER = setInterval(() => {
+          // Step 3: run the step
           onStep();
-          interval = Math.max(MIN_INTERVAL_MS, interval * ACCELERATION);
-          clearInterval(repeatTimer);
-          repeatTimer = setInterval(onStep, interval);
-        }, interval);
+
+          // Step 4: accelerate repeat interval down to a minimum
+          CURRENT_INTERVAL_MS = Math.max(MIN_INTERVAL_MS, CURRENT_INTERVAL_MS * ACCELERATION);
+
+          // Step 5: restart interval at the new faster speed
+          clearInterval(REPEAT_INTERVAL_TIMER);
+          REPEAT_INTERVAL_TIMER = setInterval(onStep, CURRENT_INTERVAL_MS);
+        }, CURRENT_INTERVAL_MS);
       }, INITIAL_DELAY_MS);
     };
 
     const stopHold = () => {
-      clearTimeout(holdTimer);
-      clearInterval(repeatTimer);
-      holdTimer = null;
-      repeatTimer = null;
+      clearTimeout(HOLD_DELAY_TIMER);
+      clearInterval(REPEAT_INTERVAL_TIMER);
+      HOLD_DELAY_TIMER = null;
+      REPEAT_INTERVAL_TIMER = null;
     };
 
-    button.addEventListener("mousedown", (e) => { e.preventDefault(); startHold(); });
-    button.addEventListener("mouseup", stopHold);
-    button.addEventListener("mouseleave", stopHold);
+    // Mouse
+    BUTTON.addEventListener("mousedown", (EVENT) => { EVENT.preventDefault(); startHold(); });
+    BUTTON.addEventListener("mouseup", stopHold);
+    BUTTON.addEventListener("mouseleave", stopHold);
 
-    button.addEventListener("touchstart", (e) => { e.preventDefault(); startHold(); }, { passive: false });
-    button.addEventListener("touchend", stopHold);
-    button.addEventListener("touchcancel", stopHold);
+    // Touch
+    BUTTON.addEventListener("touchstart", (EVENT) => { EVENT.preventDefault(); startHold(); }, { passive: false });
+    BUTTON.addEventListener("touchend", stopHold);
+    BUTTON.addEventListener("touchcancel", stopHold);
   };
 
-  SF.bindControl = function bindControl(id, setterFn, initialValue) {
-    const slider = document.getElementById(id);
-    if (!slider) return false;
+  STARFIELD.bindSliderAndNumberInput = function bindSliderAndNumberInput(CONTROL_ID, applySettingValue, INITIAL_VALUE) {
+    const SLIDER = document.getElementById(CONTROL_ID);
+    if (!SLIDER) return false;
 
-    const numberInput = document.getElementById(id + "_num");
+    const NUMBER_INPUT = document.getElementById(CONTROL_ID + "_num");
 
-    const block = slider.closest(".controlBlock");
-    const stepBtns = block ? block.querySelectorAll(".stepBtn[data-step]") : [];
+    const CONTROL_BLOCK = SLIDER.closest(".controlBlock");
+    const STEP_BUTTONS = CONTROL_BLOCK ? CONTROL_BLOCK.querySelectorAll(".stepBtn[data-step]") : [];
 
-    const min = Number(slider.min || (numberInput && numberInput.min) || 0);
-    const max = Number(slider.max || (numberInput && numberInput.max) || 10);
+    const MIN_VALUE = Number(SLIDER.min || (NUMBER_INPUT && NUMBER_INPUT.min) || 0);
+    const MAX_VALUE = Number(SLIDER.max || (NUMBER_INPUT && NUMBER_INPUT.max) || 10);
 
-    const rawStep = Number(slider.step || (numberInput && numberInput.step) || 1);
-    const step = Number.isFinite(rawStep) && rawStep > 0 ? rawStep : 1;
+    const RAW_STEP = Number(SLIDER.step || (NUMBER_INPUT && NUMBER_INPUT.step) || 1);
+    const STEP_SIZE = Number.isFinite(RAW_STEP) && RAW_STEP > 0 ? RAW_STEP : 1;
 
-    const clampValue = (v) => Math.min(max, Math.max(min, v));
+    const clampValue = (VALUE) => Math.min(MAX_VALUE, Math.max(MIN_VALUE, VALUE));
 
-    const snapToStep = (v) => {
-      const snapped = min + Math.round((v - min) / step) * step;
-      const dec = (String(step).split(".")[1] || "").length;
-      return Number(snapped.toFixed(dec));
+    const snapToStep = (VALUE) => {
+      const SNAPPED = MIN_VALUE + Math.round((VALUE - MIN_VALUE) / STEP_SIZE) * STEP_SIZE;
+      const DECIMAL_PLACES = (String(STEP_SIZE).split(".")[1] || "").length;
+      return Number(SNAPPED.toFixed(DECIMAL_PLACES));
     };
 
-    const applyValue = (v) => {
-      v = Number(v);
-      if (!Number.isFinite(v)) return;
+    const applyValue = (VALUE) => {
+      // Step 1: parse and validate
+      VALUE = Number(VALUE);
+      if (!Number.isFinite(VALUE)) return;
 
-      v = snapToStep(clampValue(v));
+      // Step 2: clamp and snap to step
+      VALUE = snapToStep(clampValue(VALUE));
 
-      slider.value = String(v);
-      if (numberInput) numberInput.value = String(v);
+      // Step 3: write UI values
+      SLIDER.value = String(VALUE);
+      if (NUMBER_INPUT) NUMBER_INPUT.value = String(VALUE);
 
-      setterFn(v);
+      // Step 4: write into settings
+      applySettingValue(VALUE);
 
-      slider.dispatchEvent(new Event("input", { bubbles: true }));
+      // Step 5: re-emit input event (keeps any other listeners in sync)
+      SLIDER.dispatchEvent(new Event("input", { bubbles: true }));
     };
 
-    const nudge = (dir) => applyValue(Number(slider.value) + dir * step);
+    const nudgeByStep = (DIRECTION) => applyValue(Number(SLIDER.value) + DIRECTION * STEP_SIZE);
 
-    applyValue(initialValue ?? slider.value);
+    // Step 6: initialize with provided value (or slider's current)
+    applyValue(INITIAL_VALUE ?? SLIDER.value);
 
-    slider.addEventListener("input", () => applyValue(slider.value));
+    // Step 7: wire slider input
+    SLIDER.addEventListener("input", () => applyValue(SLIDER.value));
 
-    if (numberInput) {
-      numberInput.addEventListener("input", () => applyValue(numberInput.value));
-      numberInput.addEventListener("change", () => applyValue(numberInput.value));
+    // Step 8: wire number box (if present)
+    if (NUMBER_INPUT) {
+      NUMBER_INPUT.addEventListener("input", () => applyValue(NUMBER_INPUT.value));
+      NUMBER_INPUT.addEventListener("change", () => applyValue(NUMBER_INPUT.value));
     }
 
-    stepBtns.forEach((btn) => {
-      const dir = Number(btn.dataset.step) || 0;
-      if (!dir) return;
-      SF.enableStepperHold(btn, () => nudge(dir));
+    // Step 9: wire stepper buttons (if present)
+    STEP_BUTTONS.forEach((BUTTON) => {
+      const DIRECTION = Number(BUTTON.dataset.step) || 0;
+      if (!DIRECTION) return;
+      STARFIELD.enableHoldToRepeat(BUTTON, () => nudgeByStep(DIRECTION));
     });
 
     return true;
   };
 
-  SF.initGravityControlsIfPresent = function initGravityControlsIfPresent() {
-    if (!document.getElementById("ATTRACT_STRENGTH") &&
-        !document.getElementById("REPEL_STRENGTH")) {
+  STARFIELD.initializeGravityControlsIfPresent = function initializeGravityControlsIfPresent() {
+    // Step 1: if controls aren't present, skip binding
+    if (
+      !document.getElementById("ATTRACT_STRENGTH") &&
+      !document.getElementById("REPEL_STRENGTH")
+    ) {
       return;
     }
 
-    SF.bindControl("ATTRACT_STRENGTH", (v) => (SF.params.attractStrength = v), SF.params.attractStrength);
-    SF.bindControl("ATTRACT_RADIUS",   (v) => (SF.params.attractRadius   = v), SF.params.attractRadius);
-    SF.bindControl("ATTRACT_SCALE",    (v) => (SF.params.attractScale    = v), SF.params.attractScale);
+    // Step 2: bind each control to the settings object
+    STARFIELD.bindSliderAndNumberInput("ATTRACT_STRENGTH", (VALUE) => (STARFIELD.interactionSettings.attractStrength = VALUE), STARFIELD.interactionSettings.attractStrength);
+    STARFIELD.bindSliderAndNumberInput("ATTRACT_RADIUS",   (VALUE) => (STARFIELD.interactionSettings.attractRadius   = VALUE), STARFIELD.interactionSettings.attractRadius);
+    STARFIELD.bindSliderAndNumberInput("ATTRACT_SCALE",    (VALUE) => (STARFIELD.interactionSettings.attractScale    = VALUE), STARFIELD.interactionSettings.attractScale);
 
-    SF.bindControl("CLAMP",            (v) => (SF.params.clamp           = v), SF.params.clamp);
+    STARFIELD.bindSliderAndNumberInput("CLAMP",            (VALUE) => (STARFIELD.interactionSettings.clamp           = VALUE), STARFIELD.interactionSettings.clamp);
 
-    SF.bindControl("REPEL_STRENGTH",   (v) => (SF.params.repelStrength   = v), SF.params.repelStrength);
-    SF.bindControl("REPEL_RADIUS",     (v) => (SF.params.repelRadius     = v), SF.params.repelRadius);
-    SF.bindControl("REPEL_SCALE",      (v) => (SF.params.repelScale      = v), SF.params.repelScale);
+    STARFIELD.bindSliderAndNumberInput("REPEL_STRENGTH",   (VALUE) => (STARFIELD.interactionSettings.repelStrength   = VALUE), STARFIELD.interactionSettings.repelStrength);
+    STARFIELD.bindSliderAndNumberInput("REPEL_RADIUS",     (VALUE) => (STARFIELD.interactionSettings.repelRadius     = VALUE), STARFIELD.interactionSettings.repelRadius);
+    STARFIELD.bindSliderAndNumberInput("REPEL_SCALE",      (VALUE) => (STARFIELD.interactionSettings.repelScale      = VALUE), STARFIELD.interactionSettings.repelScale);
 
-    SF.bindControl("POKE_STRENGTH",    (v) => (SF.params.pokeStrength    = v), SF.params.pokeStrength);
+    STARFIELD.bindSliderAndNumberInput("POKE_STRENGTH",    (VALUE) => (STARFIELD.interactionSettings.pokeStrength    = VALUE), STARFIELD.interactionSettings.pokeStrength);
   };
 
-  document.addEventListener("DOMContentLoaded", SF.initGravityControlsIfPresent);
+  document.addEventListener("DOMContentLoaded", STARFIELD.initializeGravityControlsIfPresent);
 })();
 
 /* #endregion 5) UI CONTROLS */
@@ -449,58 +509,73 @@ window.STARFIELD = window.STARFIELD || {};
  *========================================*/
 
 (() => {
-  const SF = window.STARFIELD;
+  const STARFIELD = window.STARFIELD;
 
-  SF.resizeCanvas = function resizeCanvas() {
-    if (!SF.hasCanvas) return;
+  STARFIELD.resizeStarfieldCanvas = function resizeStarfieldCanvas() {
+    if (!STARFIELD.isCanvasReady) return;
 
-    const oldW = SF.w;
-    const oldH = SF.h;
-    const oldSum = SF.screenSum || 1;
+    // Step 1: capture old sizes for rescaling stars
+    const OLD_WIDTH = STARFIELD.canvasWidth;
+    const OLD_HEIGHT = STARFIELD.canvasHeight;
+    const OLD_SCREEN_PERIMETER = STARFIELD.screenPerimeter || 1;
 
-    SF.w = window.innerWidth || 0;
-    SF.h = window.innerHeight || 0;
+    // Step 2: read current viewport size
+    STARFIELD.canvasWidth = window.innerWidth || 0;
+    STARFIELD.canvasHeight = window.innerHeight || 0;
 
-    SF.canvas.width = SF.w;
-    SF.canvas.height = SF.h;
+    // Step 3: resize the canvas backing store
+    STARFIELD.constellationCanvas.width = STARFIELD.canvasWidth;
+    STARFIELD.constellationCanvas.height = STARFIELD.canvasHeight;
 
-    SF.screenSum = SF.w + SF.h;
-    SF.scaleToScreen = Math.pow(SF.screenSum / 1200, 0.35);
+    // Step 4: compute scaling helpers
+    STARFIELD.screenPerimeter = STARFIELD.canvasWidth + STARFIELD.canvasHeight;
+    STARFIELD.screenScale = Math.pow(STARFIELD.screenPerimeter / 1200, 0.35);
 
-    SF.maxStars = Math.min(450, SF.screenSum / 10);
-    SF.maxLinkDist = SF.screenSum / 5;
+    // Step 5: compute star/link caps
+    STARFIELD.starCountLimit = Math.min(450, STARFIELD.screenPerimeter / 10);
+    STARFIELD.maxLinkDistance = STARFIELD.screenPerimeter / 5;
 
-    SF.scalePow.attGrad  = SF.scaleToScreen ** 1.11;
-    SF.scalePow.repGrad  = SF.scaleToScreen ** 0.66;
-    SF.scalePow.attShape = SF.scaleToScreen ** -8.89;
-    SF.scalePow.att      = SF.scaleToScreen ** -8.46;
-    SF.scalePow.rep      = SF.scaleToScreen ** -0.89;
-    SF.scalePow.limit    = SF.scaleToScreen ** 1.8;
+    // Step 6: compute physics scaling powers
+    STARFIELD.screenScalePowers.attractionGradient = STARFIELD.screenScale ** 1.11;
+    STARFIELD.screenScalePowers.repulsionGradient  = STARFIELD.screenScale ** 0.66;
+    STARFIELD.screenScalePowers.attractionShape    = STARFIELD.screenScale ** -8.89;
+    STARFIELD.screenScalePowers.attractionForce    = STARFIELD.screenScale ** -8.46;
+    STARFIELD.screenScalePowers.repulsionForce     = STARFIELD.screenScale ** -0.89;
+    STARFIELD.screenScalePowers.forceClamp         = STARFIELD.screenScale ** 1.8;
 
-    // Rescale existing stars after resize
-    if (oldW !== 0 && oldH !== 0 && SF.stars.length) {
-      const sx = SF.w / oldW;
-      const sy = SF.h / oldH;
-      const sizeScale = SF.screenSum / oldSum;
+    // Step 7: rescale existing stars after resize (keeps layout consistent)
+    if (OLD_WIDTH !== 0 && OLD_HEIGHT !== 0 && STARFIELD.starList.length) {
+      const SCALE_X = STARFIELD.canvasWidth / OLD_WIDTH;
+      const SCALE_Y = STARFIELD.canvasHeight / OLD_HEIGHT;
+      const SIZE_SCALE = STARFIELD.screenPerimeter / OLD_SCREEN_PERIMETER;
 
-      for (const star of SF.stars) {
-        star.x *= sx;
-        star.y *= sy;
-        star.size *= sizeScale;
+      for (const STAR of STARFIELD.starList) {
+        STAR.x *= SCALE_X;
+        STAR.y *= SCALE_Y;
+        STAR.size *= SIZE_SCALE;
       }
     }
   };
 
-  function animate() {
-    if (!SF.hasCanvas) return;
+  function runAnimationLoop() {
+    if (!STARFIELD.isCanvasReady) return;
 
-    if (!SF.freeze && typeof SF.moveStars === "function") SF.moveStars();
-    if (typeof SF.drawStarsWithLines === "function") SF.drawStarsWithLines();
+    // Step 1: physics update (unless frozen)
+    if (!STARFIELD.isFrozen && typeof STARFIELD.updateStarPhysics === "function") {
+      STARFIELD.updateStarPhysics();
+    }
 
-    requestAnimationFrame(animate);
+    // Step 2: render
+    if (typeof STARFIELD.renderStarsAndLinks === "function") {
+      STARFIELD.renderStarsAndLinks();
+    }
+
+    // Step 3: schedule next frame
+    requestAnimationFrame(runAnimationLoop);
   }
 
-  SF._animate = animate; // for debugging if needed
+  // Expose for debugging (same idea as before)
+  STARFIELD._runAnimationLoop = runAnimationLoop;
 })();
 
 /* #endregion 6) RESIZE + ANIMATION */
@@ -513,45 +588,50 @@ window.STARFIELD = window.STARFIELD || {};
  *========================================*/
 
 (() => {
-  const SF = window.STARFIELD;
+  const STARFIELD = window.STARFIELD;
 
-  function sizesReady() {
+  function isCanvasSizeUsable() {
     return (
-      Number.isFinite(SF.w) &&
-      Number.isFinite(SF.h) &&
-      SF.w > 50 &&
-      SF.h > 50
+      Number.isFinite(STARFIELD.canvasWidth) &&
+      Number.isFinite(STARFIELD.canvasHeight) &&
+      STARFIELD.canvasWidth > 50 &&
+      STARFIELD.canvasHeight > 50
     );
   }
 
-  function start() {
-    SF.resizeCanvas();
+  function startStarfield() {
+    // Step 1: resize to current viewport
+    STARFIELD.resizeStarfieldCanvas();
 
-    if (!sizesReady()) {
-      requestAnimationFrame(start);
+    // Step 2: wait until sizes are stable/usable (mobile can report 0 briefly)
+    if (!isCanvasSizeUsable()) {
+      requestAnimationFrame(startStarfield);
       return;
     }
 
-    if (!SF._starsInit) {
-      SF._starsInit = true;
-      SF.initStars();
+    // Step 3: stars init (restore or create)
+    if (!STARFIELD.hasStarsInitialized) {
+      STARFIELD.hasStarsInitialized = true;
+      STARFIELD.restoreOrCreateStars();
     }
 
-    if (!SF._animStarted) {
-      SF._animStarted = true;
-      SF._animate();
+    // Step 4: start the animation loop once
+    if (!STARFIELD.hasAnimationLoopStarted) {
+      STARFIELD.hasAnimationLoopStarted = true;
+      STARFIELD._runAnimationLoop();
     }
 
-    if (!SF._resizeWired) {
-      SF._resizeWired = true;
-      window.addEventListener("resize", SF.resizeCanvas);
+    // Step 5: wire resize listener once
+    if (!STARFIELD.hasResizeListenerWired) {
+      STARFIELD.hasResizeListenerWired = true;
+      window.addEventListener("resize", STARFIELD.resizeStarfieldCanvas);
     }
   }
 
   try {
-    start();
-  } catch (ERR) {
-    console.error("Initialization error in Starfield Setup:", ERR);
+    startStarfield();
+  } catch (ERROR) {
+    console.error("Initialization error in Starfield Setup:", ERROR);
   }
 })();
 
