@@ -1,36 +1,69 @@
 // thank heavens for chatGPT <3
 
-/*==============================================================*
- *                    KEYBOARD INPUT (WASD)
- *==============================================================*
- *  What this file does:
- *   1) Tracks WASD key state (no arrow keys)
- *   2) Prevents browser scrolling/focus interference
- *   3) Normalizes input into X/Y forces
- *   4) Exposes window.updateKeyboardForces()
- *   5) Updates per-star keyboardForceX / keyboardForceY
- *==============================================================*/
-
-
-
 /*========================================*
 //#region 1) GLOBAL INPUT STATE
  *========================================*/
 
-window.USER_INPUT = {
-  left: false,
-  right: false,
-  up: false,
-  down: false
-};
+// Which letter has been pressed
+window.USER_INPUT = 0;
 
 //#endregion
 
 
 
-/*========================================*
-//#region 2) KEY LISTENERS (WASD ONLY)
- *========================================*/
+// thank heavens for chatGPT <3
+
+/*==============================================================*
+ *                 KEYBOARD INPUT (EXACT KEYS)
+ *==============================================================*
+ *  Calls: processKeyPress(KEY)
+ *
+ *  - Desktop physical keyboards only
+ *  - Mobile on-screen keyboards are intentionally ignored
+ *  - No text insertion handling
+ *==============================================================*/
+
+(() => {
+  // Local handler (NOT on window)
+  function processKeyPress(KEY) {
+    // your logic here
+    // examples: "w", "a", "s", "d", "Enter", "Escape"
+    console.log("Key pressed:", KEY);
+  }
+
+  window.addEventListener(
+    "keydown",
+    (event) => {
+      // Ignore held-down repeats
+      if (event.repeat) return;
+
+      // Ignore IME composition
+      if (event.isComposing) return;
+
+      // Ignore typing inside inputs
+      const TARGET = event.target;
+      if (
+        TARGET &&
+        (TARGET.tagName === "INPUT" ||
+         TARGET.tagName === "TEXTAREA" ||
+         TARGET.isContentEditable)
+      ) return;
+
+      processKeyPress(event.key);
+    },
+    { passive: true }
+  );
+})();
+
+
+
+
+
+
+
+
+
+
 
 // Key down
 window.addEventListener(
