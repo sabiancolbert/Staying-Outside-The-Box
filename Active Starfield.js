@@ -114,6 +114,7 @@ window.KEYBOARD_FORCE_Y = 0;
       }
 
       // Step 13: integrate
+      window.updateKeyboardForces?.();
       STAR.x += STAR.vx + FORCE_X + window.KEYBOARD_FORCE_X;
       STAR.y += STAR.vy + FORCE_Y + window.KEYBOARD_FORCE_Y;
 
