@@ -100,7 +100,7 @@ html::before {
   background-repeat: no-repeat;
 
   /* Behind canvas + content */
-  z-index: -2;
+  z-index: 2;
   pointer-events: none;
   overflow: visible;
 }
