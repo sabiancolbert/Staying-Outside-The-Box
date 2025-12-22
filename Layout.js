@@ -13,9 +13,9 @@
  *==============================================================*/
 
 
-//#region 1) GLOBAL STATE + HELPERS
+
 /*========================================*
- *  1) GLOBAL STATE + HELPERS
+//#region 1) GLOBAL STATE + HELPERS
  *========================================*/
 
 let IS_TRANSITION_ACTIVE = false;
@@ -114,9 +114,8 @@ function getReferrerInfo() {
 
 
 
-//#region 2) SCROLL OWNERSHIP (DOCUMENT IS SCROLLER)
 /*========================================*
- *  2) SCROLL OWNERSHIP (DOCUMENT IS SCROLLER)
+//#region 2) SCROLL OWNERSHIP (DOCUMENT IS SCROLLER)
  *========================================*/
 
 function enableDocumentScroll(CONTAINER = getTransitionContainer()) {
@@ -152,9 +151,8 @@ function enableDocumentScroll(CONTAINER = getTransitionContainer()) {
 
 
 
-//#region 3) PAGE LOAD (SLIDE-IN + BACK BUTTON)
 /*========================================*
- *  3) PAGE LOAD (SLIDE-IN + BACK BUTTON)
+//#region 3) PAGE LOAD (SLIDE-IN + BACK BUTTON)
  *========================================*/
 
 window.addEventListener("load", () => {
@@ -196,9 +194,8 @@ window.addEventListener("load", () => {
 
 
 
-//#region 4) BACK/FORWARD CACHE (PAGESHOW)
 /*========================================*
- *  4) BACK/FORWARD CACHE (PAGESHOW)
+//#region 4) BACK/FORWARD CACHE (PAGESHOW)
  *========================================*/
 
 window.addEventListener("pageshow", (EVENT) => {
@@ -227,9 +224,8 @@ window.addEventListener("pageshow", (EVENT) => {
 
 
 
-//#region 5) TRANSITION NAVIGATION (SLIDE-OUT THEN LEAVE)
 /*========================================*
- *  5) TRANSITION NAVIGATION
+//#region 5) TRANSITION NAVIGATION (SLIDE-OUT THEN LEAVE)
  *========================================*/
 
 function transitionTo(URL) {
@@ -286,9 +282,8 @@ CRUNCH_SOUND.pause(), CRUNCH_SOUND.play().catch(() => {});
 
 
 
-//#region 6) TOUCH NAV FIXES (POINTER TAP VS SWIPE)
 /*========================================*
- *  6) TOUCH NAV FIXES
+//#region 6) TOUCH NAV FIXES (POINTER TAP VS SWIPE)
  *========================================*/
 
 function toggleElement(ELEMENT_ID) {
