@@ -151,7 +151,7 @@
     if (SF.pointerSpeed < 0.001) SF.pointerSpeed = 0;
 
     // Ring behavior (grow then fade with ringTimer, no extra kill-switch logic)
-    SF.ringTimer *= 0.96;
+    SF.ringTimer *= 0.95;
     if (SF.ringTimer < 0.1) SF.ringTimer = 0;
 
     SF.pokeTimer *= 0.85;
