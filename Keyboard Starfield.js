@@ -55,69 +55,37 @@ function runW(STAR) {
 
 // A = Left
 function runA(STAR) {
-  return [
-    (window.CIRCLE_TIMER + EFFECT_CONSTANT)
-    * -EFFECT_MULTIPLIER,
-    0
-  ];
+  return [-FORCE_INCREASE, 0];
 }
 
 // S = Down
 function runS(STAR) {
-  return [
-    0,
-    (window.CIRCLE_TIMER + EFFECT_CONSTANT)
-    * -EFFECT_MULTIPLIER
-  ];
+  return [0, -FORCE_INCREASE];
 }
 
 // D = Right
 function runD(STAR) {
-  return [
-    (window.CIRCLE_TIMER + EFFECT_CONSTANT)
-    * EFFECT_MULTIPLIER,
-    0
-  ];
+  return [FORCE_INCREASE, 0];
 }
 
 // Q = Left up
 function runQ(STAR) {
-  return [
-    (window.CIRCLE_TIMER + EFFECT_CONSTANT)
-    * -EFFECT_MULTIPLIER / 2,
-    (window.CIRCLE_TIMER + EFFECT_CONSTANT)
-    * EFFECT_MULTIPLIER / 2
-  ];
+  return [-FORCE_INCREASE / 2, FORCE_INCREASE / 2];
 }
 
 // E = Right up
 function runE(STAR) {
-  return [
-    (window.CIRCLE_TIMER + EFFECT_CONSTANT)
-    * EFFECT_MULTIPLIER / 2,
-    (window.CIRCLE_TIMER + EFFECT_CONSTANT)
-    * EFFECT_MULTIPLIER / 2
-  ];
+  return [FORCE_INCREASE / 2, FORCE_INCREASE / 2];
 }
 
 // Z = Left down
 function runZ(STAR) {
-  return [
-    (window.CIRCLE_TIMER + EFFECT_CONSTANT)
-    * -EFFECT_MULTIPLIER / 2,
-    (window.CIRCLE_TIMER + EFFECT_CONSTANT)
-    * -EFFECT_MULTIPLIER / 2
-  ];
+  return [-FORCE_INCREASE / 2, -FORCE_INCREASE / 2];
 }
 
 // C = Right down
 function runC(STAR) {
-  return [
-    (window.CIRCLE_TIMER + EFFECT_CONSTANT)
-    * EFFECT_MULTIPLIER / 2,
-    (window.CIRCLE_TIMER + EFFECT_CONSTANT)
-    * -EFFECT_MULTIPLIER / 2
-  ];
+  return [FORCE_INCREASE / 2, -FORCE_INCREASE / 2];
 }
 
 // X = Invert
