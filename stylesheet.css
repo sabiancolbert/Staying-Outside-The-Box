@@ -87,23 +87,22 @@
 
 /*---------- Fixed background image layer (behind everything) ----------*/
 html::before {
-  content: "";
+  /*content: "";
   position: fixed;
 
-  /* Background coverage (lv* helps iOS toolbars) */
-  width: 100lvw;
-  height: 110lvh;
-  top: -10dvh;
+  /* Background coverage (lv* helps iOS toolbars) *
+  width: 100%;
+  height: 100%;
 
   background-image: url("/Resources/Background.webp");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
 
-  /* Behind canvas + content */
-  z-index: 2;
+  /* Behind canvas + content *
+  z-index: -2;
   pointer-events: none;
-  overflow: visible;
+  overflow: visible;*/
 }
 
 /*---------- Root document ----------*/
@@ -155,6 +154,11 @@ body {
 
   width: 100%;
   height: 100%;
+  
+  background-image: url("/Resources/Background.webp");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 
   z-index: -1;
   pointer-events: none;
