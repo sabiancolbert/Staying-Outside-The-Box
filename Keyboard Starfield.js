@@ -1,17 +1,5 @@
 // thank heavens for chatGPT <3
-
-function processKeyPress(KEY) {
-  // your logic here
-const STARFIELD = window.STARFIELD;
-  if (!STARFIELD || !STARFIELD.starList?.length) return;
-
-  // Apply per-star (can customize later)
-  for (const STAR of STARFIELD.starList) {
-    STAR.keyboardForceX = INPUT_X;
-    STAR.keyboardForceY = INPUT_Y;
-  }
-  console.log("Key pressed:", KEY);
-}
+/* EVENT LISTENER */
 
 window.addEventListener("keydown", (event) => {
     // Ignore held-down repeats
@@ -23,17 +11,32 @@ window.addEventListener("keydown", (event) => {
     processKeyPress(event.key);
 });
 
-/*------------*/
+/* KEY PROCESSING */
+
+function processKeyPress(KEY) {
+  // your logic here
+const STARFIELD = window.STARFIELD;
+  if (!STARFIELD || !STARFIELD.starList?.length) return;
+
+  // Apply per-star (can customize later)
+  for (const STAR of STARFIELD.starList) {
+    const FORCES = KEY_ACTIONS[USER_INPUT]?.(STAR);
+    STAR.keyboardForceX = FORCES[0];
+    STAR.keyboardForceY = FORCES[1];
+  }
+  console.log("Key pressed:", KEY);
+}
 
 const KEY_FUNCTIONS = {
-  w: () => runW(STAR),
-  a: () => { /* move left */ },
-  s: () => { /* move down */ },
-  d: () => { /* move right */ },
+  w: (STAR) => return runW(STAR)
 };
 
-KEY_ACTIONS[USER_INPUT]?.();
+/* KEY FUNCTIONALITY */
 
 function runW(STAR) {
-
+  let FORCES = [0, 0];
+  //math
+//more math
+//ill do this part later
+    return FORCES;
 }
