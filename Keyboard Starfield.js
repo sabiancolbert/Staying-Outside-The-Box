@@ -83,7 +83,7 @@ function runD(STAR) {
   ];
 }
 
-// Q = Up left
+// Q = Left up
 function runQ(STAR) {
   return [
     (window.CIRCLE_TIMER + EFFECT_CONSTANT)
@@ -93,24 +93,39 @@ function runQ(STAR) {
   ];
 }
 
-// E = Up right
+// E = Right up
 function runE(STAR) {
-
+  return [
+    (window.CIRCLE_TIMER + EFFECT_CONSTANT)
+    * EFFECT_MULTIPLIER / 2,
+    (window.CIRCLE_TIMER + EFFECT_CONSTANT)
+    * EFFECT_MULTIPLIER / 2
+  ];
 }
 
-// Z = Down left
+// Z = Left down
 function runZ(STAR) {
-
+  return [
+    (window.CIRCLE_TIMER + EFFECT_CONSTANT)
+    * -EFFECT_MULTIPLIER / 2,
+    (window.CIRCLE_TIMER + EFFECT_CONSTANT)
+    * -EFFECT_MULTIPLIER / 2
+  ];
 }
 
-// C = Down right
+// C = Right down
 function runC(STAR) {
-
+  return [
+    (window.CIRCLE_TIMER + EFFECT_CONSTANT)
+    * EFFECT_MULTIPLIER / 2,
+    (window.CIRCLE_TIMER + EFFECT_CONSTANT)
+    * -EFFECT_MULTIPLIER / 2
+  ];
 }
 
 // X = Invert
 function runX(STAR) {
-  //STAR.vx = invert;
-    //STAR.vy = invert;
+  STAR.vx = -STAR.vx;
+  STAR.vy = -STAR.vy;
   return [0, 0];
 }
