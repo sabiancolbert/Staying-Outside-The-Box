@@ -49,7 +49,6 @@ window.STARFIELD = window.STARFIELD || {};
 
   SF.pokeTimer = 0;
   SF.ringTimer = 0;
-  SF.ringSize = 0;
 
   // Canvas sizing + scaling (Setup owns resize)
   SF.w = 0;
@@ -113,7 +112,6 @@ window.STARFIELD = window.STARFIELD || {};
           userY: SF.pointerY,
           userTime: SF.pointerTime,
           ringTimer: SF.ringTimer,
-          ringSize: SF.ringSize,
 
           // UI params
           attractStrength: SF.params.attractStrength,
@@ -245,7 +243,6 @@ window.STARFIELD = window.STARFIELD || {};
         SF.pokeTimer = meta.pokeTimer ?? 0;
         SF.pointerSpeed = meta.userSpeed ?? 0;
         SF.ringTimer = meta.ringTimer ?? 0;
-        SF.ringSize = meta.ringSize ?? 0;
 
         // Restore params
         SF.params.attractStrength = meta.attractStrength ?? SF.params.attractStrength;
