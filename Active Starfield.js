@@ -17,14 +17,11 @@
  *  1) PHYSICS (MOVE STARS)
  *========================================*/
 
-window.KEYBOARD_FORCE_X = 0;
-window.KEYBOARD_FORCE_Y = 0;
-
 (() => {
   const STARFIELD = window.STARFIELD;
 
   STARFIELD.updateStarPhysics = function updateStarPhysics() {
-    // Step 1: bail if nothing to simulate
+    // Step 1: bail if nothing to simulate, otherwise get set up
     if (!STARFIELD.isCanvasReady || !STARFIELD.starList.length) return;
 
     const INFLUENCE_RANGE = STARFIELD.screenPerimeter * 0.2;
@@ -34,6 +31,8 @@ window.KEYBOARD_FORCE_Y = 0;
 
     const SETTINGS = STARFIELD.interactionSettings;
     const SCALE = STARFIELD.screenScalePowers;
+    
+    window.updateKeyboardForces?.();
 
     // Step 2: update each star
     for (const STAR of STARFIELD.starList) {
@@ -114,9 +113,8 @@ window.KEYBOARD_FORCE_Y = 0;
       }
 
       // Step 13: integrate
-      window.updateKeyboardForces?.();
-      STAR.x += STAR.vx + FORCE_X + window.KEYBOARD_FORCE_X;
-      STAR.y += STAR.vy + FORCE_Y + window.KEYBOARD_FORCE_Y;
+      STAR.x += STAR.vx + FORCE_X + STAR.keyboardForceX;
+      STAR.y += STAR.vy + FORCE_Y + STAR.keyboardForceY;
 
       // Step 14: friction
       STAR.momentumX *= 0.98;
