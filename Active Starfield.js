@@ -377,7 +377,13 @@ window.keyboardPullY = 0;
   window.addEventListener("mousedown", (EVENT) =>
     STARFIELD.beginPointerInteraction(EVENT.clientX, EVENT.clientY)
   );
-
+  
+  // Pointer move (mouse, stylus, trackpad)
+  window.addEventListener("pointermove", (EVENT) => {
+    if (EVENT.pointerType === "touch") return;
+    STARFIELD.updatePointerSpeed(EVENT.clientX, EVENT.clientY);
+  });
+  
   // Touch
   window.addEventListener(
     "touchstart",
@@ -388,7 +394,7 @@ window.keyboardPullY = 0;
     },
     { passive: true }
   );
-
+  
   window.addEventListener(
     "touchmove",
     (EVENT) => {
@@ -398,6 +404,5 @@ window.keyboardPullY = 0;
     },
     { passive: true }
   );
-})();
 
 /* #endregion 3) POINTER INPUT */
