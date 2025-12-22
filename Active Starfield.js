@@ -111,7 +111,7 @@
       star.momentumY *= 0.98;
 
       // Wrap vs bounce
-      if (SF.ringTimer === 0 || distSq > wrapDistanceSq || SF.pokeTimer > 1000) {
+      if (SF.ringTimer === 0 || distSq > wrapDistanceSq || SF.pokeTimer > 10) {
         const r = (star.whiteValue * 2 + star.size) || 0;
 
         if (star.x < -r) star.x = SF.w + r;
@@ -198,12 +198,12 @@
 
     // Pointer ring grow and shrink
     const goalRadius = Math.max(0, SF.scaleToScreen * 100 - 40);
-    const ringRadius = goalRadius * (SF.ringTimer / 50);
-    const ringWidth = SF.ringTimer * 0.15 + 1.5;
-    const ringAlpha = Math.min(SF.ringTimer * 0.07, 1);
+    let ringRadius = goalRadius * (SF.ringTimer / 50);
+    let ringWidth = SF.ringTimer * 0.15 + 1.5;
+    let ringAlpha = Math.min(SF.ringTimer * 0.07, 1);
     // Pointer ring expand instead with poke
     if (SF.pointerSpeed > 1) {
-      const normPoke = Math.min(1, Math.max(0, SF.pokeTimer / 1));
+      const normPoke = Math.min(1, Math.max(0, SF.pokeTimer / 200));
       const invPoke   = 1 - normPoke;
       ringRadius = goalRadius * invPoke;
       ringWidth = normPoke * 7;
