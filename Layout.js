@@ -24,7 +24,7 @@ const STARFIELD = window.STARFIELD;
 const CRUNCH_SOUND = new Audio("/Resources/Crunch.mp3");
 CRUNCH_SOUND.preload = "auto";
 CRUNCH_SOUND.load();
-CRUNCH_SOUND.volume = 0.5;
+CRUNCH_SOUND.volume = 0.25;
 
 // Pending transition timers (bfcache can resurrect these unless we cancel them)
 let SAVE_BEFORE_LEAVE_TIMEOUT_ID = null;
