@@ -229,7 +229,7 @@
     if (count) {
       for (let i = 0; i < count; i++) SF.stars[i].edge = SF.edgeFactor(SF.stars[i]);
 
-      const distScale = SF.screenSum / 1100;
+      const distScale = SF.screenSum / 500;
       const cutoffRaw = SF.maxLinkDist / distScale;
       const cutoffSq = cutoffRaw * cutoffRaw;
 
