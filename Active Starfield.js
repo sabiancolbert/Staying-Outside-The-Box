@@ -154,10 +154,6 @@
     SF.ringTimer *= 0.95;
 if (SF.ringTimer < 1) {
   SF.ringTimer = 0;
-
-  // kill all pointer momentum/history
-  SF.pointerSpeed = 0;
-  SF.pointerTime = 0;
 }
 
     SF.pokeTimer *= 0.85;
@@ -310,16 +306,6 @@ if (SF.ringTimer < 1) {
 
   SF.updateSpeed = function (x, y) {
   const now = SF.nowMs();
-
-  // Cold start: no previous timestamp, so don't compute speed yet
-  if (!SF.pointerTime) {
-    SF.pointerX = x;
-    SF.pointerY = y;
-    SF.pointerTime = now;
-    SF.pointerSpeed = 0;
-    return;
-  }
-
   const dt = Math.max(1, now - SF.pointerTime);
   const dx = x - SF.pointerX;
   const dy = y - SF.pointerY;
