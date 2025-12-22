@@ -10,3 +10,7 @@ window.addEventListener("keydown", (event) => {
   // Ignore held-down repeats
   if (event.repeat) return;
 });
+
+window.updateKeyboardForces = function updateKeyboardForces() {
+    //here we go!
+}
