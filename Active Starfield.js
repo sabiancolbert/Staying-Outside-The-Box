@@ -93,7 +93,7 @@
       let fx = star.momentumX;
       let fy = star.momentumY;
 
-      const limit = P.clamp * (SF.scaleToScreen ** 2);
+      const limit = P.clamp * POW.limit;
       const mag = Math.sqrt(fx * fx + fy * fy);
 
       if (mag > limit) {
