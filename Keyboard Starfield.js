@@ -12,9 +12,9 @@
  *==============================================================*/
 
 
-//#region 1) GLOBAL INPUT STATE
+
 /*========================================*
- *  1) GLOBAL INPUT STATE
+//#region 1) GLOBAL INPUT STATE
  *========================================*/
 
 window.USER_INPUT = {
@@ -28,9 +28,8 @@ window.USER_INPUT = {
 
 
 
-//#region 2) KEY LISTENERS (WASD ONLY)
 /*========================================*
- *  2) KEY LISTENERS (WASD ONLY)
+//#region 2) KEY LISTENERS (WASD ONLY)
  *========================================*/
 
 // Key down
@@ -76,9 +75,8 @@ window.addEventListener("keyup", (event) => {
 
 
 
-//#region 3) FORCE UPDATE API
 /*========================================*
- *  3) FORCE UPDATE API
+//#region 3) FORCE UPDATE API
  *========================================*
  *  Called once per frame from physics.
  *  Converts key state → per-star forces.
@@ -111,9 +109,8 @@ window.updateKeyboardForces = function updateKeyboardForces() {
 
 
 
-//#region 4) SAFETY INITIALIZATION
 /*========================================*
- *  4) SAFETY INITIALIZATION
+//#region 4) SAFETY INITIALIZATION
  *========================================*
  *  Ensures stars never read undefined values.
  */
