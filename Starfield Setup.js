@@ -467,7 +467,7 @@ window.STARFIELD = window.STARFIELD || {};
     SF.scaleToScreen = Math.pow(SF.screenSum / 1200, 0.35);
 
     SF.maxStars = Math.min(450, SF.screenSum / 10);
-    SF.maxLinkDist = SF.screenSum;
+    SF.maxLinkDist = SF.screenSum / 5;
 
     SF.scalePow.attGrad  = SF.scaleToScreen ** 1.11;
     SF.scalePow.repGrad  = SF.scaleToScreen ** 0.66;
