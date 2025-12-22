@@ -21,6 +21,18 @@
 let IS_TRANSITION_ACTIVE = false;
 const STARFIELD = window.STARFIELD;
 
+// Pending transition timers (bfcache can resurrect these unless we cancel them)
+let SAVE_BEFORE_LEAVE_TIMEOUT_ID = null;
+let NAVIGATE_AFTER_SLIDE_TIMEOUT_ID = null;
+
+function clearPendingTransitionTimers() {
+  if (SAVE_BEFORE_LEAVE_TIMEOUT_ID) clearTimeout(SAVE_BEFORE_LEAVE_TIMEOUT_ID);
+  if (NAVIGATE_AFTER_SLIDE_TIMEOUT_ID) clearTimeout(NAVIGATE_AFTER_SLIDE_TIMEOUT_ID);
+
+  SAVE_BEFORE_LEAVE_TIMEOUT_ID = null;
+  NAVIGATE_AFTER_SLIDE_TIMEOUT_ID = null;
+}
+
 function freezeAndSaveStarfield() {
   // Step 1: if no starfield exists, do nothing
   if (!STARFIELD) return;
@@ -35,7 +47,11 @@ function freezeAndSaveStarfield() {
 }
 
 // Fires on real navigations + bfcache; best cross-browser “we’re leaving”
-window.addEventListener("pagehide", freezeAndSaveStarfield);
+window.addEventListener("pagehide", () => {
+  // Kill any scheduled “navigate after slide” that might still be pending
+  clearPendingTransitionTimers();
+  freezeAndSaveStarfield();
+});
 
 // Backup for mobile/tab switching
 document.addEventListener("visibilitychange", () => {
@@ -183,18 +199,21 @@ window.addEventListener("load", () => {
 window.addEventListener("pageshow", (EVENT) => {
   const CONTAINER = getTransitionContainer();
   if (!CONTAINER) return;
+  
+  // Step 1: bfcache restore can re-run old timers once. Cancel them immediately.
+  clearPendingTransitionTimers();
 
-  // Step 1: unfreeze starfield when returning
+  // Step 2: unfreeze starfield when returning
   if (STARFIELD) STARFIELD.isFrozen = false;
 
-  // Step 2: only handle true back/forward restores
+  // Step 3: only handle true back/forward restores
   if (!isBackForwardNavigation(EVENT)) return;
 
-  // Step 3: ensure we're in a “ready” state
+  // Step 4: ensure we're in a “ready” state
   CONTAINER.classList.remove("slide-out");
   CONTAINER.classList.add("ready");
 
-  // Step 4: reset transition state
+  // Step 5: reset transition state
   IS_TRANSITION_ACTIVE = false;
   CONTAINER.scrollTop = 0;
 });
@@ -212,6 +231,7 @@ function transitionTo(URL) {
   // Step 1: guard against double-triggers
   if (IS_TRANSITION_ACTIVE) return;
   if (!URL) return;
+  clearPendingTransitionTimers();
 
   IS_TRANSITION_ACTIVE = true;
 
@@ -244,10 +264,13 @@ function transitionTo(URL) {
   const DURATION_MS = getSlideDurationSeconds() * 1000;
 
   // Step 7: freeze+save right before leaving (keeps motion during slide, but captures final)
-  setTimeout(freezeAndSaveStarfield, Math.max(0, DURATION_MS - 50));
+  SAVE_BEFORE_LEAVE_TIMEOUT_ID = setTimeout(
+    freezeAndSaveStarfield,
+    Math.max(0, DURATION_MS - 50)
+  );
 
   // Step 8: navigate after animation ends
-  setTimeout(() => {
+  NAVIGATE_AFTER_SLIDE_TIMEOUT_ID = setTimeout(() => {
     location.href = URL;
   }, DURATION_MS);
 }
