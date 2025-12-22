@@ -3,45 +3,51 @@
  *==============================================================*
  *
  *  1) DESIGN TOKENS (ROOT VARIABLES)
- *     - colors, glow, transition timings
+ *     - global variables used everywhere
+ *     - JS can overwrite some of these at runtime
  *
  *  2) DOCUMENT BASE + BACKGROUND
  *     - html/body scroll ownership (JS swaps this)
- *     - fixed background layer behind everything
+ *     - base typography + background color safety
  *
  *  3) CANVAS LAYER
- *     - #constellations full-screen placement
+ *     - #constellations fixed full-screen
+ *     - background image lives here
  *
  *  4) PAGE STRUCTURE + TYPOGRAPHY
- *     - main spacing, headings, paragraphs, footer
- *     - dividers (hr + .divider)
+ *     - spacing and text sizing rules
+ *     - divider styling (hr + .divider)
  *
  *  5) CONTENT CONTAINERS
- *     - article layout + [hidden]
+ *     - article layout + [hidden] behavior
  *
  *  6) LINKS
- *     - base link behavior
+ *     - base link style + hover effects
  *     - utility variants (.clean, .dead, .premium)
  *
  *  7) IMAGES + IMAGE WRAPPERS
- *     - base circular image defaults
+ *     - circular avatars
  *     - .imgBorder ring frame
  *     - .imgButton (homepage badge-style images)
  *     - .navButtons icons
  *
  *  8) BUTTONS
- *     - base button visuals + hover
+ *     - base button typography + hover behavior
+ *     - note: shares visuals with .imgButton on purpose
  *
  *  9) GROUP INTERACTIONS
  *     - .hoverTogether “hover whole card” behavior
- *     - nav icon hover/active
+ *     - nav icon hover/active behavior
  *
  * 10) SCRIPT CHARACTER NAME COLORS
+ *     - character classes for script pages
  *
  * 11) SLIDE-IN PAGE TRANSITION SYSTEM
- *     - #transitionContainer + .homeJs/.otherJs/.noJs states
+ *     - #transitionContainer and JS-driven states
+ *     - .homeJs / .otherJs / .noJs
  *
  * 12) REDUCED-MOTION ACCESSIBILITY
+ *     - disables animated canvas + transitions when requested
  *
  *  NOTE: Sections use /* #region ... *\/ for editor folding.
  *==============================================================*/
@@ -50,22 +56,28 @@
 /* #region 1) DESIGN TOKENS (ROOT VARIABLES) */
 /*========================================*
  *  1) DESIGN TOKENS (ROOT VARIABLES)
- *========================================*/
+ *========================================*
+ *  These are your “global knobs”.
+ *  Step-by-step:
+ *   1) Define default values here.
+ *   2) Reference them everywhere else with var(--NAME).
+ *   3) JS can overwrite specific ones (slide distance/duration).
+ */
 
 :root {
-  /* Slide system (JS overwrites these per-page/transition) */
+  /* Step 1: Slide system defaults (JS overwrites per page/transition) */
   --SLIDE_DISTANCE: 100vh;
   --SLIDE_DURATION: 0.6s;
 
-  /* Shared glow */
+  /* Step 2: Shared glow recipe (used for text-shadow + box-shadow) */
   --SHADOW: 0 0 20px rgba(200, 0, 0, 1);
 
-  /* Brand colors */
+  /* Step 3: Brand colors (links and neutral UI color) */
   --LINK_LIGHT: #ee0000;
   --LINK_DARK:  #550000;
   --BASE_COLOR: #bdbdbd;
 
-  /* Transition timings */
+  /* Step 4: Transition speeds (grouped so everything “feels” consistent) */
   --SLOW_TRANSFORM: 0.3s ease-out;
   --SLOW_BORDER:    0.3s ease-out;
   --SLOW_SHADOW:    0.7s ease-out;
@@ -82,37 +94,52 @@
  *========================================*
  *  Important: scroll ownership is intentionally unusual.
  *  JS swaps between html/body/container as the scroller.
- *  These “DONT TOUCH” lines are the fragile bones holding it together.
+ *
+ *  This section is the foundation:
+ *   1) Remove default browser margins/padding.
+ *   2) Set a safe black background behind everything.
+ *   3) Set base font + default text color.
+ *
+ *  The "DONT TOUCH" notes are real:
+ *   - changing overflow/height here can break the transition system
+ *   - and can also break iOS scroll behavior
  */
 
 /*---------- Root document ----------*/
 html {
+  /* Step 1: eliminate default spacing */
   margin: 0;
   padding: 0;
 
-  /* DONT TOUCH: JS swaps body/html scroll control */
+  /* Step 2: default scroll behavior (JS may swap this) */
   overflow: auto;
 
-  /* Edge color visible during transitions */
+  /* Step 3: edge color visible during transitions */
   background-color: black;
 }
 
 /*---------- Body (content wrapper) ----------*/
 body {
+  /* Step 1: establish a vertical flex layout so footer/page structure behaves */
   display: flex;
   flex-direction: column;
   align-items: stretch;
 
+  /* Step 2: ensure body covers the screen height */
   min-height: 100dvh;
 
-  /* DONT TOUCH: default is “no body scroll” */
+  /* Step 3: default is “no body scroll” (JS may change this) */
   height: auto;
   overflow: visible;
 
+  /* Step 4: remove default spacing */
   margin: 0;
   padding: 0;
+
+  /* Step 5: keep body visually transparent so canvas/background shows */
   background: transparent;
 
+  /* Step 6: base typography */
   text-align: center;
   font-family: 'New Rocker';
   font-size: 7dvmin;
@@ -126,21 +153,37 @@ body {
 /* #region 3) CANVAS LAYER */
 /*========================================*
  *  3) CANVAS LAYER
- *========================================*/
+ *========================================*
+ *  The canvas is both:
+ *   - the starfield drawing surface
+ *   - and the background image layer
+ *
+ *  Step-by-step:
+ *   1) Fix it to the viewport so it never scrolls.
+ *   2) Stretch it to full size.
+ *   3) Put the background image here.
+ *   4) Send it behind content (z-index:-1).
+ *   5) Disable pointer events so it never steals taps.
+ */
 
 /* Full-screen starfield canvas (above bg, below content) */
 #constellations {
   position: fixed;
 
+  /* Step 1: full-screen sizing */
   width: 100%;
   height: 100%;
-  
+
+  /* Step 2: background image settings */
   background-image: url("/Resources/Background.webp");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
 
+  /* Step 3: keep it behind everything */
   z-index: -1;
+
+  /* Step 4: let clicks/taps pass through to real UI */
   pointer-events: none;
 }
 
@@ -151,33 +194,48 @@ body {
 /* #region 4) PAGE STRUCTURE + TYPOGRAPHY */
 /*========================================*
  *  4) PAGE STRUCTURE + TYPOGRAPHY
- *========================================*/
+ *========================================*
+ *  This section controls content spacing + text sizes.
+ *
+ *  Step-by-step:
+ *   1) main gets padding so text doesn't touch edges.
+ *   2) headings and paragraphs get consistent sizing.
+ *   3) footer uses smaller text.
+ *   4) hr is decorative (image-based divider).
+ *   5) .divider is a narrower hr variant.
+ */
 
 main {
+  /* Step 1: padding for readability */
   padding: 2dvmin;
 }
 
 h2 {
-  margin-top: -7dvmin; /* stylized “pulled up” heading */
+  /* Step 2: stylized “pulled up” heading positioning */
+  margin-top: -7dvmin;
   font-size: 4dvmin;
 }
 
 p {
+  /* Step 3: tight paragraph layout (no extra margin) */
   margin: 0;
   font-size: 6dvmin;
 }
 
 footer p {
+  /* Step 4: footer text is smaller and padded */
   font-size: 3dvmin;
   padding: 2dvmin;
 }
 
 /* Divider art */
 hr {
+  /* Step 5: divider sizing */
   width: 75dvw;
   height: 4px;
   border: none;
 
+  /* Step 6: hr is image-driven instead of a plain line */
   background-image: url("/Resources/Hr.webp");
   background-size: cover;
   background-repeat: no-repeat;
@@ -196,20 +254,30 @@ hr {
 /* #region 5) CONTENT CONTAINERS */
 /*========================================*
  *  5) CONTENT CONTAINERS
- *========================================*/
+ *========================================*
+ *  Articles are your “content cards”.
+ *
+ *  Step-by-step:
+ *   1) stack content vertically
+ *   2) center it
+ *   3) shrink-wrap to its contents
+ *   4) allow hiding with [hidden]
+ */
 
-/* Grouped image/link sections */
 article {
+  /* Step 1: vertical stacking */
   display: flex;
   flex-direction: column;
   align-items: center;
 
+  /* Step 2: shrink to content and center on page */
   width: fit-content;
   margin: 0 auto 3dvmin;
 }
 
 /* Hide blocks via [hidden] (chapters, etc.) */
 article[hidden] {
+  /* Step 3: hard-hide for safety */
   display: none !important;
 }
 
@@ -220,15 +288,26 @@ article[hidden] {
 /* #region 6) LINKS */
 /*========================================*
  *  6) LINKS
- *========================================*/
+ *========================================*
+ *  Links are styled like “interactive text buttons”.
+ *
+ *  Step-by-step:
+ *   1) inline-block so transform works nicely
+ *   2) default neutral color
+ *   3) hover grows slightly + glows + turns red
+ *   4) utility variants override specific behavior
+ */
 
 a {
+  /* Step 1: give the link a box so scaling doesn't break layout */
   display: inline-block;
   margin: 0 auto;
   padding-bottom: 1dvmin;
 
+  /* Step 2: default color */
   color: var(--BASE_COLOR);
 
+  /* Step 3: smooth transitions */
   transition:
     transform var(--SLOW_TRANSFORM),
     color var(--SLOW_COLOR),
@@ -236,6 +315,7 @@ a {
 }
 
 a:hover {
+  /* Step 4: hover treatment */
   transform: scale(1.05);
   text-shadow: var(--SHADOW);
   color: var(--LINK_LIGHT);
@@ -245,12 +325,14 @@ a:hover {
 .clean { color: var(--BASE_COLOR); }
 .clean:hover { transform: scale(1.1); }
 
+/* “Dead” links: locked down, dim, no scaling */
 .dead,
 .dead:hover {
   transform: scale(1);
   color: var(--LINK_DARK);
 }
 
+/* “Premium” links: purple glow accent */
 .premium {
   text-shadow: 0 0 20px rgba(100, 0, 100, 1);
 }
@@ -262,13 +344,25 @@ a:hover {
 /* #region 7) IMAGES + IMAGE WRAPPERS */
 /*========================================*
  *  7) IMAGES + IMAGE WRAPPERS
- *========================================*/
+ *========================================*
+ *  This section defines:
+ *   - base circular image rules
+ *   - decorative ring frame (.imgBorder)
+ *   - badge-style image buttons (.imgButton)
+ *   - nav icon strip (.navButtons)
+ *
+ *  Important note:
+ *   .imgButton and button share a block on purpose
+ *   so they feel like they belong to the same UI “family”.
+ */
 
 /*---------- Base circular images ----------*/
 img {
+  /* Step 1: default avatar sizing */
   width: 40dvmin;
   height: 40dvmin;
 
+  /* Step 2: circular crop */
   border-radius: 50%;
   object-fit: cover;
   overflow: hidden;
@@ -276,53 +370,70 @@ img {
 
 /*---------- Decorative border wrapper (.imgBorder) ----------*/
 .imgBorder {
+  /* Step 1: shrink-wrap around the image */
   display: inline-block;
   position: relative;
 
+  /* Step 2: keep it circular */
   border-radius: 50%;
-  line-height: 0; /* removes inline baseline gap */
+
+  /* Step 3: remove inline baseline gap */
+  line-height: 0;
 }
 
+/* The ring frame lives on a pseudo-element behind the image */
 .imgBorder::before {
   content: "";
   position: absolute;
-  inset: -2dvmin; /* thickness of border frame */
 
+  /* Step 4: inset controls ring thickness */
+  inset: -2dvmin;
+
+  /* Step 5: image-based frame */
   background-image: url("/Resources/Image Border.webp");
   background-size: 100% 100%;
   background-repeat: no-repeat;
   background-position: center;
 
+  /* Step 6: match circle and sit behind */
   border-radius: 50%;
   z-index: -1;
 }
 
+/* Ensure the image behaves as a block (no baseline gap) */
 .imgBorder img {
-  display: block; /* kills baseline gap under img */
+  display: block;
 }
 
 /*---------- Homepage badge-style image buttons ----------*/
 /* Note: .imgButton shares a block with button here on purpose */
 .imgButton,
 button {
+  /* Step 1: make it a block so it centers cleanly */
   display: block;
+
+  /* Step 2: let width fit content, set consistent height */
   width: auto;
   height: 20dvmin;
 
+  /* Step 3: spacing + padding */
   margin-top: 3dvmin;
   padding: 5dvmin;
 
+  /* Step 4: black backing */
   background-color: black;
 
-  /* Fallback if image fails */
+  /* Step 5: fallback font if images fail */
   font: 1dvmin Arial;
 
-  /* Relevant for replaced elements (.imgButton images); harmless on buttons */
+  /* Step 6: for replaced elements (img), harmless for buttons */
   object-fit: contain;
 
+  /* Step 7: pill shape + border */
   border-radius: 10dvmin;
   border: 3px solid var(--BASE_COLOR);
 
+  /* Step 8: smooth transitions */
   transition:
     transform var(--SLOW_TRANSFORM),
     box-shadow var(--SLOW_SHADOW),
@@ -332,30 +443,37 @@ button {
 
 /*---------- Nav icon strip ----------*/
 .navButtons {
+  /* Step 1: horizontal row */
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
 
+  /* Step 2: shrink-wrap and center */
   width: fit-content;
   margin: 0 auto;
 }
 
+/* Step 3: spacing between nav links */
 .navButtons a {
   margin: 0 10dvw;
 }
 
+/* Step 4: icon sizing and hover-ready styling */
 .navButtons img {
   width: 12dvmin;
   height: 12dvmin;
   padding: 1dvmin;
 
+  /* fallback font (rarely used, but safe) */
   font: 1dvmin Arial;
 
+  /* circular icon style */
   border-radius: 50%;
   border: 3px solid var(--BASE_COLOR);
   object-fit: cover;
 
+  /* smooth hover transitions */
   transition:
     transform var(--SLOW_TRANSFORM),
     box-shadow var(--SLOW_SHADOW),
@@ -370,32 +488,39 @@ button {
 /*========================================*
  *  8) BUTTONS
  *========================================*
- *  Note: button also receives shared visuals from the .imgButton group above.
- *  This section defines the “real” button typography + hover effects.
+ *  Reminder:
+ *   - button already gets some shared visuals above (with .imgButton)
+ *   - THIS section is where button typography and hover “personality” lives
  */
 
 button {
+  /* Step 1: remove default iOS button styling */
   -webkit-appearance: none;
   appearance: none;
 
+  /* Step 2: base layout */
   display: block;
   margin: 1dvmin auto;
   padding: 0.5em 1.5em;
   height: auto;
 
+  /* Step 3: pill */
   border-radius: 9999px;
   background: transparent;
 
+  /* Step 4: typography */
   color: var(--BASE_COLOR);
   font-family: 'New Rocker';
   font-size: 5dvmin;
 
+  /* Step 5: transitions */
   transition:
     transform var(--SLOW_TRANSFORM),
     box-shadow var(--SLOW_SHADOW);
 }
 
 button:hover {
+  /* Step 6: scale + glow + brand color */
   transform: scale(1.05);
 
   text-shadow: var(--SHADOW);
@@ -412,7 +537,14 @@ button:hover {
 /* #region 9) GROUP INTERACTIONS */
 /*========================================*
  *  9) GROUP INTERACTIONS
- *========================================*/
+ *========================================*
+ *  This makes a whole “card” react together.
+ *
+ *  Step-by-step:
+ *   1) hovering the group boosts the badge
+ *   2) hovering the group boosts the links
+ *   3) nav icons get their own hover/active behavior
+ */
 
 /* Hover/focus within a group boosts its badge + links */
 .hoverTogether:hover .imgButton,
@@ -442,7 +574,13 @@ button:hover {
 /* #region 10) SCRIPT CHARACTER NAME COLORS */
 /*========================================*
  *  10) CHARACTER NAME COLORS (SCRIPT PAGES)
- *========================================*/
+ *========================================*
+ *  These classes mark speaker names in scripts.
+ *
+ *  Step-by-step:
+ *   1) shared formatting for all names (margin + bold)
+ *   2) individual colors per character
+ */
 
 .roman,
 .sage,
@@ -484,7 +622,17 @@ button:hover {
 /* #region 11) SLIDE-IN PAGE TRANSITION SYSTEM */
 /*========================================*
  *  11) SLIDE-IN PAGE TRANSITION SYSTEM
- *========================================*/
+ *========================================*
+ *  This is the animation shell.
+ *
+ *  Step-by-step:
+ *   1) #transitionContainer holds the entire page content
+ *   2) JS toggles classes on it:
+ *        .ready     -> resting position (translateY(0))
+ *        .slide-out -> leaving position (translateY(var(--SLIDE_DISTANCE)))
+ *   3) html has either .homeJs or .otherJs depending on page type
+ *   4) .noJs disables all transforms for graceful fallback
+ */
 
 /* Main content wrapper (JS toggles who scrolls) */
 #transitionContainer {
@@ -543,7 +691,11 @@ button:hover {
 /* #region 12) REDUCED-MOTION ACCESSIBILITY */
 /*========================================*
  *  12) REDUCED-MOTION ACCESSIBILITY
- *========================================*/
+ *========================================*
+ *  When users request reduced motion:
+ *   1) remove the animated canvas layer
+ *   2) disable page slide transitions
+ */
 
 @media (prefers-reduced-motion: reduce) {
   #constellations {
