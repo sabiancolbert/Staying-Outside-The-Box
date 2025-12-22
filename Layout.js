@@ -38,7 +38,13 @@ window.addEventListener("pagehide", freezeAndSaveStars);
 
 // Backup for mobile/tab switching
 document.addEventListener("visibilitychange", () => {
-  if (document.visibilityState === "hidden") freezeAndSaveStars();
+  if (!SF) return;
+
+  if (document.visibilityState === "hidden") {
+    freezeAndSaveStars();
+  } else if (document.visibilityState === "visible") {
+    SF.freeze = false;
+  }
 });
 
 const getTransitionContainer = () => document.getElementById("transitionContainer");
