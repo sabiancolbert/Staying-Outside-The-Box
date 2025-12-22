@@ -196,12 +196,19 @@
     const BR = SF.brush;
     BR.clearRect(0, 0, SF.w, SF.h);
 
-    // Pointer ring
-    const poke = Math.max(0.0001, (SF.pokeTimer - (SF.pointerSpeed * 4)) || 0) / 2;
+    // Pointer ring grow and shrink
     const goalRadius = Math.max(0, SF.scaleToScreen * 100 - 40);
-    const ringRadius = (SF.ringTimer / 50) * goalRadius + poke;
+    const ringRadius = goalRadius * (SF.ringTimer / 50);
     const ringWidth = SF.ringTimer * 0.15 + 1.5;
-    const ringAlpha = Math.min((SF.ringTimer * 0.07) + (poke / 100), 1);
+    const ringAlpha = Math.min(SF.ringTimer * 0.07, 1);
+    // Pointer ring expand instead with poke
+    if (SF.pointerSpeed > 1) {
+      const normPoke = Math.min(1, Math.max(0, SF.pokeTimer / 1));
+      const invPoke   = 1 - normPoke;
+      ringRadius = goalRadius * invPoke;
+      ringWidth = normPoke * 7;
+      ringAlpha = normPoke;
+    }
     
     if (SF.pointerTime > 0 && ringAlpha > 0.001) {
       BR.save();
@@ -245,7 +252,7 @@
 
           const dist = Math.sqrt(dSq) * distScale;
 
-          let alpha = (1 - dist / SF.maxLinkDist) * ((aOp + B.opacity) / 2);
+          let alpha = Math.min((1 - dist / SF.maxLinkDist), ((aOp + B.opacity) / 2));
           alpha *= Math.min(aEdge, B.edge);
 
           if (alpha <= 0.002) continue;
@@ -276,11 +283,6 @@
       BR.arc(star.x, star.y, star.whiteValue * 2 + star.size, 0, Math.PI * 2);
       BR.fill();
     }
-  };
-
-  SF.forceRedraw = function forceRedraw() {
-    if (!SF.brush || !SF.canvas) return;
-    SF.drawStarsWithLines();
   };
 })();
 
