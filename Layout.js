@@ -10,12 +10,6 @@
  *   4) bfcache restore handling (pageshow)
  *   5) Transition navigation (slide-out then location change)
  *   6) Touch navigation fixes (pointer-based tap vs swipe)
- *
- *  Design notes:
- *   - CSS handles the animations via classes on #transitionContainer:
- *       .ready     -> slide-in complete
- *       .slide-out -> slide-out animation
- *   - This script’s job is to toggle those classes and manage navigation timing.
  *==============================================================*/
 
 
@@ -24,26 +18,33 @@
  *  1) GLOBAL STATE + HELPERS
  *========================================*/
 
-let IS_TRANSITIONING = false;
-const SF = window.STARFIELD;
+let IS_TRANSITION_ACTIVE = false;
+const STARFIELD = window.STARFIELD;
 
-function freezeAndSaveStars() {
-  if (!SF) return;
-  SF.freeze = true;
-  if (typeof SF.saveToStorage === "function") SF.saveToStorage();
+function freezeAndSaveStarfield() {
+  // Step 1: if no starfield exists, do nothing
+  if (!STARFIELD) return;
+
+  // Step 2: freeze physics
+  STARFIELD.isFrozen = true;
+
+  // Step 3: persist current star state (if exposed)
+  if (typeof STARFIELD.saveStarfieldToStorage === "function") {
+    STARFIELD.saveStarfieldToStorage();
+  }
 }
 
 // Fires on real navigations + bfcache; best cross-browser “we’re leaving”
-window.addEventListener("pagehide", freezeAndSaveStars);
+window.addEventListener("pagehide", freezeAndSaveStarfield);
 
 // Backup for mobile/tab switching
 document.addEventListener("visibilitychange", () => {
-  if (!SF) return;
+  if (!STARFIELD) return;
 
   if (document.visibilityState === "hidden") {
-    freezeAndSaveStars();
+    freezeAndSaveStarfield();
   } else if (document.visibilityState === "visible") {
-    SF.freeze = false;
+    STARFIELD.isFrozen = false;
   }
 });
 
@@ -54,8 +55,8 @@ const isHomepage = () => !!document.querySelector("#menuButton");
 const getSlideDurationSeconds = () => (isHomepage() ? 1.2 : 0.6);
 
 /** True if navigation was back/forward (sometimes via bfcache) */
-function isBackForwardNavigation(event) {
-  if (event?.persisted) return true;
+function isBackForwardNavigation(EVENT) {
+  if (EVENT?.persisted) return true;
   try {
     return performance?.getEntriesByType?.("navigation")?.[0]?.type === "back_forward";
   } catch {
@@ -65,27 +66,27 @@ function isBackForwardNavigation(event) {
 
 /** Determines whether the referrer is internal and whether it was the Menu page */
 function getReferrerInfo() {
-  const REF = document.referrer;
+  const REFERRER = document.referrer;
 
-  let isInternal = false;
-  let cameFromMenu = false;
+  let IS_INTERNAL_REFERRER = false;
+  let CAME_FROM_MENU_PAGE = false;
 
-  if (!REF) return { REF, isInternal, cameFromMenu };
+  if (!REFERRER) return { REFERRER, IS_INTERNAL_REFERRER, CAME_FROM_MENU_PAGE };
 
   try {
-    const REF_URL = new URL(REF);
-    isInternal = REF_URL.origin === location.origin;
+    const REFERRER_URL = new URL(REFERRER);
+    IS_INTERNAL_REFERRER = REFERRER_URL.origin === location.origin;
 
-    const PATH = REF_URL.pathname.toLowerCase();
-    cameFromMenu =
-      PATH === "/menu" ||
-      PATH === "/menu/" ||
-      PATH.endsWith("/menu/index.html");
+    const REFERRER_PATH = REFERRER_URL.pathname.toLowerCase();
+    CAME_FROM_MENU_PAGE =
+      REFERRER_PATH === "/menu" ||
+      REFERRER_PATH === "/menu/" ||
+      REFERRER_PATH.endsWith("/menu/index.html");
   } catch {
-    // if parsing fails, treat as external/unknown
+    // If parsing fails, treat as external/unknown
   }
 
-  return { REF, isInternal, cameFromMenu };
+  return { REFERRER, IS_INTERNAL_REFERRER, CAME_FROM_MENU_PAGE };
 }
 
 /* #endregion 1) GLOBAL STATE + HELPERS */
@@ -95,41 +96,34 @@ function getReferrerInfo() {
 //#region 2) SCROLL OWNERSHIP (DOCUMENT IS SCROLLER)
 /*========================================*
  *  2) SCROLL OWNERSHIP (DOCUMENT IS SCROLLER)
- *========================================*
- *  Transition system sometimes relies on the document being
- *  the scroll container, not #transitionContainer.
- *
- *  This helper:
- *   - preserves current scroll position
- *   - ensures html scrolls (overflowY:auto)
- *   - ensures body and container are NOT scroll containers
- *   - triggers canvas resize if present
- */
+ *========================================*/
 
-function enableDocumentScroll(container = getTransitionContainer()) {
+function enableDocumentScroll(CONTAINER = getTransitionContainer()) {
   const HTML = document.documentElement;
   const BODY = document.body;
 
-  // Save scroll (prefer container scrollTop if it ever becomes scrollable)
-  const CURRENT_SCROLL = container?.scrollTop ?? window.scrollY ?? 0;
+  // Step 1: preserve current scroll position
+  const SAVED_SCROLL_Y = CONTAINER?.scrollTop ?? window.scrollY ?? 0;
 
-  // Document becomes scroller
+  // Step 2: document becomes the scroller
   HTML.style.overflowY = "auto";
   BODY.style.overflow = "visible";
   BODY.style.height = "auto";
 
-  // Container is NOT scrollable
-  if (container) {
-    container.style.overflow = "visible";
-    container.style.height = "auto";
+  // Step 3: container is NOT scrollable
+  if (CONTAINER) {
+    CONTAINER.style.overflow = "visible";
+    CONTAINER.style.height = "auto";
   }
 
-  // If starfield exposes resizeCanvas(), keep it in sync
-  if (SF && typeof SF.resizeCanvas === "function") SF.resizeCanvas();
+  // Step 4: keep starfield canvas synced if available
+  if (STARFIELD && typeof STARFIELD.resizeStarfieldCanvas === "function") {
+    STARFIELD.resizeStarfieldCanvas();
+  }
 
-  // Restore scroll next frame
+  // Step 5: restore scroll next frame
   requestAnimationFrame(() => {
-    try { window.scrollTo(0, CURRENT_SCROLL); } catch {}
+    try { window.scrollTo(0, SAVED_SCROLL_Y); } catch {}
   });
 }
 
@@ -146,37 +140,33 @@ window.addEventListener("load", () => {
   const CONTAINER = getTransitionContainer();
   if (!CONTAINER) return;
 
-  // Set slide duration CSS var for this page
-  document.documentElement.style.setProperty(
-    "--SLIDE_DURATION",
-    `${getSlideDurationSeconds()}s`
-  );
+  // Step 1: set slide duration CSS var for this page
+  document.documentElement.style.setProperty("--SLIDE_DURATION", `${getSlideDurationSeconds()}s`);
 
-  // Trigger slide-in (CSS: .ready -> translateY(0))
+  // Step 2: trigger slide-in
   requestAnimationFrame(() => {
     CONTAINER.classList.add("ready");
   });
 
-  // Back button logic
-  const { REF, isInternal, cameFromMenu } = getReferrerInfo();
+  // Step 3: back button logic
+  const { REFERRER, IS_INTERNAL_REFERRER, CAME_FROM_MENU_PAGE } = getReferrerInfo();
   const BACK_LINK = document.getElementById("homepageBack");
-
   if (!BACK_LINK) return;
 
-  // • If came from Menu → hide
-  // • If came from any other internal page → show and store ref
-  if (cameFromMenu) {
+  // Step 4: if came from Menu, hide back button
+  if (CAME_FROM_MENU_PAGE) {
     BACK_LINK.style.display = "none";
     return;
   }
 
-  if (isInternal && REF) {
+  // Step 5: if came from internal page, show and store referrer
+  if (IS_INTERNAL_REFERRER && REFERRER) {
     BACK_LINK.style.display = "block";
-    localStorage.setItem("homepageBackUrl", REF);
+    localStorage.setItem("homepageBackUrl", REFERRER);
     return;
   }
 
-  // External/unknown
+  // Step 6: external/unknown referrer
   BACK_LINK.style.display = "none";
   localStorage.removeItem("homepageBackUrl");
 });
@@ -188,23 +178,24 @@ window.addEventListener("load", () => {
 //#region 4) BACK/FORWARD CACHE (PAGESHOW)
 /*========================================*
  *  4) BACK/FORWARD CACHE (PAGESHOW)
- *========================================*
- *  When bfcache restores a page, DOM returns in a “past” state.
- *  This ensures we’re back to “ready” (not mid-slide-out) and prevents
- *  transition lockups.
- */
+ *========================================*/
 
-window.addEventListener("pageshow", (event) => {
+window.addEventListener("pageshow", (EVENT) => {
   const CONTAINER = getTransitionContainer();
   if (!CONTAINER) return;
-  if (SF) SF.freeze = false;
-  
-  if (!isBackForwardNavigation(event)) return;
 
+  // Step 1: unfreeze starfield when returning
+  if (STARFIELD) STARFIELD.isFrozen = false;
+
+  // Step 2: only handle true back/forward restores
+  if (!isBackForwardNavigation(EVENT)) return;
+
+  // Step 3: ensure we're in a “ready” state
   CONTAINER.classList.remove("slide-out");
   CONTAINER.classList.add("ready");
 
-  IS_TRANSITIONING = false;
+  // Step 4: reset transition state
+  IS_TRANSITION_ACTIVE = false;
   CONTAINER.scrollTop = 0;
 });
 
@@ -215,55 +206,50 @@ window.addEventListener("pageshow", (event) => {
 //#region 5) TRANSITION NAVIGATION (SLIDE-OUT THEN LEAVE)
 /*========================================*
  *  5) TRANSITION NAVIGATION
- *========================================*
- *  transitionTo(url):
- *   - guards against double triggers
- *   - supports "back" keyword using stored URL
- *   - optionally freezes/saves starfield state
- *   - computes a slide distance for the outgoing transform
- *   - waits for CSS transition time, then navigates
- */
+ *========================================*/
 
-function transitionTo(url) {
-  if (IS_TRANSITIONING) return;
-  if (!url) return;
+function transitionTo(URL) {
+  // Step 1: guard against double-triggers
+  if (IS_TRANSITION_ACTIVE) return;
+  if (!URL) return;
 
-  IS_TRANSITIONING = true;
+  IS_TRANSITION_ACTIVE = true;
 
   const CONTAINER = getTransitionContainer();
 
-  // Special keyword: back -> restore stored URL
-  if (url === "back") {
-    const STORED = localStorage.getItem("homepageBackUrl");
-    if (!STORED) {
-      IS_TRANSITIONING = false;
+  // Step 2: special keyword: "back"
+  if (URL === "back") {
+    const STORED_BACK_URL = localStorage.getItem("homepageBackUrl");
+    if (!STORED_BACK_URL) {
+      IS_TRANSITION_ACTIVE = false;
       return;
     }
-    url = STORED;
+    URL = STORED_BACK_URL;
   }
 
-  // If container missing, just go
+  // Step 3: if no container, navigate immediately
   if (!CONTAINER) {
-    location.href = url;
+    location.href = URL;
     return;
   }
-  
-  // Compute slide distance (viewport + current scroll)
-  const DIST_PX = (window.innerHeight * 1.1) + (window.scrollY ?? 0);
-  document.documentElement.style.setProperty("--SLIDE_DISTANCE", `${DIST_PX}px`);
 
-// Start slide-out
-CONTAINER.classList.add("slide-out");
+  // Step 4: compute slide distance (viewport + current scroll)
+  const SLIDE_DISTANCE_PX = (window.innerHeight * 1.1) + (window.scrollY ?? 0);
+  document.documentElement.style.setProperty("--SLIDE_DISTANCE", `${SLIDE_DISTANCE_PX}px`);
 
-// Leave after animation time
-const MS = getSlideDurationSeconds() * 1000;
+  // Step 5: start slide-out
+  CONTAINER.classList.add("slide-out");
 
-// Freeze+save right before navigation (keeps motion during slide, but captures final state)
-setTimeout(freezeAndSaveStars, Math.max(0, MS - 50));
+  // Step 6: compute animation time
+  const DURATION_MS = getSlideDurationSeconds() * 1000;
 
-setTimeout(() => {
-  location.href = url;
-}, MS);
+  // Step 7: freeze+save right before leaving (keeps motion during slide, but captures final)
+  setTimeout(freezeAndSaveStarfield, Math.max(0, DURATION_MS - 50));
+
+  // Step 8: navigate after animation ends
+  setTimeout(() => {
+    location.href = URL;
+  }, DURATION_MS);
 }
 
 /* #endregion 5) TRANSITION NAVIGATION (SLIDE-OUT THEN LEAVE) */
@@ -273,94 +259,87 @@ setTimeout(() => {
 //#region 6) TOUCH NAV FIXES (POINTER TAP VS SWIPE)
 /*========================================*
  *  6) TOUCH NAV FIXES
- *========================================*
- *  We treat touch as:
- *   - Tap: navigate via transitionTo()
- *   - Swipe/drag: do NOT navigate, and remove sticky :focus/:active visuals
- *
- *  Uses pointer events so it works consistently on iOS + modern browsers.
- */
+ *========================================*/
 
-// Toggle an element's visibility via the [hidden] attribute
-function toggleElement(id) {
-  if (!id) return;
-  const EL = document.getElementById(id);
-  if (EL) EL.hidden = !EL.hidden;
+function toggleElementHiddenById(ELEMENT_ID) {
+  if (!ELEMENT_ID) return;
+  const ELEMENT = document.getElementById(ELEMENT_ID);
+  if (ELEMENT) ELEMENT.hidden = !ELEMENT.hidden;
 }
 
-/** Wires pointer-based navigation onto elements that match selector */
-function wirePointerNavigation(selector = "a") {
-  const items = document.querySelectorAll(selector);
-  if (!items.length) return;
+function wirePointerNavigation(SELECTOR = "a") {
+  const NAV_ITEMS = document.querySelectorAll(SELECTOR);
+  if (!NAV_ITEMS.length) return;
 
-  items.forEach((el) => {
-    let startX = 0;
-    let startY = 0;
-    let moved = false;
-    let activePointerId = null;
+  NAV_ITEMS.forEach((ELEMENT) => {
+    let START_X = 0;
+    let START_Y = 0;
+    let DID_MOVE = false;
+    let ACTIVE_POINTER_ID = null;
 
-    el.addEventListener(
+    ELEMENT.addEventListener(
       "pointerdown",
-      (e) => {
-        if (e.pointerType !== "touch") return;
+      (EVENT) => {
+        if (EVENT.pointerType !== "touch") return;
 
-        activePointerId = e.pointerId;
-        moved = false;
-        startX = e.clientX;
-        startY = e.clientY;
+        ACTIVE_POINTER_ID = EVENT.pointerId;
+        DID_MOVE = false;
+        START_X = EVENT.clientX;
+        START_Y = EVENT.clientY;
 
-        // Ensure we get the corresponding pointerup/cancel
-        try { el.setPointerCapture(activePointerId); } catch {}
+        try { ELEMENT.setPointerCapture(ACTIVE_POINTER_ID); } catch {}
       },
       { passive: true }
     );
 
-    el.addEventListener(
+    ELEMENT.addEventListener(
       "pointermove",
-      (e) => {
-        if (e.pointerId !== activePointerId) return;
+      (EVENT) => {
+        if (EVENT.pointerId !== ACTIVE_POINTER_ID) return;
 
-        // Mark as moved if finger drifts beyond tap threshold
-        if (Math.hypot(e.clientX - startX, e.clientY - startY) > 10) moved = true;
+        // Tap threshold
+        if (Math.hypot(EVENT.clientX - START_X, EVENT.clientY - START_Y) > 10) {
+          DID_MOVE = true;
+        }
       },
       { passive: true }
     );
 
-    el.addEventListener(
+    ELEMENT.addEventListener(
       "pointerup",
-      (e) => {
-        if (e.pointerId !== activePointerId) return;
+      (EVENT) => {
+        if (EVENT.pointerId !== ACTIVE_POINTER_ID) return;
 
-        try { el.releasePointerCapture(activePointerId); } catch {}
-        activePointerId = null;
+        try { ELEMENT.releasePointerCapture(ACTIVE_POINTER_ID); } catch {}
+        ACTIVE_POINTER_ID = null;
 
-        // If swipe/drag, do nothing and unstick styles
-        if (moved) {
-          try { el.blur(); } catch {}
+        // Swipe/drag: do nothing, clear sticky styles
+        if (DID_MOVE) {
+          try { ELEMENT.blur(); } catch {}
           return;
         }
 
         // Tap: take over navigation
-        e.preventDefault();
+        EVENT.preventDefault();
 
-        if (el.id === "homepageBack") {
+        if (ELEMENT.id === "homepageBack") {
           transitionTo("back");
           return;
         }
 
-        const href = el.getAttribute("href");
-        if (!href) return;
+        const HREF = ELEMENT.getAttribute("href");
+        if (!HREF) return;
 
-        transitionTo(href);
+        transitionTo(HREF);
       },
       { passive: false }
     );
 
-    el.addEventListener(
+    ELEMENT.addEventListener(
       "pointercancel",
       () => {
-        activePointerId = null;
-        try { el.blur(); } catch {}
+        ACTIVE_POINTER_ID = null;
+        try { ELEMENT.blur(); } catch {}
       },
       { passive: true }
     );
