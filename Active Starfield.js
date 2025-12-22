@@ -201,7 +201,7 @@
     const goalRadius = Math.max(0, SF.scaleToScreen * 100 - 40);
     const ringRadius = (SF.ringTimer / 50) * goalRadius + poke;
     const ringWidth = SF.ringTimer * 0.15 + 1.5;
-    const ringAlpha = Math.min((SF.ringTimer * 0.07) + (1 / (poke + 1)), 1);
+    const ringAlpha = Math.min((SF.ringTimer * 0.07) + (poke / 100), 1);
     
     if (SF.pointerTime > 0 && ringAlpha > 0.001) {
       BR.save();
