@@ -64,7 +64,8 @@ window.STARFIELD = window.STARFIELD || {};
     repGrad: 1,
     attShape: 1,
     att: 1,
-    rep: 1
+    rep: 1,
+    limit: 1
   };
 
   // Star data
@@ -474,6 +475,7 @@ window.STARFIELD = window.STARFIELD || {};
     SF.scalePow.attShape = SF.scaleToScreen ** -8.89;
     SF.scalePow.att      = SF.scaleToScreen ** -8.46;
     SF.scalePow.rep      = SF.scaleToScreen ** -0.89;
+    SF.scalePow.limit    = SF.scaleToScreen ** 1.7;
 
     // Rescale existing stars after resize
     if (oldW !== 0 && oldH !== 0 && SF.stars.length) {
