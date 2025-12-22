@@ -154,13 +154,6 @@
     SF.ringTimer *= 0.9;
     if (SF.ringTimer < 0.1) SF.ringTimer = 0;
 
-    if (SF.ringTimer < 1) {
-      SF.ringSize = 0;
-    } else if (SF.ringSize < 1) {
-      SF.ringSize += 0.05;
-      if (SF.ringSize > 1) SF.ringSize = 1;
-    }
-
     SF.pokeTimer *= 0.85;
     if (SF.pokeTimer < 1) SF.pokeTimer = 0;
 
@@ -204,8 +197,7 @@
     BR.clearRect(0, 0, SF.w, SF.h);
 
     // Pointer ring
-    const goalRadius = Math.max(0, SF.scaleToScreen * 100 - 40);
-    const ringRadius = goalRadius * SF.ringSize;
+    const ringRadius = SF.ringTimer / 50 * Math.max(0, SF.scaleToScreen * 100 - 40);
     const ringWidth = SF.ringTimer * 0.15 + 1.5;
     const ringAlpha = Math.min(SF.ringTimer * 0.07, 1);
 
@@ -319,7 +311,7 @@
   };
 
   SF.startPointerInteraction = function startPointerInteraction(x, y) {
-    SF.pokeTimer = 500;
+    SF.pokeTimer = 200;
     SF.updateSpeed(x, y);
   };
 
