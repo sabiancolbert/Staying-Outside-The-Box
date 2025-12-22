@@ -40,8 +40,5 @@ const KEY_FUNCTIONS = {
 /* KEY FUNCTIONALITY */
 
 function runW(STAR) {
-  const FORCES = [0, 0];
-  // math
-  // more math
-  return FORCES;
+  return [0, window.CIRCLE_TIMER];
 }
