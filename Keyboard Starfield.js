@@ -13,4 +13,6 @@ window.addEventListener("keydown", (event) => {
 
 window.updateKeyboardForces = function updateKeyboardForces() {
     //here we go!
+window.KEYBOARD_FORCE_X = 0;
+window.KEYBOARD_FORCE_Y = 0;
 }
