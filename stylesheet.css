@@ -94,6 +94,7 @@ html::before {
   /* Background coverage (lv* helps iOS toolbars) */
   width: 100lvw;
   height: 110lvh;
+  top: -10dvh;
 
   background-image: url("/Resources/Background.webp");
   background-size: cover;
