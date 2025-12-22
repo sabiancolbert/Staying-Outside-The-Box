@@ -13,25 +13,12 @@ const STARFIELD = window.STARFIELD;
   console.log("Key pressed:", KEY);
 }
 
-window.addEventListener(
-  "keydown",
-  (event) => {
+window.addEventListener("keydown", (event) => {
     // Ignore held-down repeats
     if (event.repeat) return;
 
     // Ignore IME composition
     if (event.isComposing) return;
 
-    // Ignore typing inside inputs
-    const TARGET = event.target;
-    if (
-      TARGET &&
-      (TARGET.tagName === "INPUT" ||
-       TARGET.tagName === "TEXTAREA" ||
-       TARGET.isContentEditable)
-    ) return;
-
     processKeyPress(event.key);
-  },
-  { passive: true }
-);
+});
