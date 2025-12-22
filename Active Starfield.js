@@ -152,7 +152,7 @@
 
     // Ring behavior (grow then fade with ringTimer, no extra kill-switch logic)
     SF.ringTimer *= 0.95;
-if (SF.ringTimer < 0.1) {
+if (SF.ringTimer < 5) {
   SF.ringTimer = 0;
 
   // kill all pointer momentum/history
