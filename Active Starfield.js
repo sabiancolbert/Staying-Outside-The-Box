@@ -152,11 +152,11 @@
       } else {
         STAR.opacity -= 0.0001;
       }
+      
+      // Step 18: get ready for next keyboard input
+      STAR.keyboardForceX = 0;
+      STAR.keyboardForceY = 0;
     }
-    
-    // Step 18: get ready for next keyboard input
-    STAR.keyboardForceX = 0;
-    STAR.keyboardForceY = 0;
 
     // Step 19: global decay for pointer speed
     STARFIELD.pointerSpeedUnits *= 0.5;
