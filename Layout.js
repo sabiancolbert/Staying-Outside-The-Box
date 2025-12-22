@@ -20,7 +20,34 @@
 
 let IS_TRANSITION_ACTIVE = false;
 const STARFIELD = window.STARFIELD;
+
 const CRUNCH_SOUND = new Audio("/Resources/Crunch.wav");
+CRUNCH_SOUND.preload = "auto";
+CRUNCH_SOUND.volume = 1;
+
+// Prime audio once on first user gesture (kills most first-play lag)
+function unlockAudioOnce() {
+  CRUNCH_SOUND.volume = 0;
+  const p = CRUNCH_SOUND.play();
+  if (p?.then) {
+    p.then(() => {
+      CRUNCH_SOUND.pause();
+      CRUNCH_SOUND.currentTime = 0;
+      CRUNCH_SOUND.volume = 1;
+    }).catch(() => {
+      CRUNCH_SOUND.volume = 1;
+    });
+  } else {
+    CRUNCH_SOUND.volume = 1;
+  }
+}
+window.addEventListener("pointerdown", unlockAudioOnce, { once: true });
+window.addEventListener("keydown", unlockAudioOnce, { once: true });
+
+function playCrunch() {
+  const s = CRUNCH_SOUND.cloneNode(true);
+  s.play().catch(() => {});
+}
 
 // Pending transition timers (bfcache can resurrect these unless we cancel them)
 let SAVE_BEFORE_LEAVE_TIMEOUT_ID = null;
@@ -232,7 +259,7 @@ function transitionTo(URL) {
   // Step 1: guard against double-triggers
   if (IS_TRANSITION_ACTIVE) return;
   if (!URL) return;
-  CRUNCH_SOUND.currentTime = 0, CRUNCH_SOUND.play().catch(() => {});
+  playCrunch();
   clearPendingTransitionTimers();
 
   IS_TRANSITION_ACTIVE = true;
