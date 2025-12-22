@@ -22,3 +22,18 @@ window.addEventListener("keydown", (event) => {
 
     processKeyPress(event.key);
 });
+
+/*------------*/
+
+const KEY_FUNCTIONS = {
+  w: () => runW(STAR),
+  a: () => { /* move left */ },
+  s: () => { /* move down */ },
+  d: () => { /* move right */ },
+};
+
+KEY_ACTIONS[USER_INPUT]?.();
+
+function runW(STAR) {
+
+}
