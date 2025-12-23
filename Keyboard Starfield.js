@@ -105,18 +105,32 @@ function runY(STAR) {
   return [0, 0];
 }
 
-// Y = Top middle
-function runU(STAR) { return [0, 0]; }
+// U = Top center
+function runU(STAR) {
+  return [0, 0];
+}
 
-// Y = Top right
-function runI(STAR) { return [0, 0]; }
+// I = Top right
+function runI(STAR) {
+  return [0, 0];
+}
 
-// H J K
-function runH(STAR) { return [0, 0]; }
-function runJ(STAR) { return [0, 0]; }
-function runK(STAR) { return [0, 0]; }
+// H = Middle left
+function runH(STAR) {
+  return [0, 0];
+}
 
-// B N M
+// J = Middle center
+function runJ(STAR) {
+  return [0, 0];
+}
+
+// K = Middle right
+function runK(STAR) {
+  return [0, 0];
+}
+
+// Y = Bottom left
 function runB(STAR) { return [0, 0]; }
 function runN(STAR) { return [0, 0]; }
 function runM(STAR) { return [0, 0]; }
