@@ -82,6 +82,9 @@
   --SLOW_BORDER:    0.3s ease-out;
   --SLOW_SHADOW:    0.7s ease-out;
   --SLOW_COLOR:     0.5s ease-out;
+  
+  /* Placeholders */
+  --PLACEHOLDER_COLOR: rgba(70, 70, 70, 0.5);
 }
 
 /* #endregion 1) DESIGN TOKENS (ROOT VARIABLES) */
