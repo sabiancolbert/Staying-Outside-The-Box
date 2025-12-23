@@ -4,6 +4,9 @@
 //#region 1) SETUP
  *========================================*/
 
+const STARFIELD = window.STARFIELD;
+if (!STARFIELD?.starList?.length) return;
+
 /* Event listener */
 window.addEventListener("keydown", (event) => {
   // Ignore held-down repeats
@@ -17,9 +20,7 @@ window.addEventListener("keydown", (event) => {
 
 /* Key proccessing */
 function processKeyPress(KEY) {
-  const STARFIELD = window.STARFIELD;
-  if (!STARFIELD?.starList?.length) return;
-
+  
   // Step 1: normalize key into a lookup value
   const KEYBOARD_INPUT = String(KEY).toLowerCase();
 
@@ -103,7 +104,7 @@ const KEY_FUNCTIONS = {
 /* Function constants */
 const EFFECT_MULTIPLIER = 1;
 const EFFECT_CONSTANT = 5;
-const FORCE_INCREASE = (window.CIRCLE_TIMER + EFFECT_CONSTANT) * EFFECT_MULTIPLIER;
+const FORCE_INCREASE = (STARFIELD.pointerRingTimer + EFFECT_CONSTANT) * EFFECT_MULTIPLIER;
 /* #endregion 1) SETUP */
 
 /*========================================*
