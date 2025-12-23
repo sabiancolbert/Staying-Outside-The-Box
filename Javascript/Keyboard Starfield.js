@@ -174,8 +174,8 @@ function runC(STAR) {
 //#region 5) OTHERS
  *========================================*/
 
-// C = Clockwise orbit
-function runC(STAR) {
+// V = Velocity invert
+function runV(STAR) {
   return [0, 0];
 }
 
@@ -184,7 +184,7 @@ function runG(STAR) {
   return [0, 0];
 }
 
-// O = Opposite directions
+// O = Orbit
 function runO(STAR) {
   STAR.vx = -STAR.vx;
   STAR.vy = -STAR.vy;
