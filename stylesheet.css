@@ -674,14 +674,23 @@ button:hover {
   transform: translateY(var(--SLIDE_DISTANCE));
 }
 
-/* No-JS fallback: no transforms or animation */
-.noJs #transitionContainer {
-  transform: none !important;
-  transition: none !important;
+/* No javascript fallbacks */
+.noJs {
+  overflow-y: auto;
 }
 
 .noJs body {
-  overflow: auto;
+  overflow: visible;
+  height: auto;
+}
+
+.noJs #transitionContainer {
+  transform: translateY(0) !important;
+  transition: none !important;
+
+  overflow: visible;
+  height: auto;
+  min-height: 100dvh;
 }
 
 /* #endregion 11) SLIDE-IN PAGE TRANSITION SYSTEM */
