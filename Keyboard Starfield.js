@@ -1,6 +1,10 @@
 // thank heavens for chatGPT <3
-/* EVENT LISTENER */
 
+/*========================================*
+//#region 1) SETUP
+ *========================================*/
+
+/* Event listener */
 window.addEventListener("keydown", (event) => {
   // Ignore held-down repeats
   if (event.repeat) return;
@@ -11,8 +15,7 @@ window.addEventListener("keydown", (event) => {
   processKeyPress(event.key);
 });
 
-/* KEY PROCESSING */
-
+/* Key proccessing */
 function processKeyPress(KEY) {
   const STARFIELD = window.STARFIELD;
   if (!STARFIELD?.starList?.length) return;
@@ -30,6 +33,7 @@ function processKeyPress(KEY) {
   console.log("Key pressed:", KEY);
 }
 
+/* Assign keys to functions */
 const KEY_FUNCTIONS = {
   w: (STAR) => runW(STAR),
   a: (STAR) => runA(STAR),
@@ -42,11 +46,15 @@ const KEY_FUNCTIONS = {
   x: (STAR) => runX(STAR)
 };
 
-/* KEY FUNCTIONALITY */
-
+/* Function constants */
 const EFFECT_MULTIPLIER = 1;
 const EFFECT_CONSTANT = 5;
 const FORCE_INCREASE = (window.CIRCLE_TIMER + EFFECT_CONSTANT) * EFFECT_MULTIPLIER;
+/* #endregion 1) SETUP */
+
+/*========================================*
+//#region 2) GLOBAL MOVEMENT
+ *========================================*/
 
 // W = Up
 function runW(STAR) {
@@ -87,6 +95,46 @@ function runZ(STAR) {
 function runC(STAR) {
   return [FORCE_INCREASE / 2, -FORCE_INCREASE / 2];
 }
+/* #endregion 2) GLOBAL MOVEMENT */
+
+/*========================================*
+//#region 3) QUADRANT MAGNETISM
+ *========================================*/
+// Y = Top left
+function runY(STAR) {
+  return [0, 0];
+}
+
+// Y = Top middle
+function runU(STAR) { return [0, 0]; }
+
+// Y = Top right
+function runI(STAR) { return [0, 0]; }
+
+// H J K
+function runH(STAR) { return [0, 0]; }
+function runJ(STAR) { return [0, 0]; }
+function runK(STAR) { return [0, 0]; }
+
+// B N M
+function runB(STAR) { return [0, 0]; }
+function runN(STAR) { return [0, 0]; }
+function runM(STAR) { return [0, 0]; }
+/* #endregion 3) QUADRANT MAGNETISM */
+
+/*========================================*
+//#region 4) PONG
+ *========================================*/
+// R T G V
+function runR(STAR) { return [0, 0]; }
+function runT(STAR) { return [0, 0]; }
+function runG(STAR) { return [0, 0]; }
+function runV(STAR) { return [0, 0]; }
+/* #endregion 4) PONG */
+
+/*========================================*
+//#region 5) OTHERS
+ *========================================*/
 
 // X = Invert
 function runX(STAR) {
@@ -95,23 +143,8 @@ function runX(STAR) {
   return [0, 0];
 }
 
-// Y = BLANK
-function runY(STAR) {
-  return [0, 0];
-}
-
-/* 
-
-O orbit around pointer
-
-P Poke burst
-All stars flash white once, but only the nearest 20 stay bright longer. Feels like a pulse wave.
-
-F rumble rumble 
-
-L link shatter
-Links fade out from center to edges like shattering glass.
-
-YUI, HJK, BNM screen quadrant magnet
-
-RTGV pong up and down AND left right. when bouncing a star, the star turns white and stay lit until wrapped (missed the pong paddle)*/
+function runF(STAR) { return [0, 0]; }
+function runO(STAR) { return [0, 0]; }
+function runP(STAR) { return [0, 0]; }
+function runL(STAR) { return [0, 0]; }
+/* #endregion 5) OTHERS */
