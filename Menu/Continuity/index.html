@@ -173,7 +173,7 @@
       }
 
       /*==============================*
-       *  4) NUMBER INPUTS (PILL BUTTON LOOK)
+       *  4) TEXT INPUTS (PILL BUTTON LOOK)
        *==============================*/
 
       input[type="number"],
@@ -211,6 +211,22 @@
         -webkit-appearance: none;
         margin: 0;
       }
+      
+      #controller::placeholder {
+  color: var(--PLACEHOLDER_COLOR);
+}
+
+#controller::-webkit-input-placeholder {
+  color: var(--PLACEHOLDER_COLOR);
+}
+
+#controller::-moz-placeholder {
+  color: var(--PLACEHOLDER_COLOR);
+}
+
+#controller:-ms-input-placeholder {
+  color: var(--PLACEHOLDER_COLOR);
+}
 
       /*==============================*
        *  5) RANGE SLIDERS (TRACK + THUMB)
