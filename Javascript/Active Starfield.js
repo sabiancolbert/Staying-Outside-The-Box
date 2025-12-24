@@ -17,7 +17,6 @@
 //#region 1) PHYSICS
  *========================================*/
 
-(() => {
   const STARFIELD = window.STARFIELD;
 
   STARFIELD.updateStarPhysics = function updateStarPhysics() {
@@ -185,7 +184,6 @@
     const DEBUG_POKE = document.getElementById("dbgPoke");
     if (DEBUG_POKE) DEBUG_POKE.textContent = STARFIELD.pokeImpulseTimer.toFixed(1);
   };
-})();
 
 /* #endregion 1) PHYSICS */
 
@@ -195,7 +193,7 @@
 //#region 2) RENDERING
  *========================================*/
 
-(() => {
+
   const STARFIELD = window.STARFIELD;
 
   const LINK_BUCKET_COUNT = 18;
@@ -317,7 +315,6 @@
       CONTEXT.fill();
     }
   };
-})();
 
 /* #endregion 2) RENDERING */
 
@@ -327,7 +324,7 @@
 //#region 3) USER INPUT
  *========================================*/
 
-(() => {
+
   const STARFIELD = window.STARFIELD;
 
   STARFIELD.updatePointerSpeed = function updatePointerSpeed(CURRENT_X, CURRENT_Y) {
@@ -405,6 +402,5 @@
     },
     { passive: true }
   );
-})();
  
 /* #endregion 3) USER INPUT */
