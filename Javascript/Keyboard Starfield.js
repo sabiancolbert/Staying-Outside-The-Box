@@ -105,7 +105,7 @@ const KEY_FUNCTIONS = {
 };
 
 /* Function constants */
-const EFFECT_MULTIPLIER = 5;
+const EFFECT_MULTIPLIER = 2;
 const EFFECT_CONSTANT = 5;
 function getForceIncrease() {
   return ((STARFIELD?.pointerRingTimer ?? 0) + EFFECT_CONSTANT) * EFFECT_MULTIPLIER;
