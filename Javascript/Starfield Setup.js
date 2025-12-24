@@ -25,8 +25,8 @@
  *========================================*/
 
 window.STARFIELD = window.STARFIELD || {};
-window.KEYBOARD_FORCE_X = window.KEYBOARD_FORCE_X || {};
-window.KEYBOARD_FORCE_Y = window.KEYBOARD_FORCE_Y || {};
+window.KEYBOARD_FORCE_X = Number.isFinite(window.KEYBOARD_FORCE_X) ? window.KEYBOARD_FORCE_X : 0;
+window.KEYBOARD_FORCE_Y = Number.isFinite(window.KEYBOARD_FORCE_Y) ? window.KEYBOARD_FORCE_Y : 0;
 var STARFIELD = window.STARFIELD;
 
   // Step 1: Find the canvas element
