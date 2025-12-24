@@ -93,8 +93,8 @@
       }
 
       // Step 11: baseline drift boosted by user interaction
-      STAR.momentumX += STAR.vx * Math.min(10, 0.05 * STARFIELD.pointerSpeedUnits) + window.KEYBOARD_FORCE_X;
-      STAR.momentumY += STAR.vy * Math.min(10, 0.05 * STARFIELD.pointerSpeedUnits) + window.KEYBOARD_FORCE_Y;
+      STAR.momentumX += STAR.vx * Math.min(10, 0.05 * STARFIELD.pointerSpeedUnits) * window.KEYBOARD_FORCE_X;
+      STAR.momentumY += STAR.vy * Math.min(10, 0.05 * STARFIELD.pointerSpeedUnits) * window.KEYBOARD_FORCE_Y;
 
       // Step 12: clamp force magnitude (prevents runaway)
       let FORCE_X = STAR.momentumX;
