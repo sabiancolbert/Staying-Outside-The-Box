@@ -193,9 +193,6 @@
 //#region 2) RENDERING
  *========================================*/
 
-
-  const STARFIELD = window.STARFIELD;
-
   const LINK_BUCKET_COUNT = 18;
   let LINK_PATHS_BY_BUCKET = Array.from({ length: LINK_BUCKET_COUNT }, () => new Path2D());
 
@@ -323,9 +320,6 @@
 /*========================================*
 //#region 3) USER INPUT
  *========================================*/
-
-
-  const STARFIELD = window.STARFIELD;
 
   STARFIELD.updatePointerSpeed = function updatePointerSpeed(CURRENT_X, CURRENT_Y) {
     const NOW_MS = STARFIELD.getNowMs();
