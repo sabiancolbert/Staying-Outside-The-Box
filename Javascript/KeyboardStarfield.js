@@ -1,5 +1,9 @@
 // thank heavens for chatGPT <3
 
+window.addEventListener("error", (e) => {
+  alert("JS error: " + (e.message || "unknown"));
+});
+
 alert("Debug man");
 
 /*========================================*
