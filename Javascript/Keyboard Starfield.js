@@ -6,7 +6,8 @@ alert("Debug car");
 //#region 1) SETUP
  *========================================*/
 
-var STARFIELD = window.STARFIELD;
+const KEYBOARD_FORCE_X = window.KEYBOARD_FORCE_X;
+const KEYBOARD_FORCE_Y = window.KEYBOARD_FORCE_Y;
 
 /* Event listener */
 window.addEventListener("keydown", (event) => {
@@ -18,97 +19,82 @@ window.addEventListener("keydown", (event) => {
   // Ignore IME composition
   if (event.isComposing) return;
 
-  processKeyPress(event.key);
+  // Run the user command
+  KEY_FUNCTIONS[event.key.toLowerCase()]?.();
 });
-
-/* Key proccessing */
-function processKeyPress(KEY) {
-  
-  // Step 1: normalize key into a lookup value
-  const KEYBOARD_INPUT = String(KEY).toLowerCase();
-
-  // Step 2: apply per-star
-  for (const STAR of STARFIELD.starList) {
-    const FORCES = KEY_FUNCTIONS[KEYBOARD_INPUT]?.(STAR) ?? [0, 0];
-    STAR.keyboardForceX = FORCES[0];
-    STAR.keyboardForceY = FORCES[1];
-  }
-
-  console.log("Key pressed:", KEY);
-}
 
 /* Assign keys to functions */
 const KEY_FUNCTIONS = {
 
   /* 2) GLOBAL MOVEMENT */
   // Up
-  w: (STAR) => runW(STAR),
+  w: () => runW(),
   // Left
-  a: (STAR) => runA(STAR),
+  a: () => runA(),
   // Down
-  s: (STAR) => runS(STAR),
+  s: () => runS(),
   // Right
-  d: (STAR) => runD(STAR),
+  d: () => runD(),
 
   // Up-left
-  q: (STAR) => runQ(STAR),
+  q: () => runQ(),
   // Up-right
-  e: (STAR) => runE(STAR),
+  e: () => runE(),
   // Down-left
-  z: (STAR) => runZ(STAR),
+  z: () => runZ(),
   // Down-right
-  x: (STAR) => runX(STAR),
+  x: () => runX(),
 
   /* 3) QUADRANT MAGNETISM */
   // Top-left
-  y: (STAR) => runY(STAR),
+  y: () => runY(),
   // Top-center
-  u: (STAR) => runU(STAR),
+  u: () => runU(),
   // Top-right
-  i: (STAR) => runI(STAR),
+  i: () => runI(),
 
   // Middle-left
-  h: (STAR) => runH(STAR),
+  h: () => runH(),
   // Middle-center
-  j: (STAR) => runJ(STAR),
+  j: () => runJ(),
   // Middle-right
-  k: (STAR) => runK(STAR),
+  k: () => runK(),
 
   // Bottom-left
-  b: (STAR) => runB(STAR),
+  b: () => runB(),
   // Bottom-center
-  n: (STAR) => runN(STAR),
+  n: () => runN(),
   // Bottom-right
-  m: (STAR) => runM(STAR),
+  m: () => runM(),
 
   /* 4) PONG */
   // Paddle left
-  r: (STAR) => runR(STAR),
+  r: () => runR(),
   // Paddle right
-  t: (STAR) => runT(STAR),
+  t: () => runT(),
   // Paddle up
-  f: (STAR) => runF(STAR),
+  f: () => runF(),
   // Paddle down
-  c: (STAR) => runC(STAR),
+  c: () => runC(),
 
   /* 5) OTHERS */
   // Velocity invert
-  v: (STAR) => runV(STAR),
+  v: () => runV(),
   // Grumble
-  g: (STAR) => runG(STAR),
+  g: () => runG(),
   // Orbit
-  o: (STAR) => runO(STAR),
+  o: () => runO(),
   // Poke burst
-  p: (STAR) => runP(STAR),
+  p: () => runP(),
   // Link shatter
-  l: (STAR) => runL(STAR)
+  l: () => runL()
 };
 
 /* Function constants */
 const EFFECT_MULTIPLIER = 2;
 const EFFECT_CONSTANT = 5;
 function getForceIncrease() {
-  return ((STARFIELD?.pointerRingTimer ?? 0) + EFFECT_CONSTANT) * EFFECT_MULTIPLIER;
+  return ((window.STARFIELD?.pointerRingTimer ?? 0) + EFFECT_CONSTANT) * EFFECT_MULTIPLIER;
 }
 /* #endregion 1) SETUP */
 
@@ -117,42 +103,43 @@ function getForceIncrease() {
  *========================================*/
 
 // W = Up
-function runW(STAR) {
-  return [0, -getForceIncrease()];
+function runW() {
+  KEYBOARD_FORCE_X = 0;
+  KEYBOARD_FORCE_Y = -getForceIncrease();
 }
 
 // A = Left
-function runA(STAR) {
+function runA() {
   return [-getForceIncrease(), 0];
 }
 
 // S = Down
-function runS(STAR) {
+function runS() {
   return [0, getForceIncrease()];
 }
 
 // D = Right
-function runD(STAR) {
+function runD() {
   return [getForceIncrease(), 0];
 }
 
 // Q = Left up
-function runQ(STAR) {
+function runQ() {
   return [-getForceIncrease() / 2, -getForceIncrease() / 2];
 }
 
 // E = Right up
-function runE(STAR) {
+function runE() {
   return [getForceIncrease() / 2, -getForceIncrease() / 2];
 }
 
 // Z = Left down
-function runZ(STAR) {
+function runZ() {
   return [-getForceIncrease() / 2, getForceIncrease() / 2];
 }
 
 // X = Right down
-function runX(STAR) {
+function runX() {
   return [getForceIncrease() / 2, getForceIncrease() / 2];
 }
 /* #endregion 2) GLOBAL MOVEMENT */
@@ -161,47 +148,47 @@ function runX(STAR) {
 //#region 3) QUADRANT MAGNETISM
  *========================================*/
 // Y = Top left
-function runY(STAR) {
+function runY() {
   return [0, 0];
 }
 
 // U = Top center
-function runU(STAR) {
+function runU() {
   return [0, 0];
 }
 
 // I = Top right
-function runI(STAR) {
+function runI() {
   return [0, 0];
 }
 
 // H = Middle left
-function runH(STAR) {
+function runH() {
   return [0, 0];
 }
 
 // J = Middle center
-function runJ(STAR) {
+function runJ() {
   return [0, 0];
 }
 
 // K = Middle right
-function runK(STAR) {
+function runK() {
   return [0, 0];
 }
 
 // B = Bottom left
-function runB(STAR) {
+function runB() {
   return [0, 0];
 }
 
 // N = Bottom center
-function runN(STAR) {
+function runN() {
   return [0, 0];
 }
 
 // M = Bottom right
-function runM(STAR) {
+function runM() {
   return [0, 0];
 }
 /* #endregion 3) QUADRANT MAGNETISM */
@@ -210,22 +197,22 @@ function runM(STAR) {
 //#region 4) PONG
  *========================================*/
 // R = Paddles left
-function runR(STAR) {
+function runR() {
   return [0, 0];
 }
 
 // T = Paddles right
-function runT(STAR) {
+function runT() {
   return [0, 0];
 }
 
 // F = Paddles up
-function runF(STAR) {
+function runF() {
   return [0, 0];
 }
 
 // C = Paddles down
-function runC(STAR) {
+function runC() {
   return [0, 0];
 }
 /* #endregion 4) PONG */
@@ -235,29 +222,29 @@ function runC(STAR) {
  *========================================*/
 
 // V = Velocity invert
-function runV(STAR) {
-  STAR.vx = -STAR.vx;
-  STAR.vy = -STAR.vy;
+function runV() {
+  .vx = -.vx;
+  .vy = -.vy;
   return [0, 0];
 }
 
 // G = Grumble
-function runG(STAR) {
+function runG() {
   return [0, 0];
 }
 
 // O = Orbit
-function runO(STAR) {
+function runO() {
   return [0, 0];
 }
 
 // P = Poke burst
-function runP(STAR) {
+function runP() {
   return [0, 0];
 }
 
 // L = Link shatter
-function runL(STAR) {
+function runL() {
   return [0, 0];
 }
 /* #endregion 5) OTHERS */
