@@ -3,6 +3,9 @@
 /*========================================*
 //#region 1) SETUP
  *========================================*/
+window.addEventListener("load", () => {
+  window.MISC_VARIABLE = 1; 
+});
 
 const STARFIELD = window.STARFIELD;
 if (!STARFIELD?.starList?.length) return;
