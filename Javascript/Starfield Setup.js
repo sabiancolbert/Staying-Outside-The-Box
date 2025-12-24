@@ -83,11 +83,6 @@ window.STARFIELD = window.STARFIELD || {};
   STARFIELD.hasAnimationLoopStarted = false;
   STARFIELD.hasResizeListenerWired = false;
   STARFIELD.hasStarsInitialized = false;
-
-  // Step 11: Debug toggles
-  STARFIELD.debug = {
-    enabled: true
-  };
 })();
 
 /* #endregion 1) STARFIELD NAMESPACE + CANVAS */
