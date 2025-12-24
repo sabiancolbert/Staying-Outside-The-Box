@@ -5,7 +5,9 @@
  *========================================*/
 
 // Debug version
-document.getElementById("dbgMisc").textContent = 5; 
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("dbgMisc").textContent = 5;
+});
 
 const STARFIELD = window.STARFIELD;
 if (!STARFIELD?.starList?.length) return;
