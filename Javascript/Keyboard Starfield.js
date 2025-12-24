@@ -4,7 +4,7 @@
 //#region 1) SETUP
  *========================================*/
 window.addEventListener("load", () => {
-  window.MISC_VARIABLE = 1; 
+  window.MISC_VARIABLE = 5; 
 });
 
 const STARFIELD = window.STARFIELD;
