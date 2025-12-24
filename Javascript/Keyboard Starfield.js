@@ -1,6 +1,6 @@
 // thank heavens for chatGPT <3
 
-//alert("Debug car");
+alert("Debug man");
 
 /*========================================*
 //#region 1) SETUP
@@ -105,6 +105,7 @@ const NEGATIVE = -STRENGTH;
 // W = Up
 function runW() {
   // X
+alert("W");
   KEYBOARD.multY = NEGATIVE;
 }
 
