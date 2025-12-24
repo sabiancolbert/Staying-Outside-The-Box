@@ -119,7 +119,6 @@ const FORCE_INCREASE = (STARFIELD.pointerRingTimer + EFFECT_CONSTANT) * EFFECT_M
 
 // W = Up
 function runW(STAR) {
-    document.getElementById("dbgMisc").textContent = 5;
   return [0, FORCE_INCREASE];
 }
 
