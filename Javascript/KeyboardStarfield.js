@@ -1,9 +1,5 @@
 // thank heavens for chatGPT <3
 
-window.addEventListener("error", (e) => {
-  alert("JS error: " + (e.message || "unknown"));
-});
-
 alert("Debug man");
 
 /*========================================*
@@ -99,7 +95,7 @@ const MULTIPLY = 1 + STRENGTH;
 const DIVIDE = 1 - STRENGTH;
 const POSITIVE = STRENGTH;
 const NEGATIVE = -STRENGTH;
-}
+
 /* #endregion 1) SETUP */
 
 /*========================================*
