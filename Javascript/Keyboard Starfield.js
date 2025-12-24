@@ -6,16 +6,18 @@
 
 // Debug version
 document.addEventListener("DOMContentLoaded", () => {
-  document.getElementById("dbgMisc").textContent = 5;
+  document.getElementById("dbgMisc")?.textContent = "5";
 });
 
 const STARFIELD = window.STARFIELD;
 
 /* Event listener */
 window.addEventListener("keydown", (event) => {
+  // Wait until webpage is ready
+  if (!STARFIELD?.starList?.length) return;
+  
   // Ignore held-down repeats
   if (event.repeat) return;
-
 
   // Ignore IME composition
   if (event.isComposing) return;
@@ -109,7 +111,9 @@ const KEY_FUNCTIONS = {
 /* Function constants */
 const EFFECT_MULTIPLIER = 5;
 const EFFECT_CONSTANT = 5;
-const FORCE_INCREASE = (STARFIELD.pointerRingTimer + EFFECT_CONSTANT) * EFFECT_MULTIPLIER;
+function getForceIncrease() {
+  return ((STARFIELD?.pointerRingTimer ?? 0) + EFFECT_CONSTANT) * EFFECT_MULTIPLIER;
+}
 /* #endregion 1) SETUP */
 
 /*========================================*
@@ -118,42 +122,42 @@ const FORCE_INCREASE = (STARFIELD.pointerRingTimer + EFFECT_CONSTANT) * EFFECT_M
 
 // W = Up
 function runW(STAR) {
-  return [0, FORCE_INCREASE];
+  return [0, getForceIncrease()];
 }
 
 // A = Left
 function runA(STAR) {
-  return [-FORCE_INCREASE, 0];
+  return [-getForceIncrease(), 0];
 }
 
 // S = Down
 function runS(STAR) {
-  return [0, -FORCE_INCREASE];
+  return [0, -getForceIncrease()];
 }
 
 // D = Right
 function runD(STAR) {
-  return [FORCE_INCREASE, 0];
+  return [getForceIncrease(), 0];
 }
 
 // Q = Left up
 function runQ(STAR) {
-  return [-FORCE_INCREASE / 2, FORCE_INCREASE / 2];
+  return [-getForceIncrease() / 2, getForceIncrease() / 2];
 }
 
 // E = Right up
 function runE(STAR) {
-  return [FORCE_INCREASE / 2, FORCE_INCREASE / 2];
+  return [getForceIncrease() / 2, getForceIncrease() / 2];
 }
 
 // Z = Left down
 function runZ(STAR) {
-  return [-FORCE_INCREASE / 2, -FORCE_INCREASE / 2];
+  return [-getForceIncrease() / 2, -getForceIncrease() / 2];
 }
 
 // X = Right down
 function runX(STAR) {
-  return [FORCE_INCREASE / 2, -FORCE_INCREASE / 2];
+  return [getForceIncrease() / 2, -getForceIncrease() / 2];
 }
 /* #endregion 2) GLOBAL MOVEMENT */
 
