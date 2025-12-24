@@ -17,7 +17,7 @@
 //#region 1) PHYSICS
  *========================================*/
 
-  const STARFIELD = window.STARFIELD;
+  var STARFIELD = window.STARFIELD;
 
   STARFIELD.updateStarPhysics = function updateStarPhysics() {
     // Step 1: bail if nothing to simulate, otherwise get set up
