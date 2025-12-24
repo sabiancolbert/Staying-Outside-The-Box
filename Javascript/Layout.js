@@ -12,7 +12,7 @@
  *   6) Touch navigation fixes (pointer-based tap vs swipe)
  *==============================================================*/
 
-
+//alert("Debug gum");
 
 /*========================================*
 //#region 1) GLOBAL STATE + HELPERS
