@@ -88,7 +88,10 @@ const KEY_FUNCTIONS = {
 };
 
 /* Function constants */
-const KEYBOARD_FORCE = 1.2;
+const FROM_ZERO = 1.2;
+const FROM_ZERO_HALF = 1.1;
+const TO_ZERO = 0.8;
+const TO_ZERO_HALF = 0.9;
 }
 /* #endregion 1) SETUP */
 
@@ -99,49 +102,49 @@ const KEYBOARD_FORCE = 1.2;
 // W = Up
 function runW() {
   window.KEYBOARD_FORCE_X = 1;
-  window.KEYBOARD_FORCE_Y = -KEYBOARD_FORCE;
+  window.KEYBOARD_FORCE_Y = TO_ZERO;
 }
 
 // A = Left
 function runA() {
-  window.KEYBOARD_FORCE_X = -KEYBOARD_FORCE;
+  window.KEYBOARD_FORCE_X = TO_ZERO;
   window.KEYBOARD_FORCE_Y = 1;
 }
 
 // S = Down
 function runS() {
   window.KEYBOARD_FORCE_X = 1;
-  window.KEYBOARD_FORCE_Y = KEYBOARD_FORCE;
+  window.KEYBOARD_FORCE_Y = FROM_ZERO;
 }
 
 // D = Right
 function runD() {
-  window.KEYBOARD_FORCE_X = KEYBOARD_FORCE;
+  window.KEYBOARD_FORCE_X = FROM_ZERO;
   window.KEYBOARD_FORCE_Y = 1;
 }
 
 // Q = Left up
 function runQ() {
-  window.KEYBOARD_FORCE_X = -KEYBOARD_FORCE / 2;
-  window.KEYBOARD_FORCE_Y = -KEYBOARD_FORCE / 2;
+  window.KEYBOARD_FORCE_X = TO_ZERO_HALF;
+  window.KEYBOARD_FORCE_Y = TO_ZERO_HALF;
 }
 
 // E = Right up
 function runE() {
-  window.KEYBOARD_FORCE_X = KEYBOARD_FORCE / 2;
-  window.KEYBOARD_FORCE_Y = -KEYBOARD_FORCE / 2;
+  window.KEYBOARD_FORCE_X = FROM_ZERO_HALF;
+  window.KEYBOARD_FORCE_Y = TO_ZERO_HALF;
 }
 
 // Z = Left down
 function runZ() {
-  window.KEYBOARD_FORCE_X = -KEYBOARD_FORCE / 2;
-  window.KEYBOARD_FORCE_Y = KEYBOARD_FORCE / 2;
+  window.KEYBOARD_FORCE_X = TO_ZERO_HALF;
+  window.KEYBOARD_FORCE_Y = FROM_ZERO_HALF;
 }
 
 // X = Right down
 function runX() {
-  window.KEYBOARD_FORCE_X = KEYBOARD_FORCE / 2;
-  window.KEYBOARD_FORCE_Y = KEYBOARD_FORCE / 2;
+  window.KEYBOARD_FORCE_X = FROM_ZERO_HALF;
+  window.KEYBOARD_FORCE_Y = FROM_ZERO_HALF;
 }
 /* #endregion 2) GLOBAL MOVEMENT */
 
@@ -237,14 +240,14 @@ function runC() {
 
 // V = Less (v) speed
 function runV() {
-  window.KEYBOARD_FORCE_X = 1;
-  window.KEYBOARD_FORCE_Y = 1;
+  window.KEYBOARD_FORCE_X = TO_ZERO;
+  window.KEYBOARD_FORCE_Y = TO_ZERO;
 }
 
 // G = Greater (^) speed
 function runG() {
-  window.KEYBOARD_FORCE_X = 1;
-  window.KEYBOARD_FORCE_Y = 1;
+  window.KEYBOARD_FORCE_X = FROM_ZERO;
+  window.KEYBOARD_FORCE_Y = FROM_ZERO;
 }
 
 // O = Orbit
