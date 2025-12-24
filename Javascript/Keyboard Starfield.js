@@ -6,11 +6,10 @@
 
 // Debug version
 document.addEventListener("DOMContentLoaded", () => {
-  document.getElementById("dbgMisc").textContent = "5";
+  document.getElementById("dbgMisc").textContent = 5;
 });
 
 const STARFIELD = window.STARFIELD;
-if (!STARFIELD?.starList?.length) return;
 
 /* Event listener */
 window.addEventListener("keydown", (event) => {
