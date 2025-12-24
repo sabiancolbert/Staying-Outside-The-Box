@@ -110,36 +110,50 @@ function runW() {
 
 // A = Left
 function runA() {
+  KEYBOARD_FORCE_X = 0;
+  KEYBOARD_FORCE_Y = 0;
   return [-getForceIncrease(), 0];
 }
 
 // S = Down
 function runS() {
+  KEYBOARD_FORCE_X = 0;
+  KEYBOARD_FORCE_Y = 0;
   return [0, getForceIncrease()];
 }
 
 // D = Right
 function runD() {
+  KEYBOARD_FORCE_X = 0;
+  KEYBOARD_FORCE_Y = 0;
   return [getForceIncrease(), 0];
 }
 
 // Q = Left up
 function runQ() {
+  KEYBOARD_FORCE_X = 0;
+  KEYBOARD_FORCE_Y = 0;
   return [-getForceIncrease() / 2, -getForceIncrease() / 2];
 }
 
 // E = Right up
 function runE() {
+  KEYBOARD_FORCE_X = 0;
+  KEYBOARD_FORCE_Y = 0;
   return [getForceIncrease() / 2, -getForceIncrease() / 2];
 }
 
 // Z = Left down
 function runZ() {
+  KEYBOARD_FORCE_X = 0;
+  KEYBOARD_FORCE_Y = 0;
   return [-getForceIncrease() / 2, getForceIncrease() / 2];
 }
 
 // X = Right down
 function runX() {
+  KEYBOARD_FORCE_X = 0;
+  KEYBOARD_FORCE_Y = 0;
   return [getForceIncrease() / 2, getForceIncrease() / 2];
 }
 /* #endregion 2) GLOBAL MOVEMENT */
@@ -149,47 +163,56 @@ function runX() {
  *========================================*/
 // Y = Top left
 function runY() {
-  return [0, 0];
+  KEYBOARD_FORCE_X = 0;
+  KEYBOARD_FORCE_Y = 0;
 }
 
 // U = Top center
 function runU() {
-  return [0, 0];
+  KEYBOARD_FORCE_X = 0;
+  KEYBOARD_FORCE_Y = 0;
 }
 
 // I = Top right
 function runI() {
-  return [0, 0];
+  KEYBOARD_FORCE_X = 0;
+  KEYBOARD_FORCE_Y = 0;
 }
 
 // H = Middle left
 function runH() {
-  return [0, 0];
+  KEYBOARD_FORCE_X = 0;
+  KEYBOARD_FORCE_Y = 0;
 }
 
 // J = Middle center
 function runJ() {
-  return [0, 0];
+  KEYBOARD_FORCE_X = 0;
+  KEYBOARD_FORCE_Y = 0;
 }
 
 // K = Middle right
 function runK() {
-  return [0, 0];
+  KEYBOARD_FORCE_X = 0;
+  KEYBOARD_FORCE_Y = 0;
 }
 
 // B = Bottom left
 function runB() {
-  return [0, 0];
+  KEYBOARD_FORCE_X = 0;
+  KEYBOARD_FORCE_Y = 0;
 }
 
 // N = Bottom center
 function runN() {
-  return [0, 0];
+  KEYBOARD_FORCE_X = 0;
+  KEYBOARD_FORCE_Y = 0;
 }
 
 // M = Bottom right
 function runM() {
-  return [0, 0];
+  KEYBOARD_FORCE_X = 0;
+  KEYBOARD_FORCE_Y = 0;
 }
 /* #endregion 3) QUADRANT MAGNETISM */
 
@@ -198,22 +221,26 @@ function runM() {
  *========================================*/
 // R = Paddles left
 function runR() {
-  return [0, 0];
+  KEYBOARD_FORCE_X = 0;
+  KEYBOARD_FORCE_Y = 0;
 }
 
 // T = Paddles right
 function runT() {
-  return [0, 0];
+  KEYBOARD_FORCE_X = 0;
+  KEYBOARD_FORCE_Y = 0;
 }
 
 // F = Paddles up
 function runF() {
-  return [0, 0];
+  KEYBOARD_FORCE_X = 0;
+  KEYBOARD_FORCE_Y = 0;
 }
 
 // C = Paddles down
 function runC() {
-  return [0, 0];
+  KEYBOARD_FORCE_X = 0;
+  KEYBOARD_FORCE_Y = 0;
 }
 /* #endregion 4) PONG */
 
@@ -223,28 +250,34 @@ function runC() {
 
 // V = Velocity invert
 function runV() {
-  .vx = -.vx;
-  .vy = -.vy;
-  return [0, 0];
+  for (STAR in window.STARFIELD.starsList)
+  {
+    STAR.vx = -STAR.vx;
+    STAR.vy = -STAR.vy;
+  }
 }
 
 // G = Grumble
 function runG() {
-  return [0, 0];
+  KEYBOARD_FORCE_X = 0;
+  KEYBOARD_FORCE_Y = 0;
 }
 
 // O = Orbit
 function runO() {
-  return [0, 0];
+  KEYBOARD_FORCE_X = 0;
+  KEYBOARD_FORCE_Y = 0;
 }
 
 // P = Poke burst
 function runP() {
-  return [0, 0];
+  KEYBOARD_FORCE_X = 0;
+  KEYBOARD_FORCE_Y = 0;
 }
 
 // L = Link shatter
 function runL() {
-  return [0, 0];
+  KEYBOARD_FORCE_X = 0;
+  KEYBOARD_FORCE_Y = 0;
 }
 /* #endregion 5) OTHERS */
