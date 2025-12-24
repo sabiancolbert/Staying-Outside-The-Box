@@ -17,8 +17,6 @@
 //#region 1) PHYSICS
  *========================================*/
 
-window.MISC_VARIABLE ??= "NAN";
-
 (() => {
   const STARFIELD = window.STARFIELD;
 
@@ -175,19 +173,17 @@ window.MISC_VARIABLE ??= "NAN";
     if (STARFIELD.pokeImpulseTimer < 1) STARFIELD.pokeImpulseTimer = 0;
 
     // Step 22: debug readouts
-    if (STARFIELD.debug.enabled) {
-      const MISC_READER = document.getElementById("dbgMisc");
-      if (MISC_READER) MISC_READER.textContent = window.MISC_VARIABLE;
-      
-      const DEBUG_RING = document.getElementById("dbgCircle");
-      if (DEBUG_RING) DEBUG_RING.textContent = STARFIELD.pointerRingTimer.toFixed(3);
+    /*const MISC_READER = document.getElementById("dbgMisc");
+    if (MISC_READER) MISC_READER.textContent = 0;
+    */
+    const DEBUG_RING = document.getElementById("dbgCircle");
+    if (DEBUG_RING) DEBUG_RING.textContent = STARFIELD.pointerRingTimer.toFixed(3);
 
-      const DEBUG_SPEED = document.getElementById("dbgSpeed");
-      if (DEBUG_SPEED) DEBUG_SPEED.textContent = STARFIELD.pointerSpeedUnits.toFixed(3);
+    const DEBUG_SPEED = document.getElementById("dbgSpeed");
+    if (DEBUG_SPEED) DEBUG_SPEED.textContent = STARFIELD.pointerSpeedUnits.toFixed(3);
 
-      const DEBUG_POKE = document.getElementById("dbgPoke");
-      if (DEBUG_POKE) DEBUG_POKE.textContent = STARFIELD.pokeImpulseTimer.toFixed(1);
-    }
+    const DEBUG_POKE = document.getElementById("dbgPoke");
+    if (DEBUG_POKE) DEBUG_POKE.textContent = STARFIELD.pokeImpulseTimer.toFixed(1);
   };
 })();
 
