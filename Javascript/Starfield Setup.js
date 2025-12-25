@@ -61,7 +61,7 @@ var STARFIELD = window.STARFIELD;
   STARFIELD.canvasWidth = 0;
   STARFIELD.canvasHeight = 0;
   STARFIELD.screenPerimeter = 0;     // width + height
-  STARFIELD.screenScale = 0;         // main scale factor
+  STARFIELD.screenScaleUp = 0;         // main scale factor
   STARFIELD.starCountLimit = 0;
   STARFIELD.maxLinkDistance = 0;
 
@@ -498,19 +498,19 @@ var STARFIELD = window.STARFIELD;
 
     // Step 4: compute scaling helpers
     STARFIELD.screenPerimeter = STARFIELD.canvasWidth + STARFIELD.canvasHeight;
-    STARFIELD.screenScale = Math.pow(STARFIELD.screenPerimeter / 1200, 0.35);
+    STARFIELD.screenScaleUp = Math.pow(STARFIELD.screenPerimeter / 1200, 0.35);
 
     // Step 5: compute star/link caps
     STARFIELD.starCountLimit = Math.min(450, STARFIELD.screenPerimeter / 10);
     STARFIELD.maxLinkDistance = STARFIELD.screenPerimeter / 5;
 
     // Step 6: compute physics scaling powers
-    STARFIELD.screenScalePowers.attractionGradient = STARFIELD.screenScale ** 1.11;
-    STARFIELD.screenScalePowers.repulsionGradient  = STARFIELD.screenScale ** 0.66;
-    STARFIELD.screenScalePowers.attractionShape    = STARFIELD.screenScale ** -8.89;
-    STARFIELD.screenScalePowers.attractionForce    = STARFIELD.screenScale ** -8.46;
-    STARFIELD.screenScalePowers.repulsionForce     = STARFIELD.screenScale ** -0.89;
-    STARFIELD.screenScalePowers.forceClamp         = STARFIELD.screenScale ** 1.8;
+    STARFIELD.screenScalePowers.attractionGradient = STARFIELD.screenScaleUp ** 1.11;
+    STARFIELD.screenScalePowers.repulsionGradient  = STARFIELD.screenScaleUp ** 0.66;
+    STARFIELD.screenScalePowers.attractionShape    = STARFIELD.screenScaleUp ** -8.89;
+    STARFIELD.screenScalePowers.attractionForce    = STARFIELD.screenScaleUp ** -8.46;
+    STARFIELD.screenScalePowers.repulsionForce     = STARFIELD.screenScaleUp ** -0.89;
+    STARFIELD.screenScalePowers.forceClamp         = STARFIELD.screenScaleUp ** 1.8;
 
     // Step 7: rescale existing stars after resize (keeps layout consistent)
     if (OLD_WIDTH !== 0 && OLD_HEIGHT !== 0 && STARFIELD.starList.length) {
