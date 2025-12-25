@@ -217,7 +217,7 @@
     CONTEXT.clearRect(0, 0, STARFIELD.canvasWidth, STARFIELD.canvasHeight);
 
     // Step 2: pointer ring sizing
-    const TARGET_RING_RADIUS = Math.max(0, STARFIELD.screenScale * 100 - 40);
+    const TARGET_RING_RADIUS = Math.max(0, STARFIELD.screenScaleUp * 100 - 40);
 
     let RING_RADIUS = TARGET_RING_RADIUS * (STARFIELD.pointerRingTimer / 50);
     let RING_WIDTH = STARFIELD.pointerRingTimer * 0.15;
