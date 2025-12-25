@@ -105,7 +105,6 @@ const NEGATIVE = -STRENGTH;
 // W = Up
 function runW() {
   // X
-alert("W");
   KEYBOARD.multY = NEGATIVE;
 }
 
