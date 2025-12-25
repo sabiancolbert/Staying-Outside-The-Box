@@ -19,7 +19,7 @@
  *========================================*/
 
 let IS_TRANSITION_ACTIVE = false;
-var STARFIELD = window.STARFIELD;
+var S = window.STARFIELD;
 
 /*
 const CRUNCH_SOUND = new Audio("/Resources/Crunch.mp3");
@@ -45,11 +45,11 @@ function freezeAndSaveStarfield() {
   if (!STARFIELD) return;
 
   // Step 2: freeze physics
-  STARFIELD.isFrozen = true;
+  S.isFrozen = true;
 
   // Step 3: persist current star state (if exposed)
-  if (typeof STARFIELD.saveStarfieldToStorage === "function") {
-    STARFIELD.saveStarfieldToStorage();
+  if (typeof S.saveStarfieldToStorage === "function") {
+    S.saveStarfieldToStorage();
   }
 }
 
@@ -67,7 +67,7 @@ document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "hidden") {
     freezeAndSaveStarfield();
   } else if (document.visibilityState === "visible") {
-    STARFIELD.isFrozen = false;
+    S.isFrozen = false;
   }
 });
 
@@ -139,8 +139,8 @@ function enableDocumentScroll(CONTAINER = getTransitionContainer()) {
   }
 
   // Step 4: keep starfield canvas synced if available
-  if (STARFIELD && typeof STARFIELD.resizeStarfieldCanvas === "function") {
-    STARFIELD.resizeStarfieldCanvas();
+  if (STARFIELD && typeof S.resizeStarfieldCanvas === "function") {
+    S.resizeStarfieldCanvas();
   }
 
   // Step 5: restore scroll next frame
@@ -208,7 +208,7 @@ window.addEventListener("pageshow", (EVENT) => {
   clearPendingTransitionTimers();
 
   // Step 2: unfreeze starfield when returning
-  if (STARFIELD) STARFIELD.isFrozen = false;
+  if (STARFIELD) S.isFrozen = false;
 
   // Step 3: only handle true back/forward restores
   if (!isBackForwardNavigation(EVENT)) return;
