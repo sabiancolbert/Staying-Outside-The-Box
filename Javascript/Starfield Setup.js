@@ -24,8 +24,8 @@
 //#region 1) STARFIELD NAMESPACE + CANVAS
  *========================================*/
 
-window.STARFIELD = window.STARFIELD ||= {};
-window.KEYBOARD = window.KEYBOARD ||= { multX: 1, multY: 1, addX: 0, addY: 0 };
+window.STARFIELD = {};
+window.KEYBOARD = { multX: 1, multY: 1, addX: 0, addY: 0 };
 var STARFIELD = window.STARFIELD;
 
   // Step 1: Find the canvas element
