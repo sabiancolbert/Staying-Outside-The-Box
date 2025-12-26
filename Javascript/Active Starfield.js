@@ -103,7 +103,7 @@
       STAR.momentumY += window.KEYBOARD.addY;
       
       // Step 13: clamp momentum magnitude
-      const MOMENTUM_LIMIT = SETTINGS.clamp * SCALE.forceClamp;
+      const MOMENTUM_LIMIT = 2 * SETTINGS.clamp * SCALE.forceClamp;
       const MOMENTUM_MAG = Math.sqrt(STAR.momentumX * STAR.momentumX + STAR.momentumY * STAR.momentumY);
 
       if (MOMENTUM_MAG > MOMENTUM_LIMIT) {
