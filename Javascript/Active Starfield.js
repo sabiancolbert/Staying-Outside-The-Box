@@ -10,17 +10,18 @@
  *   2) Rendering (renderStarsAndLinks)
  *   3) User input (updatePointerSpeed + listeners)
  *
- *  PERF INJECTS (safe):
+ *  PERF:
  *   - Links rebuild every 3 frames (fast pointer forces immediate rebuild)
- *   - Debug DOM refs cached + updated at ~10fps
- *   - Star sprites (WebP) with opacity/twinkle preserved (fallback to arc)
+ *   - Debug DOM refs cached + updated at ~10fps (if debug elements exist)
+ *   - Star sprites (WebP) with opacity/twinkle preserved
+ *   - Darkness driven by STAR.redValue (no extra per-star fields)
  *   - Faster edge fade (keeps radius in edge check)
  *==============================================================*/
 
 //alert("Debug HAT");
 
 /*========================================*
-//#region 0) PERF HELPERS (SAFE INIT)
+//#region 0) PERF HELPERS
  *========================================*/
 
 var S = window.STARFIELD;
@@ -34,63 +35,26 @@ const DBG = {
   lastMs: 0
 };
 
-function initDebugRefs() {
-  DBG.misc = document.getElementById("dbgMisc");
-  DBG.circle = document.getElementById("dbgCircle");
-  DBG.speed = document.getElementById("dbgSpeed");
-  DBG.poke = document.getElementById("dbgPoke");
-}
+// Debug elements only exist on one page, so null is fine.
+DBG.misc = document.getElementById("dbgMisc");
+DBG.circle = document.getElementById("dbgCircle");
+DBG.speed = document.getElementById("dbgSpeed");
+DBG.poke = document.getElementById("dbgPoke");
 
 /*---------- Sprite stars (WebP) ----------*/
 const STAR_SPRITES = {
   ready: false,
-  imgs: []
+  img: null
 };
 
-function loadStarSprites() {
-  // If already loaded/started, don’t duplicate
-  if (STAR_SPRITES.imgs.length) return;
-
-  const FILES = [
-    "/Resources/Star1.webp",
-    "/Resources/Star2.webp",
-    "/Resources/Star3.webp"
-  ];
-
-  let LOADED = 0;
-
-  for (const SRC of FILES) {
-    const IMG = new Image();
-    IMG.decoding = "async";
-    IMG.loading = "eager";
-    IMG.onload = () => {
-      LOADED++;
-      if (LOADED === FILES.length) STAR_SPRITES.ready = true;
-    };
-    IMG.onerror = () => {
-      LOADED++;
-      if (LOADED === FILES.length) STAR_SPRITES.ready = true; // run even if missing
-    };
-    IMG.src = SRC;
-    STAR_SPRITES.imgs.push(IMG);
-  }
-}
-
-/*---------- Safe init even if DOMContentLoaded already happened ----------*/
-(function initPerfHelpersNow() {
-  try {
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", () => {
-        initDebugRefs();
-        loadStarSprites();
-      });
-    } else {
-      initDebugRefs();
-      loadStarSprites();
-    }
-  } catch {
-    // If something odd happens, don’t block the starfield.
-  }
+(function loadStarSpriteNow() {
+  const IMG = new Image();
+  IMG.decoding = "async";
+  IMG.loading = "eager";
+  IMG.onload = () => { STAR_SPRITES.ready = true; };
+  IMG.onerror = () => { STAR_SPRITES.ready = false; }; // if missing, you’ll see nothing (by design)
+  IMG.src = "/Resources/Star1.webp";
+  STAR_SPRITES.img = IMG;
 })();
 
 /*---------- Link throttle state ----------*/
@@ -107,14 +71,14 @@ function getEdgeFadeFastWithRadius(STAR) {
   const DIST_BOTTOM = (S.canvasHeight + STAR_RADIUS) - STAR.y;
 
   const MIN_EDGE_DISTANCE = Math.min(DIST_LEFT, DIST_RIGHT, DIST_TOP, DIST_BOTTOM);
-  const FADE_BAND = Math.min(90, (S.screenPerimeter || 0) * 0.03) || 1;
 
+  const FADE_BAND = Math.min(90, S.screenPerimeter * 0.03) || 1;
+
+  // clamp 0..1 (branchy but cheap)
   let t = MIN_EDGE_DISTANCE <= 0 ? 0 : MIN_EDGE_DISTANCE >= FADE_BAND ? 1 : (MIN_EDGE_DISTANCE / FADE_BAND);
 
-  // light easing (cheap)
-  t = t * t;
-
-  return t;
+  // cheap easing
+  return t * t;
 }
 
 /* #endregion 0) PERF HELPERS */
@@ -126,8 +90,8 @@ function getEdgeFadeFastWithRadius(STAR) {
  *========================================*/
 
 S.updateStarPhysics = function updateStarPhysics() {
-  // Step 1: bail if nothing to simulate, otherwise get set up
-  if (!S || !S.isCanvasReady || !S.starList || !S.starList.length) return;
+  // Step 1: bail if nothing to simulate
+  if (!S.starList.length) return;
 
   const INFLUENCE_RANGE = S.screenPerimeter * 0.2;
   const INFLUENCE_RANGE_SQ = INFLUENCE_RANGE * INFLUENCE_RANGE;
@@ -162,7 +126,7 @@ S.updateStarPhysics = function updateStarPhysics() {
       ATTRACTION_GRADIENT = Math.max(0, ATTRACTION_GRADIENT);
       REPULSION_GRADIENT = Math.max(0, REPULSION_GRADIENT);
 
-      // Step 6: curve the gradients into a nicer “shape”
+      // Step 6: curve the gradients
       const ATTRACTION_SHAPE = Math.pow(
         ATTRACTION_GRADIENT,
         Math.max(0.1, ((SETTINGS.attractScale * 0.48) * SCALE.attractionShape))
@@ -226,7 +190,7 @@ S.updateStarPhysics = function updateStarPhysics() {
     STAR.momentumX *= 0.98;
     STAR.momentumY *= 0.98;
 
-    // Step 17: wrap vs bounce (same conditions as before)
+    // Step 17: wrap vs bounce (radius check prevents pop)
     if (S.pointerRingTimer === 0 || DISTANCE_SQ > WRAP_DISTANCE_SQ || S.pokeImpulseTimer > 10) {
       const STAR_RADIUS = (STAR.whiteValue * 2 + STAR.size) || 0;
 
@@ -251,7 +215,7 @@ S.updateStarPhysics = function updateStarPhysics() {
       if (STAR.whiteValue < 0.001) STAR.whiteValue = 0;
     }
 
-    // Step 19: opacity cycle (unchanged)
+    // Step 19: opacity cycle
     if (STAR.opacity <= 0.005) {
       STAR.opacity = 1;
       if (Math.random() < 0.07) STAR.whiteValue = 1;
@@ -272,25 +236,24 @@ S.updateStarPhysics = function updateStarPhysics() {
   S.pointerSpeedUnits *= 0.5;
   if (S.pointerSpeedUnits < 0.001) S.pointerSpeedUnits = 0;
 
-  // Step 22: ring behavior (grow then fade with pointerRingTimer)
+  // Step 22: ring behavior
   S.pointerRingTimer *= 0.95;
-  if (S.pointerRingTimer < 1) {
-    S.pointerRingTimer = 0;
-  }
+  if (S.pointerRingTimer < 1) S.pointerRingTimer = 0;
 
   // Step 23: poke timer decay
   S.pokeImpulseTimer *= 0.85;
   if (S.pokeImpulseTimer < 1) S.pokeImpulseTimer = 0;
 
-  // Step 24: debug readouts (cached + 10fps)
-  const NOW = S.getNowMs ? S.getNowMs() : Date.now();
-  if (NOW - DBG.lastMs >= 100) {
-    DBG.lastMs = NOW;
-
-    if (DBG.misc) DBG.misc.textContent = S.starList[0].momentumX;
-    if (DBG.circle) DBG.circle.textContent = S.pointerRingTimer.toFixed(3);
-    if (DBG.speed) DBG.speed.textContent = S.pointerSpeedUnits.toFixed(3);
-    if (DBG.poke) DBG.poke.textContent = S.pokeImpulseTimer.toFixed(1);
+  // Step 24: debug readouts (10fps) if elements exist
+  if (DBG.misc || DBG.circle || DBG.speed || DBG.poke) {
+    const NOW = S.getNowMs();
+    if (NOW - DBG.lastMs >= 100) {
+      DBG.lastMs = NOW;
+      if (DBG.misc) DBG.misc.textContent = S.starList[0].momentumX;
+      if (DBG.circle) DBG.circle.textContent = S.pointerRingTimer.toFixed(3);
+      if (DBG.speed) DBG.speed.textContent = S.pointerSpeedUnits.toFixed(3);
+      if (DBG.poke) DBG.poke.textContent = S.pokeImpulseTimer.toFixed(1);
+    }
   }
 };
 
@@ -312,8 +275,6 @@ function resetLinkPaths() {
 }
 
 S.renderStarsAndLinks = function renderStarsAndLinks() {
-  if (!S || !S.isCanvasReady || !S.drawingContext) return;
-
   const CONTEXT = S.drawingContext;
 
   // Step 1: clear canvas
@@ -356,7 +317,6 @@ S.renderStarsAndLinks = function renderStarsAndLinks() {
   if (STAR_COUNT) {
     LINK_FRAME++;
 
-    // fast pointer => rebuild asap
     if (S.pointerSpeedUnits > 10) LINKS_DIRTY = true;
 
     const SHOULD_REBUILD_LINKS = LINKS_DIRTY || (LINK_FRAME % 3 === 0);
@@ -364,9 +324,9 @@ S.renderStarsAndLinks = function renderStarsAndLinks() {
     if (SHOULD_REBUILD_LINKS) {
       LINKS_DIRTY = false;
 
-      // edge fade (fast, includes radius)
-      for (let STAR_INDEX = 0; STAR_INDEX < STAR_COUNT; STAR_INDEX++) {
-        S.starList[STAR_INDEX].edge = getEdgeFadeFastWithRadius(S.starList[STAR_INDEX]);
+      // edge fade once per rebuild
+      for (let i = 0; i < STAR_COUNT; i++) {
+        S.starList[i].edge = getEdgeFadeFastWithRadius(S.starList[i]);
       }
 
       const DISTANCE_SCALE = S.screenPerimeter / 500;
@@ -375,30 +335,29 @@ S.renderStarsAndLinks = function renderStarsAndLinks() {
 
       resetLinkPaths();
 
-      // pairwise linking (ONLY on rebuild frames)
-      for (let STAR_A_INDEX = 0; STAR_A_INDEX < STAR_COUNT; STAR_A_INDEX++) {
-        const STAR_A = S.starList[STAR_A_INDEX];
+      for (let a = 0; a < STAR_COUNT; a++) {
+        const STAR_A = S.starList[a];
         const AX = STAR_A.x;
         const AY = STAR_A.y;
         const OPACITY_A = STAR_A.opacity;
         const EDGE_A = STAR_A.edge;
 
-        for (let STAR_B_INDEX = STAR_A_INDEX + 1; STAR_B_INDEX < STAR_COUNT; STAR_B_INDEX++) {
-          const STAR_B = S.starList[STAR_B_INDEX];
+        for (let b = a + 1; b < STAR_COUNT; b++) {
+          const STAR_B = S.starList[b];
 
-          const DELTA_X = AX - STAR_B.x;
-          const DELTA_Y = AY - STAR_B.y;
-          const DISTANCE_SQ = DELTA_X * DELTA_X + DELTA_Y * DELTA_Y;
+          const dx = AX - STAR_B.x;
+          const dy = AY - STAR_B.y;
+          const d2 = dx * dx + dy * dy;
 
-          if (DISTANCE_SQ > CUTOFF_DISTANCE_SQ) continue;
+          if (d2 > CUTOFF_DISTANCE_SQ) continue;
 
-          const SCALED_DISTANCE = Math.sqrt(DISTANCE_SQ) * DISTANCE_SCALE;
+          const SCALED_DISTANCE = Math.sqrt(d2) * DISTANCE_SCALE;
 
-          const MIN_OPACITY = Math.min(OPACITY_A, STAR_B.opacity);
-          const MIN_EDGE = Math.min(EDGE_A, STAR_B.edge);
+          const MIN_OPACITY = OPACITY_A < STAR_B.opacity ? OPACITY_A : STAR_B.opacity;
+          const MIN_EDGE = EDGE_A < STAR_B.edge ? EDGE_A : STAR_B.edge;
           const DISTANCE_FADE = 1 - (SCALED_DISTANCE / S.maxLinkDistance);
 
-          let LINK_ALPHA = Math.max(0, DISTANCE_FADE) * MIN_OPACITY * MIN_EDGE;
+          let LINK_ALPHA = (DISTANCE_FADE > 0 ? DISTANCE_FADE : 0) * MIN_OPACITY * MIN_EDGE;
           if (LINK_ALPHA <= 0.002) continue;
 
           let BUCKET_INDEX = (LINK_ALPHA * (LINK_BUCKET_COUNT - 1)) | 0;
@@ -411,37 +370,54 @@ S.renderStarsAndLinks = function renderStarsAndLinks() {
       }
     }
 
-    // stroke cached buckets EVERY frame
-    for (let BUCKET_INDEX = 0; BUCKET_INDEX < LINK_BUCKET_COUNT; BUCKET_INDEX++) {
-      const BUCKET_ALPHA = BUCKET_INDEX / (LINK_BUCKET_COUNT - 1);
-      if (BUCKET_ALPHA <= 0) continue;
+    // stroke cached buckets every frame
+    for (let i = 0; i < LINK_BUCKET_COUNT; i++) {
+      const A = i / (LINK_BUCKET_COUNT - 1);
+      if (A <= 0) continue;
 
-      CONTEXT.strokeStyle = `rgba(100, 100, 100, ${BUCKET_ALPHA})`;
-      CONTEXT.stroke(LINK_PATHS_BY_BUCKET[BUCKET_INDEX]);
+      CONTEXT.strokeStyle = `rgba(100, 100, 100, ${A})`;
+      CONTEXT.stroke(LINK_PATHS_BY_BUCKET[i]);
     }
   }
 
-  // Step 6: draw star bodies (sprites with arc fallback)
+  // Step 6: draw star bodies (sprite only)
+  if (!STAR_SPRITES.ready) return;
+
+  const IMG = STAR_SPRITES.img;
+
   for (const STAR of S.starList) {
-    if (!STAR_SPRITES.ready || !STAR_SPRITES.imgs.length) {
-      let TEMP_RED = 255 * STAR.whiteValue + STAR.redValue;
-      if (TEMP_RED > 255) TEMP_RED = 255;
-
-      CONTEXT.beginPath();
-      CONTEXT.fillStyle = `rgba(${TEMP_RED}, ${255 * STAR.whiteValue}, ${255 * STAR.whiteValue}, ${STAR.opacity})`;
-      CONTEXT.arc(STAR.x, STAR.y, STAR.whiteValue * 2 + STAR.size, 0, Math.PI * 2);
-      CONTEXT.fill();
-      continue;
-    }
-
-    const IMG = STAR_SPRITES.imgs[(STAR.redValue % STAR_SPRITES.imgs.length) | 0];
-
     const R = (STAR.whiteValue * 2 + STAR.size) || 1;
     const SIZE = Math.max(2, R * 2.4);
 
-    CONTEXT.globalAlpha = STAR.opacity; // preserves twinkle/fade
-    CONTEXT.drawImage(IMG, STAR.x - SIZE / 2, STAR.y - SIZE / 2, SIZE, SIZE);
-    CONTEXT.globalAlpha = 1;
+    const X = STAR.x - SIZE / 2;
+    const Y = STAR.y - SIZE / 2;
+
+    // Base sprite with twinkle alpha
+    CONTEXT.save();
+    CONTEXT.globalAlpha = STAR.opacity;
+    CONTEXT.drawImage(IMG, X, Y, SIZE, SIZE);
+
+    // Darkness from redValue (50..200 -> darker..brighter)
+    let t = (STAR.redValue - 50) / 150;
+    if (t < 0) t = 0;
+    if (t > 1) t = 1;
+
+    const DARKNESS = 0.15 + 0.55 * (1 - t);
+
+    CONTEXT.globalCompositeOperation = "source-atop";
+    CONTEXT.globalAlpha = STAR.opacity * DARKNESS;
+    CONTEXT.fillStyle = "rgba(0, 0, 0, 1)";
+    CONTEXT.fillRect(X, Y, SIZE, SIZE);
+
+    // Optional: white flash brightening
+    if (STAR.whiteValue > 0.01) {
+      CONTEXT.globalCompositeOperation = "lighter";
+      CONTEXT.globalAlpha = STAR.opacity * (STAR.whiteValue > 1 ? 1 : STAR.whiteValue);
+      CONTEXT.fillStyle = "rgba(255, 255, 255, 1)";
+      CONTEXT.fillRect(X, Y, SIZE, SIZE);
+    }
+
+    CONTEXT.restore();
   }
 };
 
@@ -456,7 +432,6 @@ S.renderStarsAndLinks = function renderStarsAndLinks() {
 S.updatePointerSpeed = function updatePointerSpeed(CURRENT_X, CURRENT_Y) {
   const NOW_MS = S.getNowMs();
 
-  // Step 1: initialize baseline if this is the first event
   if (!S.lastPointerTimeMs) {
     S.pointerClientX = CURRENT_X;
     S.pointerClientY = CURRENT_Y;
@@ -465,37 +440,26 @@ S.updatePointerSpeed = function updatePointerSpeed(CURRENT_X, CURRENT_Y) {
     return;
   }
 
-  // Step 2: compute dt (at least 1ms)
-  const DELTA_TIME_MS = Math.max(1, NOW_MS - S.lastPointerTimeMs);
+  const DT = Math.max(1, NOW_MS - S.lastPointerTimeMs);
 
-  // Step 3: compute dx/dy
-  const DELTA_X = CURRENT_X - S.pointerClientX;
-  const DELTA_Y = CURRENT_Y - S.pointerClientY;
+  const DX = CURRENT_X - S.pointerClientX;
+  const DY = CURRENT_Y - S.pointerClientY;
 
-  // Step 4: compute speed per ms and scale into “units”
-  const RAW_SPEED = Math.sqrt(DELTA_X * DELTA_X + DELTA_Y * DELTA_Y) / DELTA_TIME_MS;
+  const RAW_SPEED = Math.sqrt(DX * DX + DY * DY) / DT;
   S.pointerSpeedUnits = S.screenScaleDown * Math.min(RAW_SPEED * 50, 50);
 
-  // Step 5: ring timer is driven by max(pointerRingTimer, speed)
   S.pointerRingTimer = Math.max(S.pointerRingTimer, S.pointerSpeedUnits);
 
-  // Fast pointer => rebuild links sooner
   if (S.pointerSpeedUnits > 10) LINKS_DIRTY = true;
 
-  // Step 6: store current as new baseline
   S.pointerClientX = CURRENT_X;
   S.pointerClientY = CURRENT_Y;
   S.lastPointerTimeMs = NOW_MS;
 };
 
 S.beginPointerInteraction = function beginPointerInteraction(START_X, START_Y) {
-  // Step 1: apply poke impulse
   S.pokeImpulseTimer = 200;
-
-  // Step 2: reset time baseline so first update is clean
   S.lastPointerTimeMs = 0;
-
-  // Step 3: feed the first point
   S.updatePointerSpeed(START_X, START_Y);
 };
 
