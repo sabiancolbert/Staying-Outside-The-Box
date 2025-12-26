@@ -179,7 +179,7 @@
 
     // Step 22: debug readouts
     const MISC_READER = document.getElementById("dbgMisc");
-    if (MISC_READER) MISC_READER.textContent = "NAN";
+    if (MISC_READER) MISC_READER.textContent = S.starList[0].momentumX;
     
     const DEBUG_RING = document.getElementById("dbgCircle");
     if (DEBUG_RING) DEBUG_RING.textContent = S.pointerRingTimer.toFixed(3);
