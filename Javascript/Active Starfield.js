@@ -97,14 +97,15 @@
       STAR.momentumY += STAR.vy * Math.min(10, 0.05 * S.pointerSpeedUnits);
       
       // Step 12: clamp momentum magnitude
+      const FORCE_LIMIT = SETTINGS.clamp * SCALE.forceClamp;
       const MOMENTUM_MAG = Math.sqrt(STAR.momentumX * STAR.momentumX + STAR.momentumY * STAR.momentumY);
 
-      if (MOMENTUM_MAG > 5) {
-        const MOMENTUM_SCALE = 5 / MOMENTUM_MAG;
+      if (MOMENTUM_MAG > FORCE_LIMIT) {
+        const MOMENTUM_SCALE = FORCE_LIMIT / MOMENTUM_MAG;
         FORCE_X *= FORCE_SCALE;
         FORCE_Y *= FORCE_SCALE;
       
-      // Step 13: clamp single frame magnitude
+      /* Step 13: clamp single frame magnitude
       let FORCE_X = STAR.momentumX;
       let FORCE_Y = STAR.momentumY;
 
@@ -116,6 +117,7 @@
         FORCE_X *= FORCE_SCALE;
         FORCE_Y *= FORCE_SCALE;
       }
+*/
       
       // Step 14: add keyboard influence
       STAR.momentumX *= window.KEYBOARD.multX;
