@@ -110,6 +110,7 @@
         const MOMENTUM_SCALE = MOMENTUM_LIMIT / MOMENTUM_MAG;
         STAR.momentumX *= MOMENTUM_SCALE;
         STAR.momentumY *= MOMENTUM_SCALE;
+      }
 
       // Step 15: integrate
       STAR.x += STAR.vx + STAR.momentumX;
