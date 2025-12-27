@@ -202,8 +202,8 @@ S.updateStarPhysics = function updateStarPhysics() {
       STAR.momentumY += (REPULSION_FORCE * -UNIT_TO_POINTER_Y) * dt;
 
       /* POKE LOGIC */
-      // Poke radius 1/4 of the screen
-      const POKE_RADIUS = S.screenPerimeter * 0.25;
+      // Poke radius 1/5 of the screen
+      const POKE_RADIUS = S.screenPerimeter * 0.2;
       // Invert and normalize
       const POKE_GRADIENT = 1 - (DISTANCE / POKE_RADIUS);
       // Shape the force
