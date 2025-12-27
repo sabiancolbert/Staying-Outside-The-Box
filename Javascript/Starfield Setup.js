@@ -528,8 +528,11 @@ var S = window.STARFIELD;
     }
   };
 
-  function runAnimationLoop() {
+  function runAnimationLoop(NOW) {
     if (!S.isCanvasReady) return;
+    
+    if (NOW - (S._lastFrameMs || 0) < 40) return requestAnimationFrame(runAnimationLoop);
+    S._lastFrameMs = NOW;
 
     // Step 1: physics update (unless frozen)
     if (!S.isFrozen && typeof S.updateStarPhysics === "function") {
