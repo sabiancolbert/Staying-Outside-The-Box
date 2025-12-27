@@ -1,24 +1,3 @@
-look at this style of commenting
-
-/* POKE LOGIC */
-      // Poke radius 1/4 of the screen
-      const POKE_RADIUS = S.screenPerimeter * 0.25;
-      // Invert and normalize
-      const POKE_GRADIENT = 1 - (DISTANCE / POKE_RADIUS);
-      // Shape the force
-      const POKE_SHAPE = Math.pow(Math.max(0, POKE_GRADIENT), 2);
-      // Tune the strength of the poke, and time it to fade
-      const POKE_FORCE =
-        (0.01 * SETTINGS.pokeStrength) *
-        S.pokeImpulseTimer *
-        POKE_SHAPE;
-        
-      /* APPLY USER POINTER FORCES */
-      STAR.momentumX += (POKE_FORCE * -UNIT_TO_POINTER_X) * dt;
-      STAR.momentumY += (POKE_FORCE * -UNIT_TO_POINTER_Y) * dt;
-    }
-
-notice there are big sections (poke) and small sectiond (apply) but every line is described in plain english. can you do that for the whole page please? no logic updates, just comment update
 
 // thank heavens for chatGPT <3
 
