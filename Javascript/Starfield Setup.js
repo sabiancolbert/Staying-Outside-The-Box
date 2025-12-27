@@ -811,9 +811,6 @@ function runAnimationLoop(NOW) {
   // Bail if canvas isn't active so we don't draw into null context
   if (!S.isCanvasReady) return;
 
-  // Throttle to reduce CPU on slow devices (skip frames under ~18ms)
-  if (NOW - (S._lastFrameMs || 0) < 18) return requestAnimationFrame(runAnimationLoop);
-
   // Store last frame time for throttling comparisons
   S._lastFrameMs = NOW;
 
