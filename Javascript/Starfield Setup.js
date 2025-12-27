@@ -12,7 +12,7 @@
  *   6) Resize + animation loop
  *   7) Bootstrap
  *
- *  Active S.js owns:
+ *  Active Starfield.js owns:
  *    Physics (updateStarPhysics)
  *    Rendering (renderStarsAndLinks)
  *    Pointer input (updatePointerSpeed + listeners)
