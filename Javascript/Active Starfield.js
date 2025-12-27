@@ -31,10 +31,10 @@ const DBG = {
 };
 
 // Look up optional debug elements (they don't exist on most pages)
-DBG.misc = document.getElementById("dbgMisc");     // Debug readout: misc
-DBG.circle = document.getElementById("dbgCircle"); // Debug readout: ring timer
-DBG.speed = document.getElementById("dbgSpeed");   // Debug readout: pointer speed
-DBG.poke = document.getElementById("dbgPoke");     // Debug readout: poke timer
+DBG.misc = document.getElementById("dbgMisc");       // Debug readout: misc
+DBG.circle = document.getElementById("dbgCircle");   // Debug readout: ring timer
+DBG.speed = document.getElementById("dbgSpeed");     // Debug readout: pointer speed
+DBG.poke = document.getElementById("dbgPoke");       // Debug readout: poke timer
 
 /*---------- Sprite stars (WebP) ----------*/
 // Hold sprite loading state so rendering can bail until the image is ready
@@ -43,6 +43,7 @@ const STAR_SPRITES = {
   img: null     // The Image() object used by drawImage()
 };
 
+// Load the star sprite immediately so it is ready by the time rendering starts
 (function loadStarSpriteNow() {
   // Create a new image object for the star sprite
   const IMG = new Image();
@@ -74,11 +75,11 @@ let LINK_FRAME = 0;
 let LINKS_DIRTY = true;
 
 /*---------- Links fade near the edges ----------*/
-function getEdgeDistance(STAR) {
+function getEdgeFadeFactorFast(STAR) {
   // Approximate star "radius" based on how large it draws on screen
   const STAR_RADIUS = (STAR.whiteValue * 2 + STAR.size) || 0;
 
-  // Measure padded distance to each edge
+  // Measure padded distance to each edge (radius avoids visible popping at wrap)
   const DIST_LEFT = STAR.x + STAR_RADIUS;
   const DIST_RIGHT = (S.canvasWidth + STAR_RADIUS) - STAR.x;
   const DIST_TOP = STAR.y + STAR_RADIUS;
@@ -90,26 +91,27 @@ function getEdgeDistance(STAR) {
   // Define how wide the fade band is near edges (cap it so it stays cheap)
   const FADE_BAND = Math.min(90, S.screenPerimeter * 0.03) || 1;
 
-  // Convert closest distance into a 0..1 fade factor without extra branches
-  let RESULT =
+  // Convert closest distance into a 0..1 fade factor (ternaries keep it compact)
+  const T =
     MIN_EDGE_DISTANCE <= 0 ? 0 :
     MIN_EDGE_DISTANCE >= FADE_BAND ? 1 :
     (MIN_EDGE_DISTANCE / FADE_BAND);
 
   // Square the fade for a quick easing curve (cheap "smooth-ish" fade)
-  return RESULT ** 2;
+  return T * T;
 }
 
 /*---------- Time scaling helpers ----------*/
-// Define how many milliseconds one 60fps frame represents
-const FRAME_MS = 1000 / 60;
+// Define how many milliseconds one 60fps frame represents (conversion constant)
+const SIXTY_FPS_FRAME_MS = 1000 / 60;
 
+// Clamp dt in milliseconds to prevent tab-sleep teleports and clock weirdness
 function clampDtMs(dtMs) {
   // Prevent negative dt (clock weirdness) from producing inverted updates
   if (dtMs < 0) return 0;
 
   // Cap dt so tab sleep / lag spikes don't cause massive forces and teleports
-  if (dtMs > 50) return 50; // About 3 frames at 60fps
+  if (dtMs > 50) return 50; // ~3 frames at 60fps
 
   // Return dt unchanged when it is in a safe range
   return dtMs;
@@ -117,6 +119,7 @@ function clampDtMs(dtMs) {
 
 // Convert a per-frame multiplier into a time-based multiplier
 function decayPerFrameToDt(basePerFrame, dtFrames) {
+  // Example: 0.98 per frame becomes 0.98^dtFrames for variable FPS
   return Math.pow(basePerFrame, dtFrames);
 }
 
@@ -140,16 +143,16 @@ S.updateStarPhysics = function updateStarPhysics() {
   const LAST = S.lastPhysicsMs || NOW;
 
   // Compute elapsed time and clamp it to avoid huge simulation jumps
-  const dtMs = clampdtMs(NOW - LAST);
+  const dtMs = clampDtMs(NOW - LAST);
 
   // Store this frame's timestamp for the next physics update
   S.lastPhysicsMs = NOW;
 
-  // Normalize dt into "60fps frames" (dt = 1 means one 60fps frame)
-  const dt = dtMs / FRAME_MS; // 1.0 at 60fps
+  // Normalize elapsed time into "60fps frames" (dt = 1 means one 60fps frame)
+  const dtFrames = dtMs / SIXTY_FPS_FRAME_MS;
 
   // Bail if dt is zero so we don't divide by zero or waste work
-  if (dt <= 0) return;
+  if (dtFrames <= 0) return;
 
   // Define the maximum range where pointer forces can affect stars
   const INFLUENCE_RANGE = S.screenPerimeter * 0.2;
@@ -167,11 +170,12 @@ S.updateStarPhysics = function updateStarPhysics() {
   const SCALE = S.screenScalePowers;
 
   /* TIME-BASED DECAYS */
-  const MOMENTUM_DECAY = decayPerFrameToDt(0.98, dt);
-  const WHITE_DECAY = decayPerFrameToDt(0.98, dt);
-  const POINTER_SPEED_DECAY = decayPerFrameToDt(0.5, dt);
-  const RING_DECAY = decayPerFrameToDt(0.95, dt);
-  const POKE_DECAY = decayPerFrameToDt(0.85, dt);
+  // Convert legacy "per frame" decay constants into time-based multipliers
+  const MOMENTUM_DECAY = decayPerFrameToDt(0.98, dtFrames);
+  const WHITE_DECAY = decayPerFrameToDt(0.98, dtFrames);
+  const POINTER_SPEED_DECAY = decayPerFrameToDt(0.5, dtFrames);
+  const RING_DECAY = decayPerFrameToDt(0.95, dtFrames);
+  const POKE_DECAY = decayPerFrameToDt(0.85, dtFrames);
 
   /* UPDATE EACH STAR */
   for (const STAR of S.starList) {
@@ -205,13 +209,13 @@ S.updateStarPhysics = function updateStarPhysics() {
         ATTRACTION_GRADIENT,
         Math.max(0.1, ((SETTINGS.attractScale * 0.48) * SCALE.attractionShape))
       );
-      
+
       // Compute attraction force based on settings, screen scale, pointer energy, and shape
       const ATTRACTION_FORCE =
         ((SETTINGS.attractStrength * 0.00435) * SCALE.attractionForce) *
         S.pointerSpeedUnits *
         ATTRACTION_SHAPE;
-        
+
       /* REPULSION */
       // Convert distance into a 0..1 gradient inside the repulsion radius
       let REPULSION_GRADIENT =
@@ -231,7 +235,7 @@ S.updateStarPhysics = function updateStarPhysics() {
         ((SETTINGS.repelStrength * 0.0182) * SCALE.repulsionForce) *
         S.pointerSpeedUnits *
         REPULSION_SHAPE;
-      
+
       /* POKE */
       // Define poke radius as a fraction of the screen size
       const POKE_RADIUS = S.screenPerimeter * 0.2;
@@ -249,22 +253,28 @@ S.updateStarPhysics = function updateStarPhysics() {
         POKE_SHAPE;
 
       /* APPLY PROXIMITY-ONLY FORCES */
-      STAR.momentumX += (ATTRACTION_FORCE * UNIT_TO_POINTER_X) * dt;
-      STAR.momentumY += (ATTRACTION_FORCE * UNIT_TO_POINTER_Y) * dt;
-      STAR.momentumX += (REPULSION_FORCE * -UNIT_TO_POINTER_X) * dt;
-      STAR.momentumY += (REPULSION_FORCE * -UNIT_TO_POINTER_Y) * dt;
-      STAR.momentumX += (POKE_FORCE * -UNIT_TO_POINTER_X) * dt;
-      STAR.momentumY += (POKE_FORCE * -UNIT_TO_POINTER_Y) * dt;
+      // Apply attraction toward the pointer (dt-scaled for stable feel across FPS)
+      STAR.momentumX += (ATTRACTION_FORCE * UNIT_TO_POINTER_X) * dtFrames;
+      STAR.momentumY += (ATTRACTION_FORCE * UNIT_TO_POINTER_Y) * dtFrames;
+
+      // Apply repulsion away from the pointer (dt-scaled for stable feel across FPS)
+      STAR.momentumX += (REPULSION_FORCE * -UNIT_TO_POINTER_X) * dtFrames;
+      STAR.momentumY += (REPULSION_FORCE * -UNIT_TO_POINTER_Y) * dtFrames;
+
+      // Apply poke burst away from the pointer (dt-scaled for stable feel across FPS)
+      STAR.momentumX += (POKE_FORCE * -UNIT_TO_POINTER_X) * dtFrames;
+      STAR.momentumY += (POKE_FORCE * -UNIT_TO_POINTER_Y) * dtFrames;
     }
+
     /* GLOBAL FORCES */
     // Compute a drift multiplier that grows slightly when the pointer is active
     const DRIFT_BOOST = Math.min(7, 0.01 * S.pointerSpeedUnits);
 
     // Add passive drift (dt-scaled so it feels stable across FPS)
-    STAR.momentumX += (STAR.vx * DRIFT_BOOST) * dt;
-    STAR.momentumY += (STAR.vy * DRIFT_BOOST) * dt;
+    STAR.momentumX += (STAR.vx * DRIFT_BOOST) * dtFrames;
+    STAR.momentumY += (STAR.vy * DRIFT_BOOST) * dtFrames;
 
-    // Apply keyboard impulses
+    // Apply keyboard impulses (designed as instant per-tick nudges)
     STAR.momentumX *= window.KEYBOARD.multX;
     STAR.momentumY *= window.KEYBOARD.multY;
     STAR.momentumX += window.KEYBOARD.addX;
@@ -291,8 +301,8 @@ S.updateStarPhysics = function updateStarPhysics() {
 
     /* INTEGRATION */
     // Advance star position using base velocity plus accumulated momentum (dt-scaled)
-    STAR.x += (STAR.vx + STAR.momentumX) * dt;
-    STAR.y += (STAR.vy + STAR.momentumY) * dt;
+    STAR.x += (STAR.vx + STAR.momentumX) * dtFrames;
+    STAR.y += (STAR.vy + STAR.momentumY) * dtFrames;
 
     // Apply friction decay to momentum (time-based)
     STAR.momentumX *= MOMENTUM_DECAY;
@@ -350,18 +360,18 @@ S.updateStarPhysics = function updateStarPhysics() {
     // Fade faster while the star is still fairly visible
     else if (STAR.opacity > 0.02) {
       // Reduce opacity using fadeSpeed and dt so it stays consistent across FPS
-      STAR.opacity -= (0.005 * STAR.fadeSpeed) * dt;
+      STAR.opacity -= (0.005 * STAR.fadeSpeed) * dtFrames;
     }
     // Fade slowly near the end so it doesn't vanish too abruptly
     else {
       // Reduce opacity with a tiny drift amount (dt-scaled)
-      STAR.opacity -= 0.0001 * dt;
+      STAR.opacity -= 0.0001 * dtFrames;
     }
   }
 
   /* GLOBAL DECAYS */
 
-  // Reset keyboard forces
+  // Reset keyboard forces so keys act as one-tick impulses
   window.KEYBOARD.multX = 1;
   window.KEYBOARD.multY = 1;
   window.KEYBOARD.addX = 0;
@@ -442,13 +452,9 @@ S.renderStarsAndLinks = function renderStarsAndLinks() {
   // Compute the baseline ring radius based on screen size
   const TARGET_RING_RADIUS = Math.max(0, S.screenScaleUp * 100 - 40);
 
-  // Scale ring radius based on ring timer amount
+  // Compute ring visuals from timers (defaults to ring-timer behavior)
   let RING_RADIUS = TARGET_RING_RADIUS * (S.pointerRingTimer / 50);
-
-  // Scale ring stroke width based on ring timer amount
   let RING_WIDTH = S.pointerRingTimer * 0.15;
-
-  // Convert ring timer into an alpha value (clamped to 1)
   let RING_ALPHA = Math.min(S.pointerRingTimer * 0.07, 1);
 
   // If pointer is not moving, use poke timer to drive the ring visuals instead
@@ -459,40 +465,22 @@ S.renderStarsAndLinks = function renderStarsAndLinks() {
     // Invert poke so the ring grows as poke fades
     const INVERTED_POKE = 1 - NORMALIZED_POKE;
 
-    // Drive ring radius from inverted poke
+    // Drive ring radius, width, and alpha from poke
     RING_RADIUS = TARGET_RING_RADIUS * INVERTED_POKE;
-
-    // Drive ring width from poke intensity
     RING_WIDTH = NORMALIZED_POKE * 7;
-
-    // Drive ring alpha from poke intensity
     RING_ALPHA = NORMALIZED_POKE;
   }
 
-  // Only draw the ring when it is visible enough to matter
+  // Draw the ring only when it is visible enough to matter
   if (RING_ALPHA > 0.001) {
-    // Save context state so ring styling does not leak into other drawing
+    // Draw ring using isolated context state so styling does not leak
     CONTEXT.save();
-
-    // Set the ring stroke width
     CONTEXT.lineWidth = RING_WIDTH;
-
-    // Set the ring stroke color
     CONTEXT.strokeStyle = "rgba(189, 189, 189, 1)";
-
-    // Apply ring transparency
     CONTEXT.globalAlpha = RING_ALPHA;
-
-    // Start a new ring path
     CONTEXT.beginPath();
-
-    // Draw the ring around the pointer position
     CONTEXT.arc(S.pointerClientX, S.pointerClientY, RING_RADIUS, 0, Math.PI * 2);
-
-    // Stroke the ring path
     CONTEXT.stroke();
-
-    // Restore context state back to normal drawing settings
     CONTEXT.restore();
   }
 
@@ -519,10 +507,9 @@ S.renderStarsAndLinks = function renderStarsAndLinks() {
       // Clear dirty flag once we commit to rebuilding
       LINKS_DIRTY = false;
 
-      // Update each star's cached edge fade factor
+      // Update each star's cached edge fade factor for link alpha calculations
       for (let i = 0; i < STAR_COUNT; i++) {
-        // Store computed edge fade on the star for later link alpha use
-        S.starList[i].edge = getEdgeDistance(S.starList[i]);
+        S.starList[i].edge = getEdgeFadeFactorFast(S.starList[i]);
       }
 
       // Convert raw pixel distance into a scaled distance space
@@ -539,19 +526,11 @@ S.renderStarsAndLinks = function renderStarsAndLinks() {
 
       // Iterate each star as the first endpoint
       for (let a = 0; a < STAR_COUNT; a++) {
-        // Pull out star A once per outer loop
+        // Cache star A and its commonly used values for the inner loop
         const STAR_A = S.starList[a];
-
-        // Cache star A's X coordinate
         const AX = STAR_A.x;
-
-        // Cache star A's Y coordinate
         const AY = STAR_A.y;
-
-        // Cache star A's opacity for link alpha calculations
         const OPACITY_A = STAR_A.opacity;
-
-        // Cache star A's edge fade for link alpha calculations
         const EDGE_A = STAR_A.edge;
 
         // Iterate remaining stars as the second endpoint
@@ -559,13 +538,9 @@ S.renderStarsAndLinks = function renderStarsAndLinks() {
           // Pull out star B for this pair
           const STAR_B = S.starList[b];
 
-          // Compute X delta between stars
+          // Compute squared distance between stars for cutoff testing
           const dx = AX - STAR_B.x;
-
-          // Compute Y delta between stars
           const dy = AY - STAR_B.y;
-
-          // Compute squared distance between stars
           const d2 = dx * dx + dy * dy;
 
           // Skip pairs that are too far apart
@@ -574,34 +549,27 @@ S.renderStarsAndLinks = function renderStarsAndLinks() {
           // Convert distance back into scaled space for fade math
           const SCALED_DISTANCE = Math.sqrt(d2) * DISTANCE_SCALE;
 
-          // Use the dimmer of the two stars for link brightness
+          // Use the dimmer opacity and weaker edge fade for link brightness
           const MIN_OPACITY = OPACITY_A < STAR_B.opacity ? OPACITY_A : STAR_B.opacity;
-
-          // Use the weaker edge fade of the two stars for link brightness
           const MIN_EDGE = EDGE_A < STAR_B.edge ? EDGE_A : STAR_B.edge;
 
           // Fade links out as they approach the maximum link distance
           const DISTANCE_FADE = 1 - (SCALED_DISTANCE / S.maxLinkDistance);
 
           // Combine fades and clamp to positive values
-          let LINK_ALPHA = (DISTANCE_FADE > 0 ? DISTANCE_FADE : 0) * MIN_OPACITY * MIN_EDGE;
+          const DISTANCE_CLAMP = DISTANCE_FADE > 0 ? DISTANCE_FADE : 0;
+          const LINK_ALPHA = DISTANCE_CLAMP * MIN_OPACITY * MIN_EDGE;
 
           // Skip nearly invisible links to reduce path complexity
           if (LINK_ALPHA <= 0.002) continue;
 
           // Map link alpha into a bucket index for batched drawing
           let BUCKET_INDEX = (LINK_ALPHA * (LINK_BUCKET_COUNT - 1)) | 0;
-
-          // Clamp bucket index to the valid range (low end)
           if (BUCKET_INDEX < 0) BUCKET_INDEX = 0;
-
-          // Clamp bucket index to the valid range (high end)
           if (BUCKET_INDEX >= LINK_BUCKET_COUNT) BUCKET_INDEX = LINK_BUCKET_COUNT - 1;
 
-          // Add a line segment for this link into the correct alpha bucket
+          // Add this link into the correct alpha bucket as a single line segment
           LINK_PATHS_BY_BUCKET[BUCKET_INDEX].moveTo(AX, AY);
-
-          // Add a line segment for this link into the correct alpha bucket
           LINK_PATHS_BY_BUCKET[BUCKET_INDEX].lineTo(STAR_B.x, STAR_B.y);
         }
       }
@@ -645,67 +613,38 @@ S.renderStarsAndLinks = function renderStarsAndLinks() {
     // Save context state so per-star settings do not leak
     CONTEXT.save();
 
-    // Apply star opacity as the base alpha for sprite rendering
+    // Draw base sprite with the star's opacity
     CONTEXT.globalAlpha = STAR.opacity;
-
-    // Draw the star sprite image
     CONTEXT.drawImage(IMG, X, Y, SIZE, SIZE);
 
     // Normalize redValue into a 0..1 range for darkness mapping
     let t = (STAR.redValue - 50) / 150;
-
-    // Clamp t so it stays in a safe 0..1 range (low end)
     if (t < 0) t = 0;
-
-    // Clamp t so it stays in a safe 0..1 range (high end)
     if (t > 1) t = 1;
 
     // Convert "redness" into a darkness factor (less red = darker)
     const DARKNESS = 0.15 + 0.55 * (1 - t);
 
-    // Cache star center for drawing the overlay circle
+    // Cache center and radius for the overlay circle
     const CX = STAR.x;
     const CY = STAR.y;
-
-    // Set overlay radius relative to sprite size
     const CR = SIZE * 0.48;
 
     // Restrict the darkness fill so it only affects the sprite pixels
     CONTEXT.globalCompositeOperation = "source-atop";
-
-    // Apply darkness alpha on top of base opacity
     CONTEXT.globalAlpha = STAR.opacity * DARKNESS;
-
-    // Use black as the darkness overlay color
     CONTEXT.fillStyle = "rgba(0, 0, 0, 1)";
-
-    // Begin the darkness overlay shape
     CONTEXT.beginPath();
-
-    // Draw a circle overlay centered on the star
     CONTEXT.arc(CX, CY, CR, 0, Math.PI * 2);
-
-    // Fill the darkness overlay shape
     CONTEXT.fill();
 
     // Add a white glow when the star is flashing
     if (STAR.whiteValue > 0.01) {
-      // Use additive blending to make the glow feel luminous
       CONTEXT.globalCompositeOperation = "lighter";
-
-      // Convert whiteValue into a glow alpha (clamped at 1)
       CONTEXT.globalAlpha = STAR.opacity * (STAR.whiteValue > 1 ? 1 : STAR.whiteValue);
-
-      // Use pure white for the glow fill
       CONTEXT.fillStyle = "rgba(255, 255, 255, 1)";
-
-      // Begin the glow overlay shape
       CONTEXT.beginPath();
-
-      // Draw a circle glow centered on the star
       CONTEXT.arc(CX, CY, CR, 0, Math.PI * 2);
-
-      // Fill the glow overlay shape
       CONTEXT.fill();
     }
 
