@@ -26,13 +26,11 @@ let IS_TRANSITION_ACTIVE = false;
 // Create a short alias for STARFIELD (used for freeze/save helpers)
 var S = window.STARFIELD;
 
-/*
-/* OPTIONAL AUDIO (disabled) */
+/* AUDIO (disabled) */
 //const CRUNCH_SOUND = new Audio("/Resources/Crunch.mp3");
 //CRUNCH_SOUND.preload = "auto";
 //CRUNCH_SOUND.load();
 //CRUNCH_SOUND.volume = 0.25;
-*/
 
 /* PENDING TIMERS (bfcache can revive these if we don't cancel them) */
 // Store the timeout id that saves right before leaving
