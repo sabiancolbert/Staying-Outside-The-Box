@@ -147,6 +147,8 @@ body {
   font-family: 'New Rocker';
   font-size: 7dvmin;
   color: var(--BASE_COLOR);
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 /* #endregion 2) DOCUMENT BASE + BACKGROUND */
