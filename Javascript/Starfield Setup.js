@@ -531,7 +531,7 @@ var S = window.STARFIELD;
   function runAnimationLoop(NOW) {
     if (!S.isCanvasReady) return;
     
-    if (NOW - (S._lastFrameMs || 0) < 20) return requestAnimationFrame(runAnimationLoop);
+    if (NOW - (S._lastFrameMs || 0) < 18) return requestAnimationFrame(runAnimationLoop);
     S._lastFrameMs = NOW;
 
     // Step 1: physics update (unless frozen)
