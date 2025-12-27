@@ -75,30 +75,13 @@ let LINKS_DIRTY = true;
 
 /*---------- Links fade near the edges ----------*/
 function getEdgeDistance(STAR) {
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
   // Approximate star "radius" based on how large it draws on screen
   const STAR_RADIUS = (STAR.whiteValue * 2 + STAR.size) || 0;
 
-  // Measure padded distance to the left edge
+  // Measure padded distance to each edge
   const DIST_LEFT = STAR.x + STAR_RADIUS;
-
-  // Measure padded distance to the right edge
   const DIST_RIGHT = (S.canvasWidth + STAR_RADIUS) - STAR.x;
-
-  // Measure padded distance to the top edge
   const DIST_TOP = STAR.y + STAR_RADIUS;
-
-  // Measure padded distance to the bottom edge
   const DIST_BOTTOM = (S.canvasHeight + STAR_RADIUS) - STAR.y;
 
   // Find the closest edge distance (the "most at risk" direction)
@@ -108,13 +91,13 @@ function getEdgeDistance(STAR) {
   const FADE_BAND = Math.min(90, S.screenPerimeter * 0.03) || 1;
 
   // Convert closest distance into a 0..1 fade factor without extra branches
-  let t =
+  let RESULT =
     MIN_EDGE_DISTANCE <= 0 ? 0 :
     MIN_EDGE_DISTANCE >= FADE_BAND ? 1 :
     (MIN_EDGE_DISTANCE / FADE_BAND);
 
   // Square the fade for a quick easing curve (cheap "smooth-ish" fade)
-  return t * t;
+  return RESULT ** 2;
 }
 
 /*---------- Time scaling helpers ----------*/
@@ -132,9 +115,8 @@ function clampDtMs(dtMs) {
   return dtMs;
 }
 
+// Convert a per-frame multiplier into a time-based multiplier
 function decayPerFrameToDt(basePerFrame, dtFrames) {
-  // Convert a per-frame multiplier into a time-based multiplier
-  // Example: 0.98 per frame becomes 0.98^dtFrames for variable FPS
   return Math.pow(basePerFrame, dtFrames);
 }
 
@@ -146,6 +128,7 @@ function decayPerFrameToDt(basePerFrame, dtFrames) {
 //#region 1) PHYSICS
  *========================================*/
 
+/* DECIDE HOW EACH STAR SHOULD MOVE */
 S.updateStarPhysics = function updateStarPhysics() {
   // Bail early if we have no stars to simulate
   if (!S.starList.length) return;
@@ -157,7 +140,7 @@ S.updateStarPhysics = function updateStarPhysics() {
   const LAST = S.lastPhysicsMs || NOW;
 
   // Compute elapsed time and clamp it to avoid huge simulation jumps
-  const dtMs = clampDtMs(NOW - LAST);
+  const dtMs = clampdtMs(NOW - LAST);
 
   // Store this frame's timestamp for the next physics update
   S.lastPhysicsMs = NOW;
@@ -184,66 +167,58 @@ S.updateStarPhysics = function updateStarPhysics() {
   const SCALE = S.screenScalePowers;
 
   /* TIME-BASED DECAYS */
-  // Compute friction for momentum based on dt
   const MOMENTUM_DECAY = decayPerFrameToDt(0.98, dt);
-
-  // Compute decay for flash/white twinkle based on dt
   const WHITE_DECAY = decayPerFrameToDt(0.98, dt);
-
-  // Compute decay for pointer speed "energy" based on dt
   const POINTER_SPEED_DECAY = decayPerFrameToDt(0.5, dt);
-
-  // Compute decay for the ring timer based on dt
   const RING_DECAY = decayPerFrameToDt(0.95, dt);
-
-  // Compute decay for the poke impulse based on dt
   const POKE_DECAY = decayPerFrameToDt(0.85, dt);
 
-  // Update each star in the simulation
+  /* UPDATE EACH STAR */
   for (const STAR of S.starList) {
-    // Compute X distance from star to pointer
+    // Compute distance from star to pointer
     const POINTER_DELTA_X = S.pointerClientX - STAR.x;
-
-    // Compute Y distance from star to pointer
     const POINTER_DELTA_Y = S.pointerClientY - STAR.y;
 
     // Compute squared distance (cheaper than sqrt) for range checks
     const DISTANCE_SQ =
       POINTER_DELTA_X * POINTER_DELTA_X + POINTER_DELTA_Y * POINTER_DELTA_Y;
 
-    // Only apply pointer-based forces when the star is close enough
+    /* PROXIMITY-ONLY FORCES */
     if (DISTANCE_SQ < INFLUENCE_RANGE_SQ) {
       // Compute true distance (sqrt) and add epsilon to prevent divide-by-zero
       const DISTANCE = Math.sqrt(DISTANCE_SQ) + 0.0001;
 
-      // Convert delta into a unit vector pointing toward the pointer (X)
+      // Convert delta into a unit vector pointing toward the pointer
       const UNIT_TO_POINTER_X = POINTER_DELTA_X / DISTANCE;
-
-      // Convert delta into a unit vector pointing toward the pointer (Y)
       const UNIT_TO_POINTER_Y = POINTER_DELTA_Y / DISTANCE;
 
-      /* ATTRACTION GRADIENT */
+      /* ATTRACTION */
       // Convert distance into a 0..1 gradient inside the attraction radius
       let ATTRACTION_GRADIENT =
         1 - (DISTANCE / (((SETTINGS.attractRadius * 5.2) * SCALE.attractionGradient) || 1));
 
-      /* REPULSION GRADIENT */
-      // Convert distance into a 0..1 gradient inside the repulsion radius
-      let REPULSION_GRADIENT =
-        1 - (DISTANCE / (((SETTINGS.repelRadius * 2.8) * SCALE.repulsionGradient) || 1));
-
       // Clamp attraction gradient so it never goes negative outside radius
       ATTRACTION_GRADIENT = Math.max(0, ATTRACTION_GRADIENT);
 
-      // Clamp repulsion gradient so it never goes negative outside radius
-      REPULSION_GRADIENT = Math.max(0, REPULSION_GRADIENT);
-
-      /* SHAPE CURVES */
       // Shape attraction so the falloff curve can be steeper/softer
       const ATTRACTION_SHAPE = Math.pow(
         ATTRACTION_GRADIENT,
         Math.max(0.1, ((SETTINGS.attractScale * 0.48) * SCALE.attractionShape))
       );
+      
+      // Compute attraction force based on settings, screen scale, pointer energy, and shape
+      const ATTRACTION_FORCE =
+        ((SETTINGS.attractStrength * 0.00435) * SCALE.attractionForce) *
+        S.pointerSpeedUnits *
+        ATTRACTION_SHAPE;
+        
+      /* REPULSION */
+      // Convert distance into a 0..1 gradient inside the repulsion radius
+      let REPULSION_GRADIENT =
+        1 - (DISTANCE / (((SETTINGS.repelRadius * 2.8) * SCALE.repulsionGradient) || 1));
+
+      // Clamp repulsion gradient so it never goes negative outside radius
+      REPULSION_GRADIENT = Math.max(0, REPULSION_GRADIENT);
 
       // Shape repulsion so the falloff curve can be steeper/softer
       const REPULSION_SHAPE = Math.pow(
@@ -251,34 +226,13 @@ S.updateStarPhysics = function updateStarPhysics() {
         Math.max(0.1, (SETTINGS.repelScale * 0.64))
       );
 
-      /* FORCE MAGNITUDES */
-      // Compute attraction force based on settings, screen scale, pointer energy, and shape
-      const ATTRACTION_FORCE =
-        ((SETTINGS.attractStrength * 0.00435) * SCALE.attractionForce) *
-        S.pointerSpeedUnits *
-        ATTRACTION_SHAPE;
-
       // Compute repulsion force based on settings, screen scale, pointer energy, and shape
       const REPULSION_FORCE =
         ((SETTINGS.repelStrength * 0.0182) * SCALE.repulsionForce) *
         S.pointerSpeedUnits *
         REPULSION_SHAPE;
-
-      /* APPLY ATTRACTION */
-      // Add attraction impulse into momentum (dt-scaled for FPS consistency)
-      STAR.momentumX += (ATTRACTION_FORCE * UNIT_TO_POINTER_X) * dt;
-
-      // Add attraction impulse into momentum (dt-scaled for FPS consistency)
-      STAR.momentumY += (ATTRACTION_FORCE * UNIT_TO_POINTER_Y) * dt;
-
-      /* APPLY REPULSION */
-      // Add repulsion impulse into momentum away from the pointer (dt-scaled)
-      STAR.momentumX += (REPULSION_FORCE * -UNIT_TO_POINTER_X) * dt;
-
-      // Add repulsion impulse into momentum away from the pointer (dt-scaled)
-      STAR.momentumY += (REPULSION_FORCE * -UNIT_TO_POINTER_Y) * dt;
-
-      /* POKE LOGIC */
+      
+      /* POKE */
       // Define poke radius as a fraction of the screen size
       const POKE_RADIUS = S.screenPerimeter * 0.2;
 
@@ -294,35 +248,26 @@ S.updateStarPhysics = function updateStarPhysics() {
         S.pokeImpulseTimer *
         POKE_SHAPE;
 
-      /* APPLY USER POINTER FORCES */
-      // Apply poke impulse away from the pointer (dt-scaled)
+      /* APPLY PROXIMITY-ONLY FORCES */
+      STAR.momentumX += (ATTRACTION_FORCE * UNIT_TO_POINTER_X) * dt;
+      STAR.momentumY += (ATTRACTION_FORCE * UNIT_TO_POINTER_Y) * dt;
+      STAR.momentumX += (REPULSION_FORCE * -UNIT_TO_POINTER_X) * dt;
+      STAR.momentumY += (REPULSION_FORCE * -UNIT_TO_POINTER_Y) * dt;
       STAR.momentumX += (POKE_FORCE * -UNIT_TO_POINTER_X) * dt;
-
-      // Apply poke impulse away from the pointer (dt-scaled)
       STAR.momentumY += (POKE_FORCE * -UNIT_TO_POINTER_Y) * dt;
     }
-
-    /* PASSIVE DRIFT */
+    /* GLOBAL FORCES */
     // Compute a drift multiplier that grows slightly when the pointer is active
     const DRIFT_BOOST = Math.min(7, 0.01 * S.pointerSpeedUnits);
 
-    // Add passive drift in X (dt-scaled so it feels stable across FPS)
+    // Add passive drift (dt-scaled so it feels stable across FPS)
     STAR.momentumX += (STAR.vx * DRIFT_BOOST) * dt;
-
-    // Add passive drift in Y (dt-scaled so it feels stable across FPS)
     STAR.momentumY += (STAR.vy * DRIFT_BOOST) * dt;
 
-    /* KEYBOARD IMPULSES */
-    // Apply keyboard multiplier to X momentum for one-frame effects
+    // Apply keyboard impulses
     STAR.momentumX *= window.KEYBOARD.multX;
-
-    // Apply keyboard multiplier to Y momentum for one-frame effects
     STAR.momentumY *= window.KEYBOARD.multY;
-
-    // Apply keyboard additive shove to X momentum for one-frame effects
     STAR.momentumX += window.KEYBOARD.addX;
-
-    // Apply keyboard additive shove to Y momentum for one-frame effects
     STAR.momentumY += window.KEYBOARD.addY;
 
     /* MOMENTUM CLAMP */
@@ -339,25 +284,18 @@ S.updateStarPhysics = function updateStarPhysics() {
       // Compute the scale factor needed to reduce momentum down to the limit
       const MOMENTUM_SCALE = MOMENTUM_LIMIT / MOMENTUM_MAG;
 
-      // Apply scaling to X momentum to clamp total magnitude
+      // Apply scaling to momentum to clamp total magnitude
       STAR.momentumX *= MOMENTUM_SCALE;
-
-      // Apply scaling to Y momentum to clamp total magnitude
       STAR.momentumY *= MOMENTUM_SCALE;
     }
 
     /* INTEGRATION */
-    // Advance star position in X using base velocity plus accumulated momentum (dt-scaled)
+    // Advance star position using base velocity plus accumulated momentum (dt-scaled)
     STAR.x += (STAR.vx + STAR.momentumX) * dt;
-
-    // Advance star position in Y using base velocity plus accumulated momentum (dt-scaled)
     STAR.y += (STAR.vy + STAR.momentumY) * dt;
 
-    /* FRICTION */
-    // Apply friction decay to X momentum (time-based)
+    // Apply friction decay to momentum (time-based)
     STAR.momentumX *= MOMENTUM_DECAY;
-
-    // Apply friction decay to Y momentum (time-based)
     STAR.momentumY *= MOMENTUM_DECAY;
 
     /* EDGE BEHAVIOR: WRAP VS BOUNCE */
@@ -421,20 +359,14 @@ S.updateStarPhysics = function updateStarPhysics() {
     }
   }
 
-  /* RESET KEYBOARD IMPULSES */
-  // Reset keyboard multipliers so the effect lasts only one physics tick
+  /* GLOBAL DECAYS */
+
+  // Reset keyboard forces
   window.KEYBOARD.multX = 1;
-
-  // Reset keyboard multipliers so the effect lasts only one physics tick
   window.KEYBOARD.multY = 1;
-
-  // Reset keyboard shove so the effect lasts only one physics tick
   window.KEYBOARD.addX = 0;
-
-  // Reset keyboard shove so the effect lasts only one physics tick
   window.KEYBOARD.addY = 0;
 
-  /* GLOBAL DECAYS */
   // Decay pointer speed energy over time
   S.pointerSpeedUnits *= POINTER_SPEED_DECAY;
 
@@ -498,6 +430,7 @@ function resetLinkPaths() {
   }
 }
 
+/* DISPLAY THE CALCULATED STARS AND LINES */
 S.renderStarsAndLinks = function renderStarsAndLinks() {
   // Grab the 2D canvas context for drawing
   const CONTEXT = S.drawingContext;
@@ -505,6 +438,7 @@ S.renderStarsAndLinks = function renderStarsAndLinks() {
   // Clear the full canvas each frame before redrawing
   CONTEXT.clearRect(0, 0, S.canvasWidth, S.canvasHeight);
 
+  /* USER POINTER RING */
   // Compute the baseline ring radius based on screen size
   const TARGET_RING_RADIUS = Math.max(0, S.screenScaleUp * 100 - 40);
 
@@ -706,8 +640,6 @@ S.renderStarsAndLinks = function renderStarsAndLinks() {
 
     // Compute top-left corner for centered sprite placement
     const X = STAR.x - SIZE / 2;
-
-    // Compute top-left corner for centered sprite placement
     const Y = STAR.y - SIZE / 2;
 
     // Save context state so per-star settings do not leak
@@ -731,10 +663,8 @@ S.renderStarsAndLinks = function renderStarsAndLinks() {
     // Convert "redness" into a darkness factor (less red = darker)
     const DARKNESS = 0.15 + 0.55 * (1 - t);
 
-    // Cache star center X for drawing the overlay circle
+    // Cache star center for drawing the overlay circle
     const CX = STAR.x;
-
-    // Cache star center Y for drawing the overlay circle
     const CY = STAR.y;
 
     // Set overlay radius relative to sprite size
@@ -792,16 +722,15 @@ S.renderStarsAndLinks = function renderStarsAndLinks() {
 //#region 3) USER INPUT
  *========================================*/
 
+/* AMPLIFY STAR MOVEMENT RELATIVE TO POINTER MOVEMENT SPEED */
 S.updatePointerSpeed = function updatePointerSpeed(CURRENT_X, CURRENT_Y) {
   // Sample current time for pointer speed calculation
   const NOW_MS = S.getNowMs();
 
   // Initialize pointer tracking on the first call of a gesture
   if (!S.lastPointerTimeMs) {
-    // Store the first pointer X position for future delta calculations
+    // Store the first pointer position for future delta calculations
     S.pointerClientX = CURRENT_X;
-
-    // Store the first pointer Y position for future delta calculations
     S.pointerClientY = CURRENT_Y;
 
     // Store the time baseline for future delta time calculations
@@ -817,10 +746,8 @@ S.updatePointerSpeed = function updatePointerSpeed(CURRENT_X, CURRENT_Y) {
   // Compute elapsed time since last pointer sample (minimum 1ms to avoid divide-by-zero)
   const DT = Math.max(1, NOW_MS - S.lastPointerTimeMs);
 
-  // Compute pointer movement delta in X since last sample
+  // Compute pointer movement delta since last sample
   const DX = CURRENT_X - S.pointerClientX;
-
-  // Compute pointer movement delta in Y since last sample
   const DY = CURRENT_Y - S.pointerClientY;
 
   // Convert raw movement into a speed value (pixels per ms)
@@ -835,16 +762,15 @@ S.updatePointerSpeed = function updatePointerSpeed(CURRENT_X, CURRENT_Y) {
   // Mark links dirty when speed is high so link network updates feel responsive
   if (S.pointerSpeedUnits > 10) LINKS_DIRTY = true;
 
-  // Update stored pointer X for the next delta calculation
+  // Update stored pointer for the next delta calculation
   S.pointerClientX = CURRENT_X;
-
-  // Update stored pointer Y for the next delta calculation
   S.pointerClientY = CURRENT_Y;
 
   // Update stored pointer time for the next delta time calculation
   S.lastPointerTimeMs = NOW_MS;
 };
 
+/* WHEN USER BEGINS MOVEMENT */
 S.beginPointerInteraction = function beginPointerInteraction(START_X, START_Y) {
   // Start a new poke burst at full strength
   S.pokeImpulseTimer = 200;
@@ -856,6 +782,7 @@ S.beginPointerInteraction = function beginPointerInteraction(START_X, START_Y) {
   S.updatePointerSpeed(START_X, START_Y);
 };
 
+/* DIFFERENT TYPES OF USER INTERACTION */
 // Mouse
 window.addEventListener("mousedown", (EVENT) =>
   // Begin interaction using the mouse down position
