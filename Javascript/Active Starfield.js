@@ -185,7 +185,7 @@ S.updateStarPhysics = function updateStarPhysics() {
     }
 
     // baseline drift boosted by interaction (dt-scaled)
-    const DRIFT_BOOST = Math.min(10, 0.05 * S.pointerSpeedUnits);
+    const DRIFT_BOOST = Math.min(7, 0.01 * S.pointerSpeedUnits);
     STAR.momentumX += (STAR.vx * DRIFT_BOOST) * dt;
     STAR.momentumY += (STAR.vy * DRIFT_BOOST) * dt;
 
