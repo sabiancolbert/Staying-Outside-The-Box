@@ -615,7 +615,18 @@ S.renderStarsAndLinks = function renderStarsAndLinks() {
 
     // Draw base sprite with the star's opacity
     CONTEXT.globalAlpha = STAR.opacity;
-    CONTEXT.drawImage(IMG, X, Y, SIZE, SIZE);
+    
+    // Move origin to the star center
+    CONTEXT.translate(STAR.x, STAR.y);
+    
+    // Rotate by the star’s rotation
+    CONTEXT.rotate(STAR.rotation || 0);
+    
+    // Draw sprite centered at 0,0
+    CONTEXT.drawImage(IMG, -SIZE / 2, -SIZE / 2, SIZE, SIZE);
+    
+    // Restore context state so per-star settings do not leak
+    CONTEXT.restore();
 
     // Normalize redValue into a 0..1 range for darkness mapping
     let t = (STAR.redValue - 50) / 150;
