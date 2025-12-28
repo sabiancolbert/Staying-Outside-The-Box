@@ -75,9 +75,6 @@ const STAR_SPRITES = {
 // Count frames so we can rebuild link geometry every N frames
 let LINK_FRAME = 0;
 
-// Flag used to force an immediate link rebuild (ex: fast pointer movement)
-let LINKS_DIRTY = true;
-
 /*---------- Links fade near the edges ----------*/
 function getEdgeFadeFactorFast(STAR) {
 	// Approximate star "radius" based on how large it draws on screen
@@ -700,15 +697,11 @@ S.renderStarsAndLinks = function renderStarsAndLinks() {
 	const STAR_COUNT = S.starList.length;
 
 	if (STAR_COUNT) {
-		LINK_FRAME++;
+LINK_FRAME++;
 
-		if (S.pointerSpeedUnits > 10) LINKS_DIRTY = true;
+const SHOULD_REBUILD_LINKS = (LINK_FRAME % 3 === 0);
 
-		const SHOULD_REBUILD_LINKS = LINKS_DIRTY || (LINK_FRAME % 3 === 0);
-
-		if (SHOULD_REBUILD_LINKS) {
-			LINKS_DIRTY = false;
-
+if (SHOULD_REBUILD_LINKS) {
 			for (let i = 0; i < STAR_COUNT; i++) {
 				S.starList[i].edge = getEdgeFadeFactorFast(S.starList[i]);
 			}
@@ -870,8 +863,6 @@ S.updatePointerSpeed = function updatePointerSpeed(CURRENT_X, CURRENT_Y) {
 	S.pointerSpeedUnits = S.screenScaleDown * Math.min(RAW_SPEED * 50, 50);
 
 	S.pointerRingTimer = Math.max(S.pointerRingTimer, S.pointerSpeedUnits);
-
-	if (S.pointerSpeedUnits > 10) LINKS_DIRTY = true;
 
 	S.pointerClientX = CURRENT_X;
 	S.pointerClientY = CURRENT_Y;
