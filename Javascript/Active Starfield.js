@@ -138,6 +138,7 @@ S.updateStarPhysics = function updateStarPhysics() {
 
   // Sample the current time from Setup's helper (performance.now when possible)
   const NOW = S.getNowMs();
+  const FRAME_START_MS = NOW;
 
   // Use a stored previous physics timestamp, or default to NOW on the first frame
   const LAST = S.lastPhysicsMs || NOW;
@@ -561,7 +562,7 @@ if (STAR.momentumY !== 0) STAR.momentumY = Math.sign(STAR.momentumY) * Math.max(
       if (DBG.poke) DBG.poke.textContent = S.pokeImpulseTimer.toFixed(1);
     }
   }
-  const FRAME_TIME_MS = S.getNowMs() - S.lastPhysicsMs;
+  const FRAME_TIME_MS = S.getNowMs() - FRAME_START_MS;
 
 // Tune these
 const TARGET_MS = 6;          // budget for physics (ms)
