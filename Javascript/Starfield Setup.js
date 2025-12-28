@@ -442,6 +442,9 @@ S.createNewStars = function createNewStars() {
       keyboardForceY: 0 // Keyboard force Y (legacy/optional)
     });
   }
+  // Consistant speed for paddles ball
+  S.starList[0].vx = 0.25;
+  S.starList[0].vy = 0.25;
 };
 
 /* #endregion 4) INIT */
