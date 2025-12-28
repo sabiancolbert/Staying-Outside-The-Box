@@ -724,7 +724,7 @@ S.renderStarsAndLinks = function renderStarsAndLinks() {
 
     if (S.pointerSpeedUnits > 10) LINKS_DIRTY = true;
 
-    const SHOULD_REBUILD_LINKS = LINKS_DIRTY || (LINK_FRAME % 3 === 0);
+    const SHOULD_REBUILD_LINKS = LINKS_DIRTY || (LINK_FRAME % 2 === 0);
 
     if (SHOULD_REBUILD_LINKS) {
       LINKS_DIRTY = false;
