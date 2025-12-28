@@ -304,8 +304,8 @@ S.updateStarPhysics = function updateStarPhysics() {
     
     /* INTEGRATION */
     // Advance star position using base velocity plus accumulated momentum (dt-scaled)
-    STAR.x += (STAR.vx + STAR.momentumX) * dtFrames;
-    STAR.y += (STAR.vy + STAR.momentumY) * dtFrames;
+    STAR.x += (STAR.vx + STAR.momentumX - 1) * dtFrames;
+    STAR.y += (STAR.vy + STAR.momentumY - 1) * dtFrames;
 
 // Apply friction decay to momentum (time-based) BUT never let it hit 0
 const MIN_MOM = 1;
