@@ -132,24 +132,16 @@ function decayPerFrameToDt(basePerFrame, dtFrames) {
  *========================================*/
 
 /* DECIDE HOW EACH STAR SHOULD MOVE */
-S.updateStarPhysics = async function updateStarPhysics() {
+S.updateStarPhysics = async function updateStarPhysics(dtMs) {
   // Bail early if we have no stars to simulate
   if (!S.starList.length) return;
+  
+  const dtFrames = dtMs / SIXTY_FPS_FRAME_MS;
+  if (dtFrames <= 0) return;
 
   S.lastUpdateFinished = false;
 
   try {
-    // Sample the current time from Setup's helper (performance.now when possible)
-    const NOW = S.getNowMs();
-
-    // Use a stored previous physics timestamp, or default to NOW on the first frame
-    const LAST = S.lastPhysicsMs || NOW;
-
-    // Compute elapsed time and clamp it to avoid huge simulation jumps
-    const dtMs = clampDtMs(NOW - LAST);
-
-    // Store this frame's timestamp for the next physics update
-    S.lastPhysicsMs = NOW;
 
     // Normalize elapsed time into "60fps frames" (dt = 1 means one 60fps frame)
     const dtFrames = dtMs / SIXTY_FPS_FRAME_MS;
