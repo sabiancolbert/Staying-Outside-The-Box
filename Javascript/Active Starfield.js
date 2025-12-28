@@ -278,10 +278,10 @@ S.updateStarPhysics = function updateStarPhysics() {
     STAR.momentumY += (STAR.vy * DRIFT_BOOST) * dtFrames;
 
     // Apply keyboard influence 
+STAR.momentumX += window.KEYBOARD.addX + (window.KEYBOARD.multX * STAR.vx * 0.0001);
+STAR.momentumY += window.KEYBOARD.addY + (window.KEYBOARD.multY * STAR.vy * 0.0001);
     STAR.momentumX *= window.KEYBOARD.multX;
     STAR.momentumY *= window.KEYBOARD.multY;
-    STAR.momentumX += window.KEYBOARD.addX;
-    STAR.momentumY += window.KEYBOARD.addY;
 
     /* MOMENTUM CLAMP */
     // Compute a maximum allowed momentum based on user clamp and screen scaling
