@@ -132,434 +132,376 @@ function decayPerFrameToDt(basePerFrame, dtFrames) {
  *========================================*/
 
 /* DECIDE HOW EACH STAR SHOULD MOVE */
-S.updateStarPhysics = function updateStarPhysics() {
+let UPDATING_STARS = false;
+
+S.updateStarPhysics = async function updateStarPhysics() {
   // Bail early if we have no stars to simulate
   if (!S.starList.length) return;
 
-  // Sample the current time from Setup's helper (performance.now when possible)
-  const NOW = S.getNowMs();
+  // Prevent parallel/re-entrant runs (ex: RAF calls again before await resumes)
+  if (UPDATING_STARS) return;
+  UPDATING_STARS = true;
 
-  // Use a stored previous physics timestamp, or default to NOW on the first frame
-  const LAST = S.lastPhysicsMs || NOW;
+  try {
+    // Sample the current time from Setup's helper (performance.now when possible)
+    const NOW = S.getNowMs();
 
-  // Compute elapsed time and clamp it to avoid huge simulation jumps
-  const dtMs = clampDtMs(NOW - LAST);
+    // Use a stored previous physics timestamp, or default to NOW on the first frame
+    const LAST = S.lastPhysicsMs || NOW;
 
-  // Store this frame's timestamp for the next physics update
-  S.lastPhysicsMs = NOW;
+    // Compute elapsed time and clamp it to avoid huge simulation jumps
+    const dtMs = clampDtMs(NOW - LAST);
 
-  // Normalize elapsed time into "60fps frames" (dt = 1 means one 60fps frame)
-  const dtFrames = dtMs / SIXTY_FPS_FRAME_MS;
+    // Store this frame's timestamp for the next physics update
+    S.lastPhysicsMs = NOW;
 
-  // Bail if dt is zero so we don't divide by zero or waste work
-  if (dtFrames <= 0) return;
+    // Normalize elapsed time into "60fps frames" (dt = 1 means one 60fps frame)
+    const dtFrames = dtMs / SIXTY_FPS_FRAME_MS;
 
-  // Define the maximum range where pointer forces can affect stars
-  const INFLUENCE_RANGE = S.screenPerimeter * 0.2;
+    // Bail if dt is zero so we don't divide by zero or waste work
+    if (dtFrames <= 0) return;
 
-  // Precompute squared range so we can compare squared distances cheaply
-  const INFLUENCE_RANGE_SQ = INFLUENCE_RANGE * INFLUENCE_RANGE;
+    // Define the maximum range where pointer forces can affect stars
+    const INFLUENCE_RANGE = S.screenPerimeter * 0.2;
 
-  // Define a local distance threshold used for wrap vs bounce behavior
-  const WRAP_DISTANCE_SQ = 200 * 200;
+    // Precompute squared range so we can compare squared distances cheaply
+    const INFLUENCE_RANGE_SQ = INFLUENCE_RANGE * INFLUENCE_RANGE;
 
-  // Grab UI-tunable interaction settings
-  const SETTINGS = S.interactionSettings;
+    // Define a local distance threshold used for wrap vs bounce behavior
+    const WRAP_DISTANCE_SQ = 200 * 200;
 
-  // Grab precomputed screen scaling powers (computed during resize)
-  const SCALE = S.screenScalePowers;
+    // Grab UI-tunable interaction settings
+    const SETTINGS = S.interactionSettings;
 
-  /* TIME-BASED DECAYS */
-  // Convert legacy "per frame" decay constants into time-based multipliers
-  const MOMENTUM_DECAY = decayPerFrameToDt(0.98, dtFrames);
-  const WHITE_DECAY = decayPerFrameToDt(0.98, dtFrames);
-  const POINTER_SPEED_DECAY = decayPerFrameToDt(0.5, dtFrames);
-  const RING_DECAY = decayPerFrameToDt(0.95, dtFrames);
-  const POKE_DECAY = decayPerFrameToDt(0.85, dtFrames);
+    // Grab precomputed screen scaling powers (computed during resize)
+    const SCALE = S.screenScalePowers;
 
-  /* UPDATE EACH STAR */
-  for (const STAR of S.starList) {
-    // ✅ Prevent paddle bounce and normal bounce from fighting each other
-    let DID_BOUNCE = false;
+    /* TIME-BASED DECAYS */
+    const MOMENTUM_DECAY = decayPerFrameToDt(0.98, dtFrames);
+    const WHITE_DECAY = decayPerFrameToDt(0.98, dtFrames);
+    const POINTER_SPEED_DECAY = decayPerFrameToDt(0.5, dtFrames);
+    const RING_DECAY = decayPerFrameToDt(0.95, dtFrames);
+    const POKE_DECAY = decayPerFrameToDt(0.85, dtFrames);
 
-    // Compute distance from star to pointer
-    const POINTER_DELTA_X = S.pointerClientX - STAR.x;
-    const POINTER_DELTA_Y = S.pointerClientY - STAR.y;
+    /* UPDATE EACH STAR */
+    let STAR_INDEX = 0;
+    const YIELD_EVERY = 30; // tune: 20-40 mobile, 40-80 desktop
 
-    // Compute squared distance (cheaper than sqrt) for range checks
-    const DISTANCE_SQ =
-      POINTER_DELTA_X * POINTER_DELTA_X + POINTER_DELTA_Y * POINTER_DELTA_Y;
+    for (const STAR of S.starList) {
+      // ✅ Prevent paddle bounce and normal bounce from fighting each other
+      let DID_BOUNCE = false;
 
-    /* PROXIMITY-ONLY FORCES */
-    if (DISTANCE_SQ < INFLUENCE_RANGE_SQ) {
-      // Compute true distance (sqrt) and add epsilon to prevent divide-by-zero
-      const DISTANCE = Math.sqrt(DISTANCE_SQ) + 0.0001;
+      // Compute distance from star to pointer
+      const POINTER_DELTA_X = S.pointerClientX - STAR.x;
+      const POINTER_DELTA_Y = S.pointerClientY - STAR.y;
 
-      // Convert delta into a unit vector pointing toward the pointer
-      const UNIT_TO_POINTER_X = POINTER_DELTA_X / DISTANCE;
-      const UNIT_TO_POINTER_Y = POINTER_DELTA_Y / DISTANCE;
+      // Compute squared distance (cheaper than sqrt) for range checks
+      const DISTANCE_SQ =
+        POINTER_DELTA_X * POINTER_DELTA_X + POINTER_DELTA_Y * POINTER_DELTA_Y;
 
-      /* ATTRACTION */
-      // Convert distance into a 0..1 gradient inside the attraction radius
-      let ATTRACTION_GRADIENT =
-        1 - (DISTANCE / (((SETTINGS.attractRadius * 5.2) * SCALE.attractionGradient) || 1));
+      /* PROXIMITY-ONLY FORCES */
+      if (DISTANCE_SQ < INFLUENCE_RANGE_SQ) {
+        // Compute true distance (sqrt) and add epsilon to prevent divide-by-zero
+        const DISTANCE = Math.sqrt(DISTANCE_SQ) + 0.0001;
 
-      // Clamp attraction gradient so it never goes negative outside radius
-      ATTRACTION_GRADIENT = Math.max(0, ATTRACTION_GRADIENT);
+        // Convert delta into a unit vector pointing toward the pointer
+        const UNIT_TO_POINTER_X = POINTER_DELTA_X / DISTANCE;
+        const UNIT_TO_POINTER_Y = POINTER_DELTA_Y / DISTANCE;
 
-      // Shape attraction so the falloff curve can be steeper/softer
-      const ATTRACTION_SHAPE = Math.pow(
-        ATTRACTION_GRADIENT,
-        Math.max(0.1, ((SETTINGS.attractScale * 0.48) * SCALE.attractionShape))
+        /* ATTRACTION */
+        let ATTRACTION_GRADIENT =
+          1 - (DISTANCE / (((SETTINGS.attractRadius * 5.2) * SCALE.attractionGradient) || 1));
+        ATTRACTION_GRADIENT = Math.max(0, ATTRACTION_GRADIENT);
+
+        const ATTRACTION_SHAPE = Math.pow(
+          ATTRACTION_GRADIENT,
+          Math.max(0.1, ((SETTINGS.attractScale * 0.48) * SCALE.attractionShape))
+        );
+
+        const ATTRACTION_FORCE =
+          ((SETTINGS.attractStrength * 0.0044) * SCALE.attractionForce) *
+          S.pointerSpeedUnits *
+          ATTRACTION_SHAPE;
+
+        /* REPULSION */
+        let REPULSION_GRADIENT =
+          1 - (DISTANCE / (((SETTINGS.repelRadius * 2.8) * SCALE.repulsionGradient) || 1));
+        REPULSION_GRADIENT = Math.max(0, REPULSION_GRADIENT);
+
+        const REPULSION_SHAPE = Math.pow(
+          REPULSION_GRADIENT,
+          Math.max(0.1, (SETTINGS.repelScale * 0.64))
+        );
+
+        const REPULSION_FORCE =
+          ((SETTINGS.repelStrength * 0.0182) * SCALE.repulsionForce) *
+          S.pointerSpeedUnits *
+          REPULSION_SHAPE;
+
+        /* POKE */
+        const POKE_RADIUS = S.screenPerimeter * 0.2;
+
+        const POKE_GRADIENT = 1 - (DISTANCE / POKE_RADIUS);
+
+        const POKE_SHAPE = Math.pow(Math.max(0, POKE_GRADIENT), 2);
+
+        const POKE_FORCE =
+          (0.01 * SETTINGS.pokeStrength) *
+          S.pokeImpulseTimer *
+          POKE_SHAPE;
+
+        /* APPLY PROXIMITY-ONLY FORCES */
+        STAR.momentumX += (ATTRACTION_FORCE * UNIT_TO_POINTER_X) * dtFrames;
+        STAR.momentumY += (ATTRACTION_FORCE * UNIT_TO_POINTER_Y) * dtFrames;
+
+        STAR.momentumX += (REPULSION_FORCE * -UNIT_TO_POINTER_X) * dtFrames;
+        STAR.momentumY += (REPULSION_FORCE * -UNIT_TO_POINTER_Y) * dtFrames;
+
+        STAR.momentumX += (POKE_FORCE * -UNIT_TO_POINTER_X) * dtFrames;
+        STAR.momentumY += (POKE_FORCE * -UNIT_TO_POINTER_Y) * dtFrames;
+      }
+
+      /* GLOBAL FORCES */
+      const DRIFT_BOOST = Math.min(7, 0.01 * (S.pointerSpeedUnits + 0.0001));
+
+      STAR.momentumX += (STAR.vx * DRIFT_BOOST) * dtFrames;
+      STAR.momentumY += (STAR.vy * DRIFT_BOOST) * dtFrames;
+
+      /* KEYBOARD INFLUENCE */
+      STAR.momentumX += window.KEYBOARD.addX + (window.KEYBOARD.multX * STAR.vx * 0.05);
+      STAR.momentumY += window.KEYBOARD.addY + (window.KEYBOARD.multY * STAR.vy * 0.05);
+      STAR.momentumX *= window.KEYBOARD.multX;
+      STAR.momentumY *= window.KEYBOARD.multY;
+
+      /* MOMENTUM CLAMP */
+      const MOMENTUM_LIMIT = 2 * SETTINGS.clamp * SCALE.forceClamp;
+
+      const MOMENTUM_MAG = Math.sqrt(
+        STAR.momentumX * STAR.momentumX + STAR.momentumY * STAR.momentumY
       );
 
-      // Compute attraction force based on settings, screen scale, pointer energy, and shape
-      const ATTRACTION_FORCE =
-        ((SETTINGS.attractStrength * 0.0044) * SCALE.attractionForce) *
-        S.pointerSpeedUnits *
-        ATTRACTION_SHAPE;
+      if (MOMENTUM_MAG > MOMENTUM_LIMIT) {
+        const MOMENTUM_SCALE = MOMENTUM_LIMIT / MOMENTUM_MAG;
+        STAR.momentumX *= MOMENTUM_SCALE;
+        STAR.momentumY *= MOMENTUM_SCALE;
+      }
 
-      /* REPULSION */
-      // Convert distance into a 0..1 gradient inside the repulsion radius
-      let REPULSION_GRADIENT =
-        1 - (DISTANCE / (((SETTINGS.repelRadius * 2.8) * SCALE.repulsionGradient) || 1));
+      /* INTEGRATION */
+      STAR.x += (STAR.vx + STAR.momentumX) * dtFrames;
+      STAR.y += (STAR.vy + STAR.momentumY) * dtFrames;
 
-      // Clamp repulsion gradient so it never goes negative outside radius
-      REPULSION_GRADIENT = Math.max(0, REPULSION_GRADIENT);
+      /* FRICTION DECAY (time-based) + MIN MOMENTUM */
+      const MIN_MOM = 0.01;
 
-      // Shape repulsion so the falloff curve can be steeper/softer
-      const REPULSION_SHAPE = Math.pow(
-        REPULSION_GRADIENT,
-        Math.max(0.1, (SETTINGS.repelScale * 0.64))
-      );
+      STAR.momentumX *= MOMENTUM_DECAY;
+      STAR.momentumY *= MOMENTUM_DECAY;
 
-      // Compute repulsion force based on settings, screen scale, pointer energy, and shape
-      const REPULSION_FORCE =
-        ((SETTINGS.repelStrength * 0.0182) * SCALE.repulsionForce) *
-        S.pointerSpeedUnits *
-        REPULSION_SHAPE;
+      if (STAR.momentumX !== 0) {
+        STAR.momentumX =
+          Math.sign(STAR.momentumX) * Math.max(MIN_MOM, Math.abs(STAR.momentumX));
+      }
+      if (STAR.momentumY !== 0) {
+        STAR.momentumY =
+          Math.sign(STAR.momentumY) * Math.max(MIN_MOM, Math.abs(STAR.momentumY));
+      }
 
-      /* POKE */
-      // Define poke radius as a fraction of the screen size
-      const POKE_RADIUS = S.screenPerimeter * 0.2;
+      /*==============================================================*
+       *  PADDLE STAR PHYSICS (FULL INJECTED BLOCK)
+       *==============================================================*/
+      if (window.KEYBOARD.paddlesTimer > 0 && STAR === S.starList[0]) {
+        STAR.whiteValue = 1;
+        STAR.opacity = 1;
 
-      // Convert distance into a 0..1 poke gradient inside the poke radius
-      const POKE_GRADIENT = 1 - (DISTANCE / POKE_RADIUS);
+        const CANVAS = S.constellationCanvas;
+        if (CANVAS) {
+          const rect = CANVAS.getBoundingClientRect();
 
-      // Shape poke so it ramps up sharply near the pointer
-      const POKE_SHAPE = Math.pow(Math.max(0, POKE_GRADIENT), 2);
+          const viewLeft = -rect.left;
+          const viewTop = -rect.top;
+          const viewRight = viewLeft + window.innerWidth;
+          const viewBottom = viewTop + window.innerHeight;
 
-      // Tune the strength of the poke, and time it to fade
-      const POKE_FORCE =
-        (0.01 * SETTINGS.pokeStrength) *
-        S.pokeImpulseTimer *
-        POKE_SHAPE;
+          const cx = viewLeft + (window.KEYBOARD.paddlesX / 100) * window.innerWidth;
+          const cy = viewTop + (window.KEYBOARD.paddlesY / 100) * window.innerHeight;
 
-      /* APPLY PROXIMITY-ONLY FORCES */
-      // Apply attraction toward the pointer (dt-scaled for stable feel across FPS)
-      STAR.momentumX += (ATTRACTION_FORCE * UNIT_TO_POINTER_X) * dtFrames;
-      STAR.momentumY += (ATTRACTION_FORCE * UNIT_TO_POINTER_Y) * dtFrames;
+          const paddleW = window.innerWidth * 0.10;
+          const paddleH = window.innerHeight * 0.10;
+          const halfPW = paddleW * 0.5;
+          const halfPH = paddleH * 0.5;
 
-      // Apply repulsion away from the pointer (dt-scaled for stable feel across FPS)
-      STAR.momentumX += (REPULSION_FORCE * -UNIT_TO_POINTER_X) * dtFrames;
-      STAR.momentumY += (REPULSION_FORCE * -UNIT_TO_POINTER_Y) * dtFrames;
+          const paddleThickness = Math.max(
+            2,
+            Math.min(window.innerWidth, window.innerHeight) * 0.03
+          );
+          const halfT = paddleThickness * 0.5;
 
-      // Apply poke burst away from the pointer (dt-scaled for stable feel across FPS)
-      STAR.momentumX += (POKE_FORCE * -UNIT_TO_POINTER_X) * dtFrames;
-      STAR.momentumY += (POKE_FORCE * -UNIT_TO_POINTER_Y) * dtFrames;
-    }
+          const BALL_R = Math.max(2, (2 + STAR.size) || 2);
 
-    /* GLOBAL FORCES */
-    // Compute a drift multiplier that grows slightly when the pointer is active
-    const DRIFT_BOOST = Math.min(7, 0.01 * (S.pointerSpeedUnits + 0.0001));
+          const Vx = (STAR.vx || 0) + (STAR.momentumX || 0);
+          const Vy = (STAR.vy || 0) + (STAR.momentumY || 0);
+          const speed = Math.sqrt(Vx * Vx + Vy * Vy);
 
-    // Add passive drift (dt-scaled so it feels stable across FPS)
-    STAR.momentumX += (STAR.vx * DRIFT_BOOST) * dtFrames;
-    STAR.momentumY += (STAR.vy * DRIFT_BOOST) * dtFrames;
+          if (speed > 0.0001) {
+            const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
 
-    // Apply keyboard influence 
-    STAR.momentumX += window.KEYBOARD.addX + (window.KEYBOARD.multX * STAR.vx * 0.05);
-    STAR.momentumY += window.KEYBOARD.addY + (window.KEYBOARD.multY * STAR.vy * 0.05);
-    STAR.momentumX *= window.KEYBOARD.multX;
-    STAR.momentumY *= window.KEYBOARD.multY;
+            const maxAngle = 1.25;
 
-    /* MOMENTUM CLAMP */
-    // Compute a maximum allowed momentum based on user clamp and screen scaling
-    const MOMENTUM_LIMIT = 2 * SETTINGS.clamp * SCALE.forceClamp;
+            const pushOutX = BALL_R + halfT + 0.5;
+            const pushOutY = BALL_R + halfT + 0.5;
 
-    // Compute current momentum magnitude so we can clamp smoothly
-    const MOMENTUM_MAG = Math.sqrt(
-      STAR.momentumX * STAR.momentumX + STAR.momentumY * STAR.momentumY
-    );
-    
-    // Clamp momentum to prevent runaway speeds and keep the sim stable
-    if (MOMENTUM_MAG > MOMENTUM_LIMIT) {
-      // Compute the scale factor needed to reduce momentum down to the limit
-      const MOMENTUM_SCALE = MOMENTUM_LIMIT / MOMENTUM_MAG;
+            const touchLeft = STAR.x <= viewLeft + (BALL_R + halfT);
+            const touchRight = STAR.x >= viewRight - (BALL_R + halfT);
+            const touchTop = STAR.y <= viewTop + (BALL_R + halfT);
+            const touchBottom = STAR.y >= viewBottom - (BALL_R + halfT);
 
-      // Apply scaling to momentum to clamp total magnitude
-      STAR.momentumX *= MOMENTUM_SCALE;
-      STAR.momentumY *= MOMENTUM_SCALE;
-    }
-    
-    /* INTEGRATION */
-    // Advance star position using base velocity plus accumulated momentum (dt-scaled)
-    STAR.x += (STAR.vx + STAR.momentumX) * dtFrames;
-    STAR.y += (STAR.vy + STAR.momentumY) * dtFrames;
+            const withinLeftRightPaddle = (STAR.y >= (cy - halfPH) && STAR.y <= (cy + halfPH));
+            const withinTopBottomPaddle = (STAR.x >= (cx - halfPW) && STAR.x <= (cx + halfPW));
 
-// Apply friction decay to momentum (time-based) BUT never let it hit 0
-const MIN_MOM = 0.01;
+            const HIT_COOLDOWN_MS = 60;
 
-STAR.momentumX *= MOMENTUM_DECAY;
-STAR.momentumY *= MOMENTUM_DECAY;
+            if (touchLeft && withinLeftRightPaddle && Vx < 0) {
+              const offset = clamp((STAR.y - cy) / (halfPH || 1), -1, 1);
+              const ang = offset * maxAngle;
 
-// Preserve sign while enforcing a minimum magnitude
-if (STAR.momentumX !== 0) STAR.momentumX = Math.sign(STAR.momentumX) * Math.max(MIN_MOM, Math.abs(STAR.momentumX));
-if (STAR.momentumY !== 0) STAR.momentumY = Math.sign(STAR.momentumY) * Math.max(MIN_MOM, Math.abs(STAR.momentumY));
+              const outVx = +1 * speed * Math.cos(ang);
+              const outVy = speed * Math.sin(ang);
 
-    /*==============================================================*
-     *  PADDLE STAR PHYSICS (FULL INJECTED BLOCK)
-     *==============================================================*/
-    if (window.KEYBOARD.paddlesTimer > 0 && STAR === S.starList[0]) {
-      // Keep the paddle ball white and visible
-      STAR.whiteValue = 1;
-      STAR.opacity = 1;
+              DID_BOUNCE =
+                bounceVertical(STAR, viewLeft, +1, outVx, outVy, pushOutX, NOW, HIT_COOLDOWN_MS) ||
+                DID_BOUNCE;
+            } else if (touchRight && withinLeftRightPaddle && Vx > 0) {
+              const offset = clamp((STAR.y - cy) / (halfPH || 1), -1, 1);
+              const ang = offset * maxAngle;
 
-      const CANVAS = S.constellationCanvas;
-      if (CANVAS) {
-        const rect = CANVAS.getBoundingClientRect();
+              const outVx = -1 * speed * Math.cos(ang);
+              const outVy = speed * Math.sin(ang);
 
-        // Viewport rectangle in CANVAS coordinates (matches render)
-        const viewLeft = -rect.left;
-        const viewTop = -rect.top;
-        const viewRight = viewLeft + window.innerWidth;
-        const viewBottom = viewTop + window.innerHeight;
+              DID_BOUNCE =
+                bounceVertical(STAR, viewRight, -1, outVx, outVy, pushOutX, NOW, HIT_COOLDOWN_MS) ||
+                DID_BOUNCE;
+            } else if (touchTop && withinTopBottomPaddle && Vy < 0) {
+              const offset = clamp((STAR.x - cx) / (halfPW || 1), -1, 1);
+              const ang = offset * maxAngle;
 
-        // Paddle center (0..100) in viewport -> canvas coords
-        const cx = viewLeft + (window.KEYBOARD.paddlesX / 100) * window.innerWidth;
-        const cy = viewTop + (window.KEYBOARD.paddlesY / 100) * window.innerHeight;
+              const outVy = +1 * speed * Math.cos(ang);
+              const outVx = speed * Math.sin(ang);
 
-        // Paddle spans (same as render)
-        const paddleW = window.innerWidth * 0.10;  // top/bottom paddle length
-        const paddleH = window.innerHeight * 0.10; // left/right paddle length
-        const halfPW = paddleW * 0.5;
-        const halfPH = paddleH * 0.5;
+              DID_BOUNCE =
+                bounceHorizontal(STAR, viewTop, +1, outVx, outVy, pushOutY, NOW, HIT_COOLDOWN_MS) ||
+                DID_BOUNCE;
+            } else if (touchBottom && withinTopBottomPaddle && Vy > 0) {
+              const offset = clamp((STAR.x - cx) / (halfPW || 1), -1, 1);
+              const ang = offset * maxAngle;
 
-        // Paddle thickness (match render feel)
-        const paddleThickness = Math.max(2, Math.min(window.innerWidth, window.innerHeight) * 0.03);
-        const halfT = paddleThickness * 0.5;
+              const outVy = -1 * speed * Math.cos(ang);
+              const outVx = speed * Math.sin(ang);
 
-        // Ball radius (a little bigger than sprite feels better)
-        const BALL_R = Math.max(2, (2 + STAR.size) || 2);
-
-        // Ball velocity (include momentum so it matches how it *actually* moved)
-        const Vx = (STAR.vx || 0) + (STAR.momentumX || 0);
-        const Vy = (STAR.vy || 0) + (STAR.momentumY || 0);
-        const speed = Math.sqrt(Vx * Vx + Vy * Vy);
-
-        if (speed > 0.0001) {
-          const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
-
-          // Center hit = perpendicular; edge hit = shallow
-          const maxAngle = 1.25; // ~72 degrees
-
-          // Push out after hit so we don't immediately collide again
-          const pushOutX = BALL_R + halfT + 0.5;
-          const pushOutY = BALL_R + halfT + 0.5;
-
-          // Collision envelopes (edge touch with thickness)
-          const touchLeft   = STAR.x <= viewLeft   + (BALL_R + halfT);
-          const touchRight  = STAR.x >= viewRight  - (BALL_R + halfT);
-          const touchTop    = STAR.y <= viewTop    + (BALL_R + halfT);
-          const touchBottom = STAR.y >= viewBottom - (BALL_R + halfT);
-
-          // Must be within paddle segment
-          const withinLeftRightPaddle = (STAR.y >= (cy - halfPH) && STAR.y <= (cy + halfPH));
-          const withinTopBottomPaddle = (STAR.x >= (cx - halfPW) && STAR.x <= (cx + halfPW));
-
-          const HIT_COOLDOWN_MS = 60;
-
-          // LEFT paddle: bounce to the right (+1)
-          if (touchLeft && withinLeftRightPaddle && Vx < 0) {
-            const offset = clamp((STAR.y - cy) / (halfPH || 1), -1, 1);
-            const ang = offset * maxAngle;
-
-            const outVx = +1 * speed * Math.cos(ang);
-            const outVy = speed * Math.sin(ang);
-
-            DID_BOUNCE = bounceVertical(STAR, viewLeft, +1, outVx, outVy, pushOutX, NOW, HIT_COOLDOWN_MS) || DID_BOUNCE;
-          }
-
-          // RIGHT paddle: bounce to the left (-1)
-          else if (touchRight && withinLeftRightPaddle && Vx > 0) {
-            const offset = clamp((STAR.y - cy) / (halfPH || 1), -1, 1);
-            const ang = offset * maxAngle;
-
-            const outVx = -1 * speed * Math.cos(ang);
-            const outVy = speed * Math.sin(ang);
-
-            DID_BOUNCE = bounceVertical(STAR, viewRight, -1, outVx, outVy, pushOutX, NOW, HIT_COOLDOWN_MS) || DID_BOUNCE;
-          }
-
-          // TOP paddle: bounce down (+1)
-          else if (touchTop && withinTopBottomPaddle && Vy < 0) {
-            const offset = clamp((STAR.x - cx) / (halfPW || 1), -1, 1);
-            const ang = offset * maxAngle;
-
-            const outVy = +1 * speed * Math.cos(ang);
-            const outVx = speed * Math.sin(ang);
-
-            DID_BOUNCE = bounceHorizontal(STAR, viewTop, +1, outVx, outVy, pushOutY, NOW, HIT_COOLDOWN_MS) || DID_BOUNCE;
-          }
-
-          // BOTTOM paddle: bounce up (-1)
-          else if (touchBottom && withinTopBottomPaddle && Vy > 0) {
-            const offset = clamp((STAR.x - cx) / (halfPW || 1), -1, 1);
-            const ang = offset * maxAngle;
-
-            const outVy = -1 * speed * Math.cos(ang);
-            const outVx = speed * Math.sin(ang);
-
-            DID_BOUNCE = bounceHorizontal(STAR, viewBottom, -1, outVx, outVy, pushOutY, NOW, HIT_COOLDOWN_MS) || DID_BOUNCE;
+              DID_BOUNCE =
+                bounceHorizontal(STAR, viewBottom, -1, outVx, outVy, pushOutY, NOW, HIT_COOLDOWN_MS) ||
+                DID_BOUNCE;
+            }
           }
         }
       }
-    }
 
-    /* EDGE BEHAVIOR: WRAP VS BOUNCE */
-    // Choose wrap behavior when ring is off, far away, or poke is strong
-    if (S.pointerRingTimer === 0 || DISTANCE_SQ > WRAP_DISTANCE_SQ || S.pokeImpulseTimer > 10) {
-      // Compute padded radius for wrap checks to avoid visible popping
-      const STAR_RADIUS = (STAR.whiteValue * 2 + STAR.size) || 0;
-
-      // Wrap star from left to right when it exits the left boundary
-      if (STAR.x < -STAR_RADIUS) STAR.x = S.canvasWidth + STAR_RADIUS;
-      // Wrap star from right to left when it exits the right boundary
-      else if (STAR.x > S.canvasWidth + STAR_RADIUS) STAR.x = -STAR_RADIUS;
-
-      // Wrap star from top to bottom when it exits the top boundary
-      if (STAR.y < -STAR_RADIUS) STAR.y = S.canvasHeight + STAR_RADIUS;
-      // Wrap star from bottom to top when it exits the bottom boundary
-      else if (STAR.y > S.canvasHeight + STAR_RADIUS) STAR.y = -STAR_RADIUS;
-    } else {
-      // ✅ NEW: use bounce helpers (and don't overwrite paddle bounce this frame)
-      if (!DID_BOUNCE) {
-        // Compute padded radius for bounce checks to avoid visible clipping
+      /* EDGE BEHAVIOR: WRAP VS BOUNCE */
+      if (S.pointerRingTimer === 0 || DISTANCE_SQ > WRAP_DISTANCE_SQ || S.pokeImpulseTimer > 10) {
         const STAR_RADIUS = (STAR.whiteValue * 2 + STAR.size) || 0;
 
-        // Combined velocity for deciding direction
-        const Vx = (STAR.vx || 0) + (STAR.momentumX || 0);
-        const Vy = (STAR.vy || 0) + (STAR.momentumY || 0);
+        if (STAR.x < -STAR_RADIUS) STAR.x = S.canvasWidth + STAR_RADIUS;
+        else if (STAR.x > S.canvasWidth + STAR_RADIUS) STAR.x = -STAR_RADIUS;
 
-        // Push away from wall so it doesn't get stuck re-hitting
-        const pushOutX = STAR_RADIUS + 0.5;
-        const pushOutY = STAR_RADIUS + 0.5;
+        if (STAR.y < -STAR_RADIUS) STAR.y = S.canvasHeight + STAR_RADIUS;
+        else if (STAR.y > S.canvasHeight + STAR_RADIUS) STAR.y = -STAR_RADIUS;
+      } else {
+        if (!DID_BOUNCE) {
+          const STAR_RADIUS = (STAR.whiteValue * 2 + STAR.size) || 0;
 
-        // Left wall
-        if (STAR.x < STAR_RADIUS) {
-          const outVx = Math.abs(Vx);
-          const outVy = Vy;
-          bounceVertical(STAR, STAR_RADIUS, +1, outVx, outVy, pushOutX, NOW, 0);
-        }
-        // Right wall
-        else if (STAR.x > S.canvasWidth - STAR_RADIUS) {
-          const outVx = -Math.abs(Vx);
-          const outVy = Vy;
-          bounceVertical(STAR, S.canvasWidth - STAR_RADIUS, -1, outVx, outVy, pushOutX, NOW, 0);
-        }
+          const Vx = (STAR.vx || 0) + (STAR.momentumX || 0);
+          const Vy = (STAR.vy || 0) + (STAR.momentumY || 0);
 
-        // Top wall
-        if (STAR.y < STAR_RADIUS) {
-          const outVx = Vx;
-          const outVy = Math.abs(Vy);
-          bounceHorizontal(STAR, STAR_RADIUS, +1, outVx, outVy, pushOutY, NOW, 0);
+          const pushOutX = STAR_RADIUS + 0.5;
+          const pushOutY = STAR_RADIUS + 0.5;
+
+          if (STAR.x < STAR_RADIUS) {
+            const outVx = Math.abs(Vx);
+            const outVy = Vy;
+            bounceVertical(STAR, STAR_RADIUS, +1, outVx, outVy, pushOutX, NOW, 0);
+          } else if (STAR.x > S.canvasWidth - STAR_RADIUS) {
+            const outVx = -Math.abs(Vx);
+            const outVy = Vy;
+            bounceVertical(STAR, S.canvasWidth - STAR_RADIUS, -1, outVx, outVy, pushOutX, NOW, 0);
+          }
+
+          if (STAR.y < STAR_RADIUS) {
+            const outVx = Vx;
+            const outVy = Math.abs(Vy);
+            bounceHorizontal(STAR, STAR_RADIUS, +1, outVx, outVy, pushOutY, NOW, 0);
+          } else if (STAR.y > S.canvasHeight - STAR_RADIUS) {
+            const outVx = Vx;
+            const outVy = -Math.abs(Vy);
+            bounceHorizontal(STAR, S.canvasHeight - STAR_RADIUS, -1, outVx, outVy, pushOutY, NOW, 0);
+          }
         }
-        // Bottom wall
-        else if (STAR.y > S.canvasHeight - STAR_RADIUS) {
-          const outVx = Vx;
-          const outVy = -Math.abs(Vy);
-          bounceHorizontal(STAR, S.canvasHeight - STAR_RADIUS, -1, outVx, outVy, pushOutY, NOW, 0);
-        }
+      }
+
+      /* WHITE FLASH DECAY */
+      if (STAR.whiteValue > 0) {
+        STAR.whiteValue *= WHITE_DECAY;
+        if (STAR.whiteValue < 0.001) STAR.whiteValue = 0;
+      }
+
+      /* OPACITY / TWINKLE CYCLE */
+      if (STAR.opacity <= 0.005) {
+        STAR.opacity = 1;
+        if (Math.random() < 0.07) STAR.whiteValue = 1;
+      } else if (STAR.opacity > 0.02) {
+        STAR.opacity -= (0.005 * STAR.fadeSpeed) * dtFrames;
+      } else {
+        STAR.opacity -= 0.0001 * dtFrames;
+      }
+
+      // Yield to browser occasionally so HTML/CSS/input can run
+      STAR_INDEX++;
+      if ((STAR_INDEX % YIELD_EVERY) === 0) {
+        await new Promise(r => requestAnimationFrame(r));
       }
     }
 
-    /* WHITE FLASH DECAY */
-    // Only decay whiteValue when it is actively above zero
-    if (STAR.whiteValue > 0) {
-      // Fade whiteValue down smoothly over time
-      STAR.whiteValue *= WHITE_DECAY;
+    /* GLOBAL DECAYS */
 
-      // Snap extremely tiny values to zero to avoid endless micro-updates
-      if (STAR.whiteValue < 0.001) STAR.whiteValue = 0;
+    // Reset keyboard forces so keys act as one-tick impulses
+    window.KEYBOARD.multX = 1;
+    window.KEYBOARD.multY = 1;
+    window.KEYBOARD.addX = 0;
+    window.KEYBOARD.addY = 0;
+
+    // Decay pointer speed energy over time
+    S.pointerSpeedUnits *= POINTER_SPEED_DECAY;
+    if (S.pointerSpeedUnits < 0.001) S.pointerSpeedUnits = 0;
+
+    // Decay the ring timer over time
+    S.pointerRingTimer *= RING_DECAY;
+    if (S.pointerRingTimer < 1) S.pointerRingTimer = 0;
+
+    // Decay the poke impulse over time
+    S.pokeImpulseTimer *= POKE_DECAY;
+    if (S.pokeImpulseTimer < 1) S.pokeImpulseTimer = 0;
+
+    /* DEBUG READOUTS */
+    if (DBG.misc || DBG.circle || DBG.speed || DBG.poke) {
+      if (NOW - DBG.lastMs >= 100) {
+        DBG.lastMs = NOW;
+
+        if (DBG.misc) DBG.misc.textContent = S.starList[0].momentumX;
+        if (DBG.circle) DBG.circle.textContent = S.pointerRingTimer.toFixed(3);
+        if (DBG.speed) DBG.speed.textContent = S.pointerSpeedUnits.toFixed(3);
+        if (DBG.poke) DBG.poke.textContent = S.pokeImpulseTimer.toFixed(1);
+      }
     }
-
-    /* OPACITY / TWINKLE CYCLE */
-    // Reset twinkle cycle when opacity gets very low
-    if (STAR.opacity <= 0.005) {
-      // Restart opacity at full brightness
-      STAR.opacity = 1;
-
-      // Occasionally trigger a white flash on a new twinkle
-      if (Math.random() < 0.07) STAR.whiteValue = 1;
-    }
-    // Fade faster while the star is still fairly visible
-    else if (STAR.opacity > 0.02) {
-      // Reduce opacity using fadeSpeed and dt so it stays consistent across FPS
-      STAR.opacity -= (0.005 * STAR.fadeSpeed) * dtFrames;
-    }
-    // Fade slowly near the end so it doesn't vanish too abruptly
-    else {
-      // Reduce opacity with a tiny drift amount (dt-scaled)
-      STAR.opacity -= 0.0001 * dtFrames;
-    }
-  }
-
-  /* GLOBAL DECAYS */
-
-  // Reset keyboard forces so keys act as one-tick impulses
-  window.KEYBOARD.multX = 1;
-  window.KEYBOARD.multY = 1;
-  window.KEYBOARD.addX = 0;
-  window.KEYBOARD.addY = 0;
-
-  // Decay pointer speed energy over time
-  S.pointerSpeedUnits *= POINTER_SPEED_DECAY;
-
-  // Snap tiny pointer speed values to zero to avoid endless micro-updates
-  if (S.pointerSpeedUnits < 0.001) S.pointerSpeedUnits = 0;
-
-  // Decay the ring timer over time
-  S.pointerRingTimer *= RING_DECAY;
-
-  // Snap small ring values to zero so "off" is truly off
-  if (S.pointerRingTimer < 1) S.pointerRingTimer = 0;
-
-  // Decay the poke impulse over time
-  S.pokeImpulseTimer *= POKE_DECAY;
-
-  // Snap small poke values to zero so the burst ends cleanly
-  if (S.pokeImpulseTimer < 1) S.pokeImpulseTimer = 0;
-
-  /* DEBUG READOUTS */
-  // Only do debug work when any debug elements exist
-  if (DBG.misc || DBG.circle || DBG.speed || DBG.poke) {
-    // Throttle debug DOM writes to about 10 updates per second
-    if (NOW - DBG.lastMs >= 100) {
-      // Record the last debug update time
-      DBG.lastMs = NOW;
-
-      // Write a sample star value for quick sanity checking
-      if (DBG.misc) DBG.misc.textContent = S.starList[0].momentumX;
-
-      // Write ring timer value for visual verification
-      if (DBG.circle) DBG.circle.textContent = S.pointerRingTimer.toFixed(3);
-
-      // Write pointer speed value for visual verification
-      if (DBG.speed) DBG.speed.textContent = S.pointerSpeedUnits.toFixed(3);
-
-      // Write poke timer value for visual verification
-      if (DBG.poke) DBG.poke.textContent = S.pokeImpulseTimer.toFixed(1);
-    }
+  } finally {
+    // ALWAYS release the lock (even if something throws)
+    UPDATING_STARS = false;
   }
 };
 
