@@ -308,6 +308,32 @@ S.updateStarPhysics = function updateStarPhysics() {
     STAR.momentumX *= MOMENTUM_DECAY;
     STAR.momentumY *= MOMENTUM_DECAY;
 
+
+
+
+
+
+
+
+
+
+
+
+    /* PADDLE STAR PHYSICS */
+    if (window.KEYBOARD.paddlesTimer > 0 && STAR === S.starList[0]) {
+      // Keep the paddle ball white and visible
+      STAR.whiteValue = 1;
+      STAR.opacity = 1;
+      
+      //GPT START
+      if (/*is touching (half of paddle line width) and is in within 5% (5+ and 5- makes the 10% length of the paddle) of the paddle*/) {
+        const STAR_RADIUS = (2 + STAR.size) || 0;
+        STAR.vx = STAR.vx /* times a number to reflect. angle becomes 90 degrees (perpendicular) from the wall if hit central paddle, and angle changes all the way to 0 or 180 (parallel woth the wall) as it gets closer to the edge of the paddle */;
+        STAR.vy = STAR.vy /* same thing */;
+      }
+      //GPT END
+    }
+    
     /* EDGE BEHAVIOR: WRAP VS BOUNCE */
     // Choose wrap behavior when ring is off, far away, or poke is strong
     if (S.pointerRingTimer === 0 || DISTANCE_SQ > WRAP_DISTANCE_SQ || S.pokeImpulseTimer > 10) {
