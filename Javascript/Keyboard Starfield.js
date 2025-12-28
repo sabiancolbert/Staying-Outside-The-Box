@@ -90,8 +90,8 @@ const KEY_FUNCTIONS = {
 };
 
 /* CONSTANTS */
-const MULTIPLY = 25;
-const DIVIDE = 0.75;
+const MULTIPLY = 1.8;
+const DIVIDE = 0.2;
 const POSITIVE = 1;
 const NEGATIVE = -1;
 
