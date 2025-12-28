@@ -278,10 +278,10 @@ S.updateStarPhysics = function updateStarPhysics() {
     STAR.momentumY += (STAR.vy * DRIFT_BOOST) * dtFrames;
 
     // Apply keyboard impulses (designed as instant per-tick nudges)
-    STAR.momentumX *= window.KEYBOARD.multX;
-    STAR.momentumY *= window.KEYBOARD.multY;
     STAR.momentumX += window.KEYBOARD.addX;
     STAR.momentumY += window.KEYBOARD.addY;
+    STAR.momentumX *= window.KEYBOARD.multX;
+    STAR.momentumY *= window.KEYBOARD.multY;
 
     /* MOMENTUM CLAMP */
     // Compute a maximum allowed momentum based on user clamp and screen scaling
