@@ -90,11 +90,10 @@ const KEY_FUNCTIONS = {
 };
 
 /* CONSTANTS */
-const STRENGTH = 5;
-const MULTIPLY = STRENGTH;
-const DIVIDE = 1 / STRENGTH;
-const POSITIVE = STRENGTH;
-const NEGATIVE = -STRENGTH;
+const MULTIPLY = 25;
+const DIVIDE = 0.75;
+const POSITIVE = 1;
+const NEGATIVE = -1;
 
 /* #endregion 1) SETUP */
 
