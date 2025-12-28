@@ -132,15 +132,11 @@ function decayPerFrameToDt(basePerFrame, dtFrames) {
  *========================================*/
 
 /* DECIDE HOW EACH STAR SHOULD MOVE */
-let UPDATING_STARS = false;
-
 S.updateStarPhysics = async function updateStarPhysics() {
   // Bail early if we have no stars to simulate
   if (!S.starList.length) return;
 
-  // Prevent parallel/re-entrant runs (ex: RAF calls again before await resumes)
-  if (UPDATING_STARS) return;
-  UPDATING_STARS = true;
+  S.lastUpdateFinished = false;
 
   try {
     // Sample the current time from Setup's helper (performance.now when possible)
@@ -501,7 +497,7 @@ S.updateStarPhysics = async function updateStarPhysics() {
     }
   } finally {
     // ALWAYS release the lock (even if something throws)
-    UPDATING_STARS = false;
+    S.lastUpdateFinished = true;
   }
 };
 
@@ -569,8 +565,6 @@ function resetLinkPaths() {
 
 /* DISPLAY THE CALCULATED STARS AND LINES */
 S.renderStarsAndLinks = function renderStarsAndLinks() {
-  // If stars haven't updated, then don't do anythinf
-  if (UPDATING_STARS) return;
   
   // Grab the 2D canvas context for drawing
   const CONTEXT = S.drawingContext;
