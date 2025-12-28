@@ -140,9 +140,6 @@ S.updateStarPhysics = function updateStarPhysics() {
 	// Bail early if we have no stars to simulate
 	if (!S.starList.length) return;
 
-	// For HTML preformance prioritization
-	const LAG = performance.now();
-
 	// Sample the current time from Setup's helper (performance.now when possible)
 	const NOW = S.getNowMs();
 
