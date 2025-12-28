@@ -820,6 +820,12 @@ S.resizeStarfieldCanvas = function resizeStarfieldCanvas() {
   }
 };
 
+function clampDtMs(dtMs) {
+  if (!Number.isFinite(dtMs) || dtMs < 0) return 0;
+  if (dtMs > 50) return 50;
+  return dtMs;
+}
+
 // Run the main animation loop and call physics + rendering
 function runAnimationLoop(NOW) {
   // Bail if canvas isn't active so we don't draw into null context
@@ -852,6 +858,7 @@ function runAnimationLoop(NOW) {
 
 // Expose the loop so we can start/inspect it from the console
 S._runAnimationLoop = runAnimationLoop;
+
 
 /* #endregion 6) RESIZE + ANIMATION */
 
@@ -893,7 +900,7 @@ function startStarfield() {
   // Start the animation loop once
   if (!S.hasAnimationLoopStarted) {
     S.hasAnimationLoopStarted = true;
-    S._runAnimationLoop();
+    requestAnimationFrame(S._runAnimationLoop);
   }
 
   /* RESIZE LISTENER */
