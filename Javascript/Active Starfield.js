@@ -324,44 +324,140 @@ S.updateStarPhysics = function updateStarPhysics() {
       // Keep the paddle ball white and visible
       STAR.whiteValue = 1;
       STAR.opacity = 1;
-      
-      //GPT START
-      if (/*is touching (half of paddle line width) and is in within 5% (5+ and 5- makes the 10% length of the paddle) of the paddle*/) {
-        const STAR_RADIUS = (2 + STAR.size) || 0;
-        STAR.vx = STAR.vx /* times a number to reflect. angle becomes 90 degrees (perpendicular) from the wall if hit central paddle, and angle changes all the way to 0 or 180 (parallel woth the wall) as it gets closer to the edge of the paddle */;
-        STAR.vy = STAR.vy /* same thing */;
+    
+      const CANVAS = S.constellationCanvas;
+      const rect = CANVAS.getBoundingClientRect();
+  
+      // Viewport rectangle in CANVAS coordinates (matches your render)
+      const viewLeft = -rect.left;
+      const viewTop = -rect.top;
+      const viewRight = viewLeft + window.innerWidth;
+      const viewBottom = viewTop + window.innerHeight;
+  
+      // Paddle center (0..100) in viewport, then offset into canvas coords
+      const cx = viewLeft + (window.KEYBOARD.paddlesX / 100) * window.innerWidth;
+      const cy = viewTop + (window.KEYBOARD.paddlesY / 100) * window.innerHeight;
+  
+      // Paddle spans (same as render)
+      const paddleW = window.innerWidth * 0.10;
+      const paddleH = window.innerHeight * 0.10;
+      const halfPW = paddleW * 0.5;
+      const halfPH = paddleH * 0.5;
+  
+      // Paddle thickness (match render feel)
+      const paddleThickness = Math.max(2, Math.min(window.innerWidth, window.innerHeight) * 0.03);
+      const halfT = paddleThickness * 0.5;
+  
+      // Ball radius
+      const BALL_R = Math.max(2, (2 + STAR.size) || 2);
+  
+      // Current “ball” speed from vx/vy (you can include momentum if you want)
+      const Vx = (STAR.vx || 0) + (STAR.momentumX || 0);
+      const Vy = (STAR.vy || 0) + (STAR.momentumY || 0);
+      const speed = Math.sqrt(Vx * Vx + Vy * Vy);
+      if (speed > 0.0001) {
+        const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
+  
+        // Where center hit = perpendicular, edge hit = shallow
+        const maxAngle = 1.25; // ~72 degrees
+  
+        // How far to push out after hit (radius + half thickness + tiny epsilon)
+        const pushOutX = BALL_R + halfT + 0.5;
+        const pushOutY = BALL_R + halfT + 0.5;
+  
+        // Collision envelopes
+        const touchLeft   = STAR.x <= viewLeft  + (BALL_R + halfT);
+        const touchRight  = STAR.x >= viewRight - (BALL_R + halfT);
+        const touchTop    = STAR.y <= viewTop   + (BALL_R + halfT);
+        const touchBottom = STAR.y >= viewBottom- (BALL_R + halfT);
+  
+        const withinLeftRightPaddle = (STAR.y >= (cy - halfPH) && STAR.y <= (cy + halfPH));
+        const withinTopBottomPaddle = (STAR.x >= (cx - halfPW) && STAR.x <= (cx + halfPW));
+  
+        const HIT_COOLDOWN_MS = 60;
+  
+        // LEFT paddle: vertical wall, bounce to the right (+1)
+        if (touchLeft && withinLeftRightPaddle && Vx < 0) {
+          const offset = clamp((STAR.y - cy) / (halfPH || 1), -1, 1);
+          const ang = offset * maxAngle;
+  
+          const outVx = +1 * speed * Math.cos(ang);
+          const outVy = speed * Math.sin(ang);
+  
+          bounceVertical(STAR, viewLeft, +1, outVx, outVy, pushOutX, NOW, HIT_COOLDOWN_MS);
+        }
+  
+        // RIGHT paddle: vertical wall, bounce to the left (-1)
+        else if (touchRight && withinLeftRightPaddle && Vx > 0) {
+          const offset = clamp((STAR.y - cy) / (halfPH || 1), -1, 1);
+          const ang = offset * maxAngle;
+  
+          const outVx = -1 * speed * Math.cos(ang);
+          const outVy = speed * Math.sin(ang);
+  
+          bounceVertical(STAR, viewRight, -1, outVx, outVy, pushOutX, NOW, HIT_COOLDOWN_MS);
+        }
+  
+        // TOP paddle: horizontal wall, bounce down (+1)
+        else if (touchTop && withinTopBottomPaddle && Vy < 0) {
+          const offset = clamp((STAR.x - cx) / (halfPW || 1), -1, 1);
+          const ang = offset * maxAngle;
+  
+          const outVy = +1 * speed * Math.cos(ang);
+          const outVx = speed * Math.sin(ang);
+  
+          bounceHorizontal(STAR, viewTop, +1, outVx, outVy, pushOutY, NOW, HIT_COOLDOWN_MS);
+        }
+  
+        // BOTTOM paddle: horizontal wall, bounce up (-1)
+        else if (touchBottom && withinTopBottomPaddle && Vy > 0) {
+          const offset = clamp((STAR.x - cx) / (halfPW || 1), -1, 1);
+          const ang = offset * maxAngle;
+  
+          const outVy = -1 * speed * Math.cos(ang);
+          const outVx = speed * Math.sin(ang);
+  
+          bounceHorizontal(STAR, viewBottom, -1, outVx, outVy, pushOutY, NOW, HIT_COOLDOWN_MS);
+        }
       }
-      //GPT END
     }
     
     /* EDGE BEHAVIOR: WRAP VS BOUNCE */
-    // Choose wrap behavior when ring is off, far away, or poke is strong
-    if (S.pointerRingTimer === 0 || DISTANCE_SQ > WRAP_DISTANCE_SQ || S.pokeImpulseTimer > 10) {
-      // Compute padded radius for wrap checks to avoid visible popping
-      const STAR_RADIUS = (STAR.whiteValue * 2 + STAR.size) || 0;
-
-      // Wrap star from left to right when it exits the left boundary
-      if (STAR.x < -STAR_RADIUS) STAR.x = S.canvasWidth + STAR_RADIUS;
-      // Wrap star from right to left when it exits the right boundary
-      else if (STAR.x > S.canvasWidth + STAR_RADIUS) STAR.x = -STAR_RADIUS;
-
-      // Wrap star from top to bottom when it exits the top boundary
-      if (STAR.y < -STAR_RADIUS) STAR.y = S.canvasHeight + STAR_RADIUS;
-      // Wrap star from bottom to top when it exits the bottom boundary
-      else if (STAR.y > S.canvasHeight + STAR_RADIUS) STAR.y = -STAR_RADIUS;
-    } else {
-      // Compute padded radius for bounce checks to avoid visible clipping
-      const STAR_RADIUS = (STAR.whiteValue * 2 + STAR.size) || 0;
-
-      // Bounce off the left boundary by reflecting position and flipping X momentum
-      if (STAR.x < STAR_RADIUS) { STAR.x = 2 * STAR_RADIUS - STAR.x; STAR.momentumX = -STAR.momentumX; }
-      // Bounce off the right boundary by reflecting position and flipping X momentum
-      else if (STAR.x > S.canvasWidth - STAR_RADIUS) { STAR.x = 2 * (S.canvasWidth - STAR_RADIUS) - STAR.x; STAR.momentumX = -STAR.momentumX; }
-
-      // Bounce off the top boundary by reflecting position and flipping Y momentum
-      if (STAR.y < STAR_RADIUS) { STAR.y = 2 * STAR_RADIUS - STAR.y; STAR.momentumY = -STAR.momentumY; }
-      // Bounce off the bottom boundary by reflecting position and flipping Y momentum
-      else if (STAR.y > S.canvasHeight - STAR_RADIUS) { STAR.y = 2 * (S.canvasHeight - STAR_RADIUS) - STAR.y; STAR.momentumY = -STAR.momentumY; }
+    const STAR_RADIUS = (STAR.whiteValue * 2 + STAR.size) || 0;
+  
+    // For normal bounce, we'll reflect the "ball velocity" too (vx/vy), not just momentum.
+    // If you want normal stars to keep using momentum, only apply this to STAR[0].
+    const Vx = (STAR.vx || 0) + (STAR.momentumX || 0);
+    const Vy = (STAR.vy || 0) + (STAR.momentumY || 0);
+  
+    // How far to push out so it doesn't remain inside the wall
+    const pushOutX = STAR_RADIUS + 0.5;
+    const pushOutY = STAR_RADIUS + 0.5;
+  
+    // Left wall
+    if (STAR.x < STAR_RADIUS) {
+      const outVx = Math.abs(Vx);     // force to the right
+      const outVy = Vy;              // keep vertical
+      bounceVertical(STAR, STAR_RADIUS, +1, outVx, outVy, pushOutX, NOW, 0);
+    }
+    // Right wall
+    else if (STAR.x > S.canvasWidth - STAR_RADIUS) {
+      const outVx = -Math.abs(Vx);   // force to the left
+      const outVy = Vy;
+      bounceVertical(STAR, S.canvasWidth - STAR_RADIUS, -1, outVx, outVy, pushOutX, NOW, 0);
+    }
+  
+    // Top wall
+    if (STAR.y < STAR_RADIUS) {
+      const outVx = Vx;
+      const outVy = Math.abs(Vy);    // force down
+      bounceHorizontal(STAR, STAR_RADIUS, +1, outVx, outVy, pushOutY, NOW, 0);
+    }
+    // Bottom wall
+    else if (STAR.y > S.canvasHeight - STAR_RADIUS) {
+      const outVx = Vx;
+      const outVy = -Math.abs(Vy);   // force up
+      bounceHorizontal(STAR, S.canvasHeight - STAR_RADIUS, -1, outVx, outVy, pushOutY, NOW, 0);
     }
 
     /* WHITE FLASH DECAY */
@@ -443,6 +539,63 @@ S.updateStarPhysics = function updateStarPhysics() {
     }
   }
 };
+
+/* ---------- Bounce helpers (reusable) ---------- */
+/**
+ * Apply a vertical-wall bounce (left/right).
+ * Caller provides:
+ *  - wallX: x coordinate of the wall line
+ *  - wallSign: +1 means bounce to the right, -1 means bounce to the left
+ *  - outVx/outVy: the post-bounce velocity components you computed
+ *  - pushOut: how far to place the star away from the wall to avoid re-hits
+ *  - NOW + cooldownMs: optional hit-cooldown support (per-star)
+ */
+function bounceVertical(STAR, wallX, wallSign, outVx, outVy, pushOut, NOW, cooldownMs = 0) {
+  if (cooldownMs > 0) {
+    const last = STAR.lastBounceV_Ms || 0;
+    if (NOW - last < cooldownMs) return false;
+    STAR.lastBounceV_Ms = NOW;
+  }
+
+  STAR.vx = outVx;
+  STAR.vy = outVy;
+
+  // If this star uses momentum too, you can choose to clear it for "clean ball" behavior:
+  STAR.momentumX = 0;
+  STAR.momentumY = 0;
+
+  // Push away from wall so we don't immediately collide again
+  STAR.x = wallX + wallSign * pushOut;
+
+  return true;
+}
+
+/**
+ * Apply a horizontal-wall bounce (top/bottom).
+ * Caller provides:
+ *  - wallY: y coordinate of the wall line
+ *  - wallSign: +1 means bounce downward, -1 means bounce upward
+ *  - outVx/outVy: the post-bounce velocity components you computed
+ *  - pushOut: how far to place the star away from the wall to avoid re-hits
+ *  - NOW + cooldownMs: optional hit-cooldown support (per-star)
+ */
+function bounceHorizontal(STAR, wallY, wallSign, outVx, outVy, pushOut, NOW, cooldownMs = 0) {
+  if (cooldownMs > 0) {
+    const last = STAR.lastBounceH_Ms || 0;
+    if (NOW - last < cooldownMs) return false;
+    STAR.lastBounceH_Ms = NOW;
+  }
+
+  STAR.vx = outVx;
+  STAR.vy = outVy;
+
+  STAR.momentumX = 0;
+  STAR.momentumY = 0;
+
+  STAR.y = wallY + wallSign * pushOut;
+
+  return true;
+}
 
 /* #endregion 1) PHYSICS */
 
