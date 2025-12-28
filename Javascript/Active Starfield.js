@@ -308,8 +308,8 @@ S.updateStarPhysics = function updateStarPhysics() {
     STAR.y += (STAR.vy + STAR.momentumY) * dtFrames;
 
     // Apply friction decay to momentum (time-based)
-    STAR.momentumX = Math.max(MOMENTUM_DECAY * STAR.momentumX);
-    STAR.momentumY = Math.max(MOMENTUM_DECAY * STAR.momentumY);
+    STAR.momentumX = Math.max(0.01, MOMENTUM_DECAY * STAR.momentumX);
+    STAR.momentumY = Math.max(0.01, MOMENTUM_DECAY * STAR.momentumY);
 
     /*==============================================================*
      *  PADDLE STAR PHYSICS (FULL INJECTED BLOCK)
