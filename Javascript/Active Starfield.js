@@ -133,10 +133,9 @@ function decayPerFrameToDt(basePerFrame, dtFrames) {
 
 /* DECIDE HOW EACH STAR SHOULD MOVE */
 S.updateStarPhysics = async function updateStarPhysics(dtMs) {
+  
   if(!S.lastUpdateFinished) return;
   S.lastUpdateFinished = false;
-  // Bail early if we have no stars to simulate
-  if (!S.starList.length) return;
   
   const dtFrames = dtMs / SIXTY_FPS_FRAME_MS;
   if (dtFrames <= 0) return;
