@@ -210,25 +210,25 @@ function runM() {
 // R = Paddles left
 function runR() {
   PADDLES_TIMER = 10;
-  animatePaddles(-5, 0);
+  K.paddlesX -= 5;
 }
 
 // T = Paddles right
 function runT() {
   PADDLES_TIMER = 10;
-  animatePaddles(5, 0);
+  K.paddlesX += 5;
 }
 
 // F = Paddles up
 function runF() {
   PADDLES_TIMER = 10;
-  animatePaddles(0, -5);
+  K.paddlesY -= 5;
 }
 
 // C = Paddles down
 function runC() {
   PADDLES_TIMER = 10;
-  animatePaddles(0, 5);
+  K.paddlesY += 5;
 }
 /* #endregion 4) PONG */
 
