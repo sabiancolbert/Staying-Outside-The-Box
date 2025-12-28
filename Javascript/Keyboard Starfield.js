@@ -95,10 +95,6 @@ const MULTIPLY = 1 + STRENGTH;
 const DIVIDE = 1 - STRENGTH;
 const POSITIVE = STRENGTH;
 const NEGATIVE = -STRENGTH;
-let PADDLES_ACTIVE = 0;
-let PADDLES_TIMER = 0;
-
-
 
 /* #endregion 1) SETUP */
 
@@ -209,25 +205,25 @@ function runM() {
  *========================================*/
 // R = Paddles left
 function runR() {
-  PADDLES_TIMER = 10;
+  K.paddlesTimer = 10;
   K.paddlesX -= 5;
 }
 
 // T = Paddles right
 function runT() {
-  PADDLES_TIMER = 10;
+  K.paddlesTimer = 10;
   K.paddlesX += 5;
 }
 
 // F = Paddles up
 function runF() {
-  PADDLES_TIMER = 10;
+  K.paddlesTimer = 10;
   K.paddlesY -= 5;
 }
 
 // C = Paddles down
 function runC() {
-  PADDLES_TIMER = 10;
+  K.paddlesTimer = 10;
   K.paddlesY += 5;
 }
 /* #endregion 4) PONG */
