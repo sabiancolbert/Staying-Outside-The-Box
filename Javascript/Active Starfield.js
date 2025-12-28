@@ -278,8 +278,8 @@ S.updateStarPhysics = function updateStarPhysics() {
     STAR.momentumY += (STAR.vy * DRIFT_BOOST) * dtFrames;
 
     // Apply keyboard influence 
-STAR.momentumX += window.KEYBOARD.addX + (window.KEYBOARD.multX * STAR.vx * 0.1);
-STAR.momentumY += window.KEYBOARD.addY + (window.KEYBOARD.multY * STAR.vy * 0.1);
+    STAR.momentumX += window.KEYBOARD.addX + (window.KEYBOARD.multX * STAR.vx * 0.05);
+    STAR.momentumY += window.KEYBOARD.addY + (window.KEYBOARD.multY * STAR.vy * 0.05);
     STAR.momentumX *= window.KEYBOARD.multX;
     STAR.momentumY *= window.KEYBOARD.multY;
 
