@@ -545,7 +545,7 @@ if (STAR.momentumY !== 0) STAR.momentumY = Math.sign(STAR.momentumY) * Math.max(
   // Only do debug work when any debug elements exist
   if (DBG.misc || DBG.circle || DBG.speed || DBG.poke) {
     // Throttle debug DOM writes to about 10 updates per second
-    if (NOW - DBG.lastMs >= 100) {
+    if (NOW - DBG.lastMs >= 10) {
       // Record the last debug update time
       DBG.lastMs = NOW;
 
