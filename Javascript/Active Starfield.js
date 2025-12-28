@@ -561,6 +561,31 @@ if (STAR.momentumY !== 0) STAR.momentumY = Math.sign(STAR.momentumY) * Math.max(
       if (DBG.poke) DBG.poke.textContent = S.pokeImpulseTimer.toFixed(1);
     }
   }
+  const FRAME_TIME_MS = S.getNowMs() - S.lastPhysicsMs;
+
+// Tune these
+const TARGET_MS = 6;          // budget for physics (ms)
+const SHRINK = 0.95;
+const GROW = 1.05;
+
+// Safety clamps
+const MIN_LINK_DISTANCE = S.goalLinkDistance * 0.3;
+const MAX_LINK_DISTANCE = S.goalLinkDistance;
+
+if (FRAME_TIME_MS > TARGET_MS) {
+  // Too slow: reduce link distance
+  S.maxLinkDistance *= SHRINK;
+} else {
+  // Fast enough: restore quality
+  S.maxLinkDistance *= GROW;
+}
+
+// Clamp
+if (S.maxLinkDistance < MIN_LINK_DISTANCE) {
+  S.maxLinkDistance = MIN_LINK_DISTANCE;
+} else if (S.maxLinkDistance > MAX_LINK_DISTANCE) {
+  S.maxLinkDistance = MAX_LINK_DISTANCE;
+}
 };
 
 /* ---------- Bounce helpers (momentum-only, no hard-stop) ---------- */
