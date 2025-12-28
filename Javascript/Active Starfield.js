@@ -134,11 +134,16 @@ function decayPerFrameToDt(basePerFrame, dtFrames) {
 /* DECIDE HOW EACH STAR SHOULD MOVE */
 S.updateStarPhysics = async function updateStarPhysics(dtMs) {
   
-  if(!S.lastUpdateFinished) return;
-  S.lastUpdateFinished = false;
-  
+  // Validate dt first (prevents deadlock)
+  if (!Number.isFinite(dtMs) || dtMs <= 0) return;
+
   const dtFrames = dtMs / SIXTY_FPS_FRAME_MS;
   if (dtFrames <= 0) return;
+
+  // Now do the lock
+  if (!S.lastUpdateFinished) return;
+  S.lastUpdateFinished = false;
+
   const NOW = S.getNowMs();
 
   try {
