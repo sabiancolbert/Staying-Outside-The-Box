@@ -307,9 +307,15 @@ S.updateStarPhysics = function updateStarPhysics() {
     STAR.x += (STAR.vx + STAR.momentumX) * dtFrames;
     STAR.y += (STAR.vy + STAR.momentumY) * dtFrames;
 
-    // Apply friction decay to momentum (time-based)
-    STAR.momentumX = Math.max(0.01, MOMENTUM_DECAY * STAR.momentumX);
-    STAR.momentumY = Math.max(0.01, MOMENTUM_DECAY * STAR.momentumY);
+// Apply friction decay to momentum (time-based) BUT never let it hit 0
+const MIN_MOM = 0.01;
+
+STAR.momentumX *= MOMENTUM_DECAY;
+STAR.momentumY *= MOMENTUM_DECAY;
+
+// Preserve sign while enforcing a minimum magnitude
+if (STAR.momentumX !== 0) STAR.momentumX = Math.sign(STAR.momentumX) * Math.max(MIN_MOM, Math.abs(STAR.momentumX));
+if (STAR.momentumY !== 0) STAR.momentumY = Math.sign(STAR.momentumY) * Math.max(MIN_MOM, Math.abs(STAR.momentumY));
 
     /*==============================================================*
      *  PADDLE STAR PHYSICS (FULL INJECTED BLOCK)
