@@ -820,30 +820,12 @@ S.resizeStarfieldCanvas = function resizeStarfieldCanvas() {
   }
 };
 
-function clampDtMs(dtMs) {
-  if (!Number.isFinite(dtMs) || dtMs < 0) return 0;
-  if (dtMs > 50) return 50;
-  return dtMs;
-}
-
 // Run the main animation loop and call physics + rendering
 function runAnimationLoop(NOW) {
   // Bail if canvas isn't active so we don't draw into null context
   if (!S.isCanvasReady) return;
-  
-  const LAST = S._lastFrameMs || NOW;
-  const dtMs = clampDtMs(NOW - LAST);
-  S._lastFrameMs = NOW
-  
-  if (S.lastUpdateFinished){
-  
-    /* PHYSICS */
-    // Run physics update if not frozen and Active file has installed the function
-    if (!S.isFrozen && typeof S.updateStarPhysics === "function") {
-      S.updateStarPhysics(dtMs);
-    }
-    
-  }
+
+  S.updateStarPhysics();
   
   /* RENDER */
   // Run render step if Active file has installed the function
