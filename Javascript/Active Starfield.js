@@ -490,7 +490,7 @@ S.renderStarsAndLinks = function renderStarsAndLinks() {
     // Draw using the render pass context
     CONTEXT.save();
     CONTEXT.globalAlpha = alpha;
-    CONTEXT.lineWidth = Math.max(2, Math.min(window.innerWidth, window.innerHeight) * 0.004);
+    CONTEXT.lineWidth = Math.max(2, Math.min(window.innerWidth, window.innerHeight) * 0.03);
     CONTEXT.lineCap = "round";
     CONTEXT.strokeStyle = "rgba(255,255,255,1)";
   
