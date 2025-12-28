@@ -461,48 +461,56 @@ S.renderStarsAndLinks = function renderStarsAndLinks() {
 
   /* PADDLES */
   if (window.KEYBOARD.paddlesTimer > 0) {
-  
     // Clamp 0-100
-    window.KEYBOARD.paddlesX = Math.max(0, Math.min(100, (window.KEYBOARD.paddlesX)));
-    window.KEYBOARD.paddlesY = Math.max(0, Math.min(100, (window.KEYBOARD.paddlesY)));
+    window.KEYBOARD.paddlesX = Math.max(0, Math.min(100, window.KEYBOARD.paddlesX));
+    window.KEYBOARD.paddlesY = Math.max(0, Math.min(100, window.KEYBOARD.paddlesY));
   
-    // Use the render pass context (already cleared this frame)
-    const W = S.canvasWidth;
-    const H = S.canvasHeight;
+    const CANVAS = S.constellationCanvas;
+    if (!CANVAS) return;
+  
+    const rect = CANVAS.getBoundingClientRect();
+  
+    // Visible viewport rectangle in CANVAS coordinates
+    const viewLeft = -rect.left;
+    const viewTop = -rect.top;
+    const viewRight = viewLeft + window.innerWidth;
+    const viewBottom = viewTop + window.innerHeight;
   
     // Timer lives on KEYBOARD now
     const alpha = Math.min(1, Math.max(0, window.KEYBOARD.paddlesTimer));
   
-    // 10% paddle spans
-    const paddleW = W * 0.10; // top/bottom
-    const paddleH = H * 0.10; // left/right
+    // Convert 0..100 to viewport pixels (then offset into canvas coords)
+    const cx = viewLeft + (window.KEYBOARD.paddlesX / 100) * window.innerWidth;
+    const cy = viewTop + (window.KEYBOARD.paddlesY / 100) * window.innerHeight;
   
-    // Convert 0..100 to pixels
-    const cx = (window.KEYBOARD.paddlesX / 100) * W;
-    const cy = (window.KEYBOARD.paddlesY / 100) * H;
+    // Paddle spans as % of viewport size
+    const paddleW = window.innerWidth * 0.10;  // top/bottom
+    const paddleH = window.innerHeight * 0.10; // left/right
   
+    // Draw using the render pass context
     CONTEXT.save();
     CONTEXT.globalAlpha = alpha;
-    CONTEXT.lineWidth = Math.max(5, Math.min(W, H) * 0.05);
+    CONTEXT.lineWidth = Math.max(2, Math.min(window.innerWidth, window.innerHeight) * 0.004);
     CONTEXT.lineCap = "round";
     CONTEXT.strokeStyle = "rgba(255,255,255,1)";
   
-    // Left & right vertical paddles
     CONTEXT.beginPath();
-    CONTEXT.moveTo(0, Math.max(0, cy - paddleH / 2));
-    CONTEXT.lineTo(0, Math.min(H, cy + paddleH / 2));
-    CONTEXT.moveTo(W, Math.max(0, cy - paddleH / 2));
-    CONTEXT.lineTo(W, Math.min(H, cy + paddleH / 2));
   
-    // Top & bottom horizontal paddles
-    CONTEXT.moveTo(Math.max(0, cx - paddleW / 2), 0);
-    CONTEXT.lineTo(Math.min(W, cx + paddleW / 2), 0);
-    CONTEXT.moveTo(Math.max(0, cx - paddleW / 2), H);
-    CONTEXT.lineTo(Math.min(W, cx + paddleW / 2), H);
+    // Left & right vertical paddles (viewport edges)
+    CONTEXT.moveTo(viewLeft, Math.max(viewTop, cy - paddleH / 2));
+    CONTEXT.lineTo(viewLeft, Math.min(viewBottom, cy + paddleH / 2));
+    CONTEXT.moveTo(viewRight, Math.max(viewTop, cy - paddleH / 2));
+    CONTEXT.lineTo(viewRight, Math.min(viewBottom, cy + paddleH / 2));
+  
+    // Top & bottom horizontal paddles (viewport edges)
+    CONTEXT.moveTo(Math.max(viewLeft, cx - paddleW / 2), viewTop);
+    CONTEXT.lineTo(Math.min(viewRight, cx + paddleW / 2), viewTop);
+    CONTEXT.moveTo(Math.max(viewLeft, cx - paddleW / 2), viewBottom);
+    CONTEXT.lineTo(Math.min(viewRight, cx + paddleW / 2), viewBottom);
   
     CONTEXT.stroke();
     CONTEXT.restore();
-    
+  
     // Decay paddles
     window.KEYBOARD.paddlesTimer -= 0.1;
   }
