@@ -135,20 +135,13 @@ function decayPerFrameToDt(basePerFrame, dtFrames) {
 S.updateStarPhysics = async function updateStarPhysics(dtMs) {
   // Bail early if we have no stars to simulate
   if (!S.starList.length) return;
+  S.lastUpdateFinished = false;
   
   const dtFrames = dtMs / SIXTY_FPS_FRAME_MS;
   if (dtFrames <= 0) return;
-
-  S.lastUpdateFinished = false;
+  const NOW = S.getNowMs();
 
   try {
-
-    // Normalize elapsed time into "60fps frames" (dt = 1 means one 60fps frame)
-    const dtFrames = dtMs / SIXTY_FPS_FRAME_MS;
-
-    // Bail if dt is zero so we don't divide by zero or waste work
-    if (dtFrames <= 0) return;
-
     // Define the maximum range where pointer forces can affect stars
     const INFLUENCE_RANGE = S.screenPerimeter * 0.2;
 
