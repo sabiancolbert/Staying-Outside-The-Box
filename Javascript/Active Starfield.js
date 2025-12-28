@@ -277,12 +277,6 @@ S.updateStarPhysics = function updateStarPhysics() {
     STAR.momentumX += (STAR.vx * DRIFT_BOOST) * dtFrames;
     STAR.momentumY += (STAR.vy * DRIFT_BOOST) * dtFrames;
 
-    // Apply keyboard impulses (designed as instant per-tick nudges)
-    STAR.momentumX += window.KEYBOARD.addX;
-    STAR.momentumY += window.KEYBOARD.addY;
-    STAR.momentumX *= window.KEYBOARD.multX;
-    STAR.momentumY *= window.KEYBOARD.multY;
-
     /* MOMENTUM CLAMP */
     // Compute a maximum allowed momentum based on user clamp and screen scaling
     const MOMENTUM_LIMIT = 2 * SETTINGS.clamp * SCALE.forceClamp;
@@ -302,10 +296,20 @@ S.updateStarPhysics = function updateStarPhysics() {
       STAR.momentumY *= MOMENTUM_SCALE;
     }
 
+    // Switch to a treatable force
+    let FORCE_X = STAR.vx + STAR.momentumX;
+    let FORCE_Y = STAR.vy + STAR.momentumY;
+    
+    // Apply keyboard impulses (designed as instant per-tick nudges)
+    FORCE_X += window.KEYBOARD.addX;
+    FORCE_Y += window.KEYBOARD.addY;
+    FORCE_X *= window.KEYBOARD.multX;
+    FORCE_Y *= window.KEYBOARD.multY;
+
     /* INTEGRATION */
     // Advance star position using base velocity plus accumulated momentum (dt-scaled)
-    STAR.x += (STAR.vx + STAR.momentumX) * dtFrames;
-    STAR.y += (STAR.vy + STAR.momentumY) * dtFrames;
+    STAR.x += FORCE_X * dtFrames;
+    STAR.y += FORCE_Y * dtFrames;
 
     // Apply friction decay to momentum (time-based)
     STAR.momentumX *= MOMENTUM_DECAY;
