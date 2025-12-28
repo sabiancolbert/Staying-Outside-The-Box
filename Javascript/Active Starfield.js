@@ -569,6 +569,9 @@ function resetLinkPaths() {
 
 /* DISPLAY THE CALCULATED STARS AND LINES */
 S.renderStarsAndLinks = function renderStarsAndLinks() {
+  // If stars haven't updated, then don't do anythinf
+  if (UPDATING_STARS) return;
+  
   // Grab the 2D canvas context for drawing
   const CONTEXT = S.drawingContext;
 
