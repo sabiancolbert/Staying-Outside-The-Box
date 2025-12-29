@@ -329,6 +329,50 @@ MAGNET_Y += slightly perpendicular and slightly towards magnetY;
   
 */
 // GPT END
+// ===================== MAGNET (percent target) =====================
+if (window.KEYBOARD.magnetY > 0) {
+  // Treat magnetX/magnetY as 0..100 screen percentages
+  const mx = (window.KEYBOARD.magnetX / 100) * S.canvasWidth;
+  const my = (window.KEYBOARD.magnetY / 100) * S.canvasHeight;
+
+  // Vector from star -> magnet
+  const dxm = mx - STAR.x;
+  const dym = my - STAR.y;
+
+  // Distance (avoid divide-by-zero)
+  const dm = Math.sqrt(dxm * dxm + dym * dym) + 0.0001;
+
+  // Unit vector toward magnet
+  const ux = dxm / dm;
+  const uy = dym / dm;
+
+  // Perpendicular unit vector (orbit direction)
+  const dir = (window.KEYBOARD.magnetDir === -1) ? -1 : 1; // default clockwise
+  const px = -uy * dir;
+  const py =  ux * dir;
+
+  // Strength knobs (simple + obvious)
+  const strength = window.KEYBOARD.magnetStrength || 1;
+
+  // Optional: gentle falloff with distance (so far stars move less violently)
+  // Set FALLOFF = 0 to make it "global constant strength"
+  const FALLOFF = 0.35; // try 0.15..0.6
+  const fall = 1 / (1 + FALLOFF * dm / (S.screenPerimeter || 1));
+
+  // Base force (uses your clamp scaling so it stays consistent across screens)
+  const BASE = (0.08 * SETTINGS.clamp * SCALE.forceClamp) * strength * fall;
+
+  // Pull vs spin ratio
+  const PULL = BASE * 0.55;
+  const SPIN = BASE * 0.95;
+
+  // Apply dt-scaled
+  STAR.momentumX += (ux * PULL + px * SPIN) * dtFrames;
+  STAR.momentumY += (uy * PULL + py * SPIN) * dtFrames;
+
+  // Keep links responsive when orbit is active
+  LINKS_DIRTY = true;
+}
 }
 }
 
