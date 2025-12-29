@@ -179,8 +179,8 @@ function RUN_X() {
 
 // Y = Top-left
 function RUN_Y() {
-  K.magnetX = 16.5; // ~1/6 from left
-  K.magnetY = 16.5; // ~1/6 from top
+  K.magnetX = 16.5; // Near left
+  K.magnetY = 16.5; // Near top
 }
 
 // U = Top-center
@@ -191,7 +191,7 @@ function RUN_U() {
 
 // I = Top-right
 function RUN_I() {
-  K.magnetX = 83.5; // ~5/6 from left
+  K.magnetX = 83.5; // Near right
   K.magnetY = 16.5;
 }
 
@@ -239,13 +239,13 @@ function RUN_M() {
  *====================================================================*/
 
 /* GROUP: Paddle impulses */
-// These control the paddle overlay and the special “ball star”.
+// These control the paddles overlay and the special “ball star”.
 // paddlesTimer controls visibility fade-out.
 
 // R = Paddle left
 function RUN_R() {
   K.paddlesTimer = 50; // Make paddles visible
-  K.paddlesX -= 5;     // Shift paddle center left
+  K.paddlesX -= 5;     // Shift paddles left
 }
 
 // T = Paddle right
@@ -309,7 +309,7 @@ function RUN_P() {
 }
 
 /* GROUP: Link rebuild trigger */
-// Forces links to fade back in over time.
+// Forces links to disappear and fade back in over time.
 function RUN_L() {
   const S = window.STARFIELD;
   if (!S) return;
@@ -319,6 +319,5 @@ function RUN_L() {
 
 /* #endregion 5) OTHERS */
 
-
-// Joke: If the keyboard were a spaceship, these functions are the tiny thrusters.
+// GPT Joke: If the keyboard were a spaceship, these functions are the tiny thrusters.
 // Not enough to warp-drive, but plenty to bonk a star into the next zip code. 🚀
