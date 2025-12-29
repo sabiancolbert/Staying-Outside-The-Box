@@ -282,7 +282,7 @@ S.updateStarPhysics = function updateStarPhysics() {
     STAR.momentumY += window.KEYBOARD.addY + (window.KEYBOARD.multY * STAR.vy * 0.05);
     STAR.momentumX *= window.KEYBOARD.multX;
     STAR.momentumY *= window.KEYBOARD.multY;
-    if (window.KEYBOARD.magnetY > 0) {
+    if (window.KEYBOARD.magnetY > 0 || window.KEYBOARD.magnetPointer) {
       const CANVAS = S.constellationCanvas;
       if (CANVAS) {
         const rect = CANVAS.getBoundingClientRect();
