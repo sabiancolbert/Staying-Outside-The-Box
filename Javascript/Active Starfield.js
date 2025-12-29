@@ -578,7 +578,10 @@ if (STAR.momentumY !== 0) STAR.momentumY = Math.sign(STAR.momentumY) * Math.max(
     S.maxLinkDistance = S.goalLinkDistance * t;
     S.linkRebuildTimer -= 0.004 * dtMs;
   
-    if (S.linkRebuildTimer < 0) S.linkRebuildTimer = 0;
+    if (S.linkRebuildTimer < 0) {
+      S.linkRebuildTimer = 0;
+      S.maxLinkDistance = S.goalLinkDistance;
+    }
     LINKS_DIRTY = true;
   }
 
