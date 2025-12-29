@@ -770,6 +770,13 @@ S.renderStarsAndLinks = function renderStarsAndLinks() {
   }
 
   /* LINKS */
+  // Keyboard "L" button
+  if (S.linkRebuildTimer > 0) {
+    S.maxLinkDistance += S.goalLinkDistance / 30;
+    S.linkRebuildTimer--;
+    LINKS_DIRTY = true;
+  }
+  // Regular link behavior
   CONTEXT.lineWidth = 1;
   const STAR_COUNT = S.starList.length;
 
