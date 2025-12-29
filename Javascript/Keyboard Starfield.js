@@ -270,7 +270,7 @@ function runP() {
   }
 }
 
-// L = Link shatter
+// L = Link fade in
 function runL() {
   window.STARFIELD.linkRebuildTimer = 300;
 }
