@@ -259,7 +259,7 @@ function runG() {
 function runO() {
   K.magnetPointer = true;
   K.magnetX = window.STARFIELD.pointerClientX;
-  K.magnetY = window.STARFIELD.pointerClientY + 0.001;
+  K.magnetY = window.STARFIELD.pointerClientY;
 }
 
 // P = Passive movement inversion
