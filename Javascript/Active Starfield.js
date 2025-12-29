@@ -282,6 +282,9 @@ S.updateStarPhysics = function updateStarPhysics() {
     STAR.momentumY += window.KEYBOARD.addY + (window.KEYBOARD.multY * STAR.vy * 0.05);
     STAR.momentumX *= window.KEYBOARD.multX;
     STAR.momentumY *= window.KEYBOARD.multY;
+    if (window.KEYBOARD.magnetY > 0) {
+      //HERE
+    }
 
     /* MOMENTUM CLAMP */
     // Compute a maximum allowed momentum based on user clamp and screen scaling
@@ -521,6 +524,8 @@ if (STAR.momentumY !== 0) STAR.momentumY = Math.sign(STAR.momentumY) * Math.max(
   window.KEYBOARD.multY = 1;
   window.KEYBOARD.addX = 0;
   window.KEYBOARD.addY = 0;
+  window.KEYBOARD.magnetX = 0;
+  window.KEYBOARD.magnetY = 0;
 
   // Decay pointer speed energy over time
   S.pointerSpeedUnits *= POINTER_SPEED_DECAY;
