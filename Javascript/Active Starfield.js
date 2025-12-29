@@ -290,9 +290,7 @@ S.updateStarPhysics = function updateStarPhysics() {
         // Convert magnet target into CANVAS coordinates (same space as STAR.x / STAR.y)
         let mx, my;
       
-        const IS_PERCENT = !!window.KEYBOARD.magnetIsPercent;
-      
-        if (IS_PERCENT) {
+        if (window.KEYBOARD.magnetPointer) {
           // Visible viewport rectangle in CANVAS coordinates (matches paddles math)
           const viewLeft = -rect.left;
           const viewTop = -rect.top;
