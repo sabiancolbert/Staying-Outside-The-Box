@@ -783,7 +783,7 @@ S.resizeStarfieldCanvas = function resizeStarfieldCanvas() {
 
   /* RECOMPUTE PHYSICS SCALING POWERS */
   // Scale attraction radius behavior as screen grows
-  S.screenScalePowers.attractionGradient = S.screenScaleUp ** 0.6;
+  S.screenScalePowers.attractionGradient = S.screenScaleUp ** 0.5;
 
   // Scale repulsion radius behavior as screen grows
   S.screenScalePowers.repulsionGradient = S.screenScaleUp ** 0.66;
