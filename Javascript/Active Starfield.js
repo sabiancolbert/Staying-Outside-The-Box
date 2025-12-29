@@ -571,6 +571,16 @@ if (STAR.momentumY !== 0) STAR.momentumY = Math.sign(STAR.momentumY) * Math.max(
       STAR.opacity -= 0.0001 * dtFrames;
     }
   }
+  
+  /* Keyboard "L" button */
+  if (S.linkRebuildTimer > 0) {
+    const t = 1 - (S.linkRebuildTimer / 300);
+    S.maxLinkDistance = S.goalLinkDistance * t;
+    S.linkRebuildTimer -= 0.004 * dtMs;
+  
+    if (S.linkRebuildTimer < 0) S.linkRebuildTimer = 0;
+    LINKS_DIRTY = true;
+  }
 
   /* GLOBAL DECAYS */
 
@@ -770,18 +780,6 @@ S.renderStarsAndLinks = function renderStarsAndLinks() {
   }
 
   /* LINKS */
-  // Keyboard "L" button
-  if (S.linkRebuildTimer > 0) {
-    const dtMs = clampDtMs(S.getNowMs() - (S._lastRenderMs || S.getNowMs()));
-    S._lastRenderMs = S.getNowMs();
-    const t = 1 - (S.linkRebuildTimer / 300);
-    S.maxLinkDistance = S.goalLinkDistance * t;
-    S.linkRebuildTimer -= 0.004 * dtMs;
-  
-    if (S.linkRebuildTimer < 0) S.linkRebuildTimer = 0;
-    LINKS_DIRTY = true;
-  }
-  // Regular link behavior
   CONTEXT.lineWidth = 1;
   const STAR_COUNT = S.starList.length;
 
