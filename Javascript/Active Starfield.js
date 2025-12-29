@@ -299,8 +299,8 @@ S.updateStarPhysics = function updateStarPhysics() {
           const dm = Math.sqrt(dxm * dxm + dym * dym) + 0.0001;
         
           // Unit vector toward magnet
-          const ux = dxm / dm * 2;
-          const uy = dym / dm * 2;
+          const ux = dxm / dm * 5;
+          const uy = dym / dm * 5;
         
           // Perpendicular unit vector (orbit direction)
           const dir = (window.KEYBOARD.magnetDir === -1) ? -1 : 1; // default clockwise
