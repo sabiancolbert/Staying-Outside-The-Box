@@ -293,8 +293,8 @@ S.updateStarPhysics = function updateStarPhysics() {
           // magnetX/magnetY are pointer client coords
           window.KEYBOARD.magnetPointer = false;
           const rect = S.constellationCanvas.getBoundingClientRect();
-          mx = window.KEYBOARD.magnetX - rect.left;
-          my = window.KEYBOARD.magnetY - rect.top;
+          mx = S.pointerClientX - rect.left;
+          my = S.pointerClientY - rect.top;
         } else {
           // magnetX/magnetY are 0..100 screen percentages
           mx = (window.KEYBOARD.magnetX / 100) * S.canvasWidth;
