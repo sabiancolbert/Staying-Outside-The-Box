@@ -774,6 +774,10 @@ S.renderStarsAndLinks = function renderStarsAndLinks() {
   if (S.linkRebuildTimer > 1) {
     S.maxLinkDistance += S.goalLinkDistance / S.linkRebuildTimer;
     S.linkRebuildTimer -= 0.004 * dtMs;
+  
+    if (S.maxLinkDistance > S.goalLinkDistance) S.maxLinkDistance = S.goalLinkDistance; // clamp
+    if (S.linkRebuildTimer < 0) S.linkRebuildTimer = 0;
+  
     LINKS_DIRTY = true;
   }
   // Regular link behavior
