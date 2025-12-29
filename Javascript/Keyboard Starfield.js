@@ -272,6 +272,6 @@ function runP() {
 
 // L = Link shatter
 function runL() {
-  
+  window.STARFIELD.linkRebuildTimer = 300;
 }
 /* #endregion 5) OTHERS */
