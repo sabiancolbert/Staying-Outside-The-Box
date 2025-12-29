@@ -291,6 +291,7 @@ S.updateStarPhysics = function updateStarPhysics() {
         let mx, my;
       
         if (window.KEYBOARD.magnetPointer) {
+          window.KEYBOARD.magnetPointer = false;
           // Visible viewport rectangle in CANVAS coordinates (matches paddles math)
           const viewLeft = -rect.left;
           const viewTop = -rect.top;
