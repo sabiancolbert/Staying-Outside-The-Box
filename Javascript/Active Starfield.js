@@ -331,7 +331,7 @@ S.updateStarPhysics = function updateStarPhysics() {
           const userStrength = window.KEYBOARD.magnetStrength || 1;
       
           // Base orbit strength: uses clamp scale so big screens don’t get wimpy
-          const BASE = (0.010 * SETTINGS.clamp * SCALE.forceClamp) * userStrength;
+          const BASE = (0.3 * SETTINGS.clamp * SCALE.forceClamp) * userStrength;
       
           // Split into pull (inward) and spin (tangential)
           // More spin = more orbit; more pull = tighter spiral.
