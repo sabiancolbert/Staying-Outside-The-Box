@@ -284,10 +284,16 @@ S.updateStarPhysics = function updateStarPhysics() {
     STAR.momentumY *= window.KEYBOARD.multY;
     if (window.KEYBOARD.magnetY > 0) {
       //GPT START
+//this will create a global orbit effect
 /*
 if (mangetY is a percentage){ //dont need to check x
-magnetX = magnetX of screen width
+        const rect = CANVAS.getBoundingClientRect();
+magnetX = magnetX of screen width;
+magnetY = magnetY of screen height;
 }
+//otherwise, magnets already start as coordinates derrived from user pointer
+STAR.momentumX += slightly perpendicular and slightly towards magnetX;
+STAR.momentumY += slightly perpendicular and slightly towards magnetY;
 */
 //GPT END
     }
@@ -326,9 +332,7 @@ STAR.momentumY *= MOMENTUM_DECAY;
 if (STAR.momentumX !== 0) STAR.momentumX = Math.sign(STAR.momentumX) * Math.max(MIN_MOM, Math.abs(STAR.momentumX));
 if (STAR.momentumY !== 0) STAR.momentumY = Math.sign(STAR.momentumY) * Math.max(MIN_MOM, Math.abs(STAR.momentumY));
 
-    /*==============================================================*
-     *  PADDLE STAR PHYSICS (FULL INJECTED BLOCK)
-     *==============================================================*/
+    /* PADDLE STAR PHYSICS */
     if (window.KEYBOARD.paddlesTimer > 0 && STAR === S.starList[0]) {
       // Keep the paddle ball white and visible
       STAR.whiteValue = 1;
