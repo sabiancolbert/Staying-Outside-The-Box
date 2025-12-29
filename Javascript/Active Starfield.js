@@ -283,7 +283,13 @@ S.updateStarPhysics = function updateStarPhysics() {
     STAR.momentumX *= window.KEYBOARD.multX;
     STAR.momentumY *= window.KEYBOARD.multY;
     if (window.KEYBOARD.magnetY > 0) {
-      //HERE
+      //GPT START
+/*
+if (mangetY is a percentage){ //dont need to check x
+magnetX = magnetX of screen width
+}
+*/
+//GPT END
     }
 
     /* MOMENTUM CLAMP */
