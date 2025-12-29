@@ -789,14 +789,14 @@ S.resizeStarfieldCanvas = function resizeStarfieldCanvas() {
   // Scale repulsion radius behavior as screen grows
   S.screenScalePowers.repulsionGradient = S.screenScaleUp ** 0.66;
 
-  // Scale attraction falloff curve shaping as screen grows
-  S.screenScalePowers.attractionShape = S.screenScaleUp ** -8.89;
+// Scale attraction falloff curve shaping as screen shrinks
+  S.screenScalePowers.attractionShape = S.screenScaleDown ** 8.89;
 
-  // Scale attraction force strength as screen grows
-  S.screenScalePowers.attractionForce = S.screenScaleUp ** -6.46;
+  // Scale attraction force strength as screen shrinks
+  S.screenScalePowers.attractionForce = S.screenScaleDown ** 6.46;
 
-  // Scale repulsion force strength as screen grows
-  S.screenScalePowers.repulsionForce = S.screenScaleUp ** -0.89;
+  // Scale repulsion force strength as screen shrinks
+  S.screenScalePowers.repulsionForce = S.screenScaleDown ** 0.89;
 
   // Scale the global force clamp as screen grows
   S.screenScalePowers.forceClamp = S.screenScaleUp ** 1.8;
