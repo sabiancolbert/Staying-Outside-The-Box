@@ -36,7 +36,9 @@ window.KEYBOARD = {
   addY: 0,
   paddlesX: 50,
   paddlesY: 50,
-  paddlesTimer: 0
+  paddlesTimer: 0,
+  magnetX: 0,
+  magnetY: 0
 };
 
 // Create a short alias for the STARFIELD namespace
