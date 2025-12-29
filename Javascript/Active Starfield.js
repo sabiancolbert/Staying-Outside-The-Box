@@ -644,7 +644,7 @@ if (FRAME_TIME_MS > TARGET_MS) {
   }
 }
 
-    if (S.linkRebuildTimer > 0) S.linkRebuildTimer -= 0.004 * dtMs;
+    if (S.linkRebuildTimer > 0) S.linkRebuildTimer -= 5 * dtMs;
     if (S.linkRebuildTimer < 0) S.linkRebuildTimer = 0;
 
 
