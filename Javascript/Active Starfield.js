@@ -468,10 +468,6 @@ S.updateStarPhysics = function updateStarPhysics() {                      // Ins
             DID_BOUNCE = bounceVertical(                                   // Apply vertical-wall bounce
               STAR, VIEW_LEFT, +1, OUT_VEL_X, OUT_VEL_Y, PUSH_OUT_X, NOW_MS, HIT_COOLDOWN_MS
             ) || DID_BOUNCE;                                               // Preserve bounce flag
-            if (DID_BOUNCE) {                                              // Continue the direction of the bounce
-              STAR.vx *= -1;
-            }
-            //HERE
           } else if (TOUCH_RIGHT && WITHIN_LR_PADDLE && TOTAL_VEL_X > 0) {  // Right wall hit, within paddle, moving right
 
             const OFFSET = clamp((STAR.y - PADDLE_CENTER_Y) / (HALF_PH || 1), -1, 1); // Normalize contact point
@@ -483,10 +479,6 @@ S.updateStarPhysics = function updateStarPhysics() {                      // Ins
             DID_BOUNCE = bounceVertical(                                   // Apply vertical-wall bounce
               STAR, VIEW_RIGHT, -1, OUT_VEL_X, OUT_VEL_Y, PUSH_OUT_X, NOW_MS, HIT_COOLDOWN_MS
             ) || DID_BOUNCE;                                               // Preserve bounce flag
-            if (DID_BOUNCE) {                                              // Continue the direction of the bounce
-              STAR.vx *= -1;
-            }
-            //HERE
           } else if (TOUCH_TOP && WITHIN_TB_PADDLE && TOTAL_VEL_Y < 0) {    // Top wall hit, within paddle, moving up
 
             const OFFSET = clamp((STAR.x - PADDLE_CENTER_X) / (HALF_PW || 1), -1, 1); // Normalize contact point
@@ -498,10 +490,6 @@ S.updateStarPhysics = function updateStarPhysics() {                      // Ins
             DID_BOUNCE = bounceHorizontal(                                 // Apply horizontal-wall bounce
               STAR, VIEW_TOP, +1, OUT_VEL_X, OUT_VEL_Y, PUSH_OUT_Y, NOW_MS, HIT_COOLDOWN_MS
             ) || DID_BOUNCE;                                               // Preserve bounce flag
-            if (DID_BOUNCE) {                                              // Continue the direction of the bounce
-              STAR.vy *= -1;
-            }
-            //HERE
           } else if (TOUCH_BOTTOM && WITHIN_TB_PADDLE && TOTAL_VEL_Y > 0) { // Bottom wall hit, within paddle, moving down
 
             const OFFSET = clamp((STAR.x - PADDLE_CENTER_X) / (HALF_PW || 1), -1, 1); // Normalize contact point
@@ -513,10 +501,6 @@ S.updateStarPhysics = function updateStarPhysics() {                      // Ins
             DID_BOUNCE = bounceHorizontal(                                 // Apply horizontal-wall bounce
               STAR, VIEW_BOTTOM, -1, OUT_VEL_X, OUT_VEL_Y, PUSH_OUT_Y, NOW_MS, HIT_COOLDOWN_MS
             ) || DID_BOUNCE;                                               // Preserve bounce flag
-            if (DID_BOUNCE) {                                              // Continue the direction of the bounce
-              STAR.vy *= -1;
-            }
-            //HERE
           }
         }
       }
