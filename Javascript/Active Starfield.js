@@ -466,7 +466,7 @@ S.updateStarPhysics = function updateStarPhysics() {                      // Ins
             const OUT_VEL_Y = BALL_SPEED * Math.sin(ANG);                  // Y component based on angle
 
             DID_BOUNCE = bounceVertical(                                   // Apply vertical-wall bounce
-              STAR, VIEW_LEFT, +1, OUT_VEL_X, OUT_VEL_Y, PUSH_OUT_X, NOW_MS, HIT_COOLDOWN_MS
+              STAR, VIEW_LEFT, +1, OUT_VEL_X, OUT_VEL_Y, PUSH_OUT_X, NOW_MS, HIT_COOLDOWN_MS, true
             ) || DID_BOUNCE;                                               // Preserve bounce flag
           } else if (TOUCH_RIGHT && WITHIN_LR_PADDLE && TOTAL_VEL_X > 0) {  // Right wall hit, within paddle, moving right
 
@@ -477,7 +477,7 @@ S.updateStarPhysics = function updateStarPhysics() {                      // Ins
             const OUT_VEL_Y = BALL_SPEED * Math.sin(ANG);                  // Y component
 
             DID_BOUNCE = bounceVertical(                                   // Apply vertical-wall bounce
-              STAR, VIEW_RIGHT, -1, OUT_VEL_X, OUT_VEL_Y, PUSH_OUT_X, NOW_MS, HIT_COOLDOWN_MS
+              STAR, VIEW_RIGHT, -1, OUT_VEL_X, OUT_VEL_Y, PUSH_OUT_X, NOW_MS, HIT_COOLDOWN_MS, true
             ) || DID_BOUNCE;                                               // Preserve bounce flag
           } else if (TOUCH_TOP && WITHIN_TB_PADDLE && TOTAL_VEL_Y < 0) {    // Top wall hit, within paddle, moving up
 
@@ -488,7 +488,7 @@ S.updateStarPhysics = function updateStarPhysics() {                      // Ins
             const OUT_VEL_X = BALL_SPEED * Math.sin(ANG);                  // X component based on angle
 
             DID_BOUNCE = bounceHorizontal(                                 // Apply horizontal-wall bounce
-              STAR, VIEW_TOP, +1, OUT_VEL_X, OUT_VEL_Y, PUSH_OUT_Y, NOW_MS, HIT_COOLDOWN_MS
+              STAR, VIEW_TOP, +1, OUT_VEL_X, OUT_VEL_Y, PUSH_OUT_Y, NOW_MS, HIT_COOLDOWN_MS, true
             ) || DID_BOUNCE;                                               // Preserve bounce flag
           } else if (TOUCH_BOTTOM && WITHIN_TB_PADDLE && TOTAL_VEL_Y > 0) { // Bottom wall hit, within paddle, moving down
 
@@ -499,7 +499,7 @@ S.updateStarPhysics = function updateStarPhysics() {                      // Ins
             const OUT_VEL_X = BALL_SPEED * Math.sin(ANG);                  // X component based on angle
 
             DID_BOUNCE = bounceHorizontal(                                 // Apply horizontal-wall bounce
-              STAR, VIEW_BOTTOM, -1, OUT_VEL_X, OUT_VEL_Y, PUSH_OUT_Y, NOW_MS, HIT_COOLDOWN_MS
+              STAR, VIEW_BOTTOM, -1, OUT_VEL_X, OUT_VEL_Y, PUSH_OUT_Y, NOW_MS, HIT_COOLDOWN_MS, true
             ) || DID_BOUNCE;                                               // Preserve bounce flag
           }
         }
@@ -630,7 +630,7 @@ S.updateStarPhysics = function updateStarPhysics() {                      // Ins
 };                                                                         // End updateStarPhysics
 
 /* GROUP: Bounce helpers (momentum-only, no hard stop) */                  // Group label
-function bounceVertical(STAR, WALL_X, WALL_SIGN, OUT_VEL_X, OUT_VEL_Y, PUSH_OUT, NOW_MS, COOLDOWN_MS = 0) { // Bounce on vertical wall
+function bounceVertical(STAR, WALL_X, WALL_SIGN, OUT_VEL_X, OUT_VEL_Y, PUSH_OUT, NOW_MS, COOLDOWN_MS = 0, IS_PERMANENT = false) { // Bounce on vertical wall
   if (COOLDOWN_MS > 0) {                                                   // If cooldown is enabled
     const LAST = STAR.lastBounceV_Ms || 0;                                 // Read last vertical bounce time
     if (NOW_MS - LAST < COOLDOWN_MS) return false;                         // Skip if still cooling down
@@ -645,10 +645,12 @@ function bounceVertical(STAR, WALL_X, WALL_SIGN, OUT_VEL_X, OUT_VEL_Y, PUSH_OUT,
 
   STAR.x = WALL_X + WALL_SIGN * PUSH_OUT;                                  // Push star out of wall to avoid re-colliding
 
+  if (IS_PERMANENT) STAR.vy *= -1;                                         // Continue that direction if permanent
+
   return true;                                                             // Indicate bounce occurred
 }
 
-function bounceHorizontal(STAR, WALL_Y, WALL_SIGN, OUT_VEL_X, OUT_VEL_Y, PUSH_OUT, NOW_MS, COOLDOWN_MS = 0) { // Bounce on horizontal wall
+function bounceHorizontal(STAR, WALL_Y, WALL_SIGN, OUT_VEL_X, OUT_VEL_Y, PUSH_OUT, NOW_MS, COOLDOWN_MS = 0, IS_PERMANENT = false) { // Bounce on horizontal wall
   if (COOLDOWN_MS > 0) {                                                   // If cooldown is enabled
     const LAST = STAR.lastBounceH_Ms || 0;                                 // Read last horizontal bounce time
     if (NOW_MS - LAST < COOLDOWN_MS) return false;                         // Skip if still cooling down
@@ -662,7 +664,9 @@ function bounceHorizontal(STAR, WALL_Y, WALL_SIGN, OUT_VEL_X, OUT_VEL_Y, PUSH_OU
   STAR.momentumY = OUT_VEL_Y - BASE_VY;                                    // Set momentum so total vel becomes OUT_VEL_Y
 
   STAR.y = WALL_Y + WALL_SIGN * PUSH_OUT;                                  // Push star out of wall to avoid re-colliding
-
+  
+  if (IS_PERMANENT) STAR.vx *= -1;                                         // Continue that direction if permanent
+  
   return true;                                                             // Indicate bounce occurred
 }
 
