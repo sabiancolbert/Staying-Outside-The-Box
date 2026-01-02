@@ -42,10 +42,6 @@ var K = window.KEYBOARD;
 // unless the browser explicitly suppresses it.
 window.addEventListener("keydown", (EVENT) => {
 
-  // Ignore held-down repeat events.
-  // We want single, intentional impulses, not OS-level auto-repeat.
-  if (EVENT.repeat) return;
-
   // Ignore IME composition events (important for non-Latin keyboards).
   // Prevents accidental impulses while typing.
   if (EVENT.isComposing) return;
