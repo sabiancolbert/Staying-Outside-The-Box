@@ -253,7 +253,7 @@ S.updateStarPhysics = function updateStarPhysics() {                      // Ins
       // Shape repulsion falloff curve.                                    // Curve shaping
       const REPULSION_SHAPE = Math.pow(                                   // Exponent curve
         REPULSION_GRADIENT,                                               // Base gradient
-        Math.max(0.1, (SETTINGS.repelScale * SCALE.repelShape)                        // Exponent (never below 0.1)
+        Math.max(0.1, (SETTINGS.repelScale * SCALE.repulsionShape)                        // Exponent (never below 0.1)
       );
 
       // Compute repulsion force (settings + screen scale + pointer energy + shape). // Force composition
