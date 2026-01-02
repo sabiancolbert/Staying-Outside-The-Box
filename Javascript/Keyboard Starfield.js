@@ -245,25 +245,25 @@ function RUN_M() {
 // R = Paddle left
 function RUN_R() {
   K.paddlesTimer = 50; // Make paddles visible
-  K.paddlesX -= 5;     // Shift paddles left
+  K.paddlesX -= 1;     // Shift paddles left
 }
 
 // T = Paddle right
 function RUN_T() {
   K.paddlesTimer = 50;
-  K.paddlesX += 5;
+  K.paddlesX += 1;
 }
 
 // F = Paddle up
 function RUN_F() {
   K.paddlesTimer = 50;
-  K.paddlesY -= 5;
+  K.paddlesY -= 1;
 }
 
 // C = Paddle down
 function RUN_C() {
   K.paddlesTimer = 50;
-  K.paddlesY += 5;
+  K.paddlesY += 1;
 }
 
 /* #endregion 4) PONG */
