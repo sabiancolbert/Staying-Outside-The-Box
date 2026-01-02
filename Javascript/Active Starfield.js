@@ -225,7 +225,7 @@ S.updateStarPhysics = function updateStarPhysics() {                      // Ins
       /* GROUP: Attraction */                                             // Group label
       // Convert distance into 0..1 gradient inside attraction radius.     // Gradient mapping
       let ATTRACTION_GRADIENT =
-        1 - (DISTANCE_TO_POINTER / (((SETTINGS.attractRadius * 5.2) * SCALE.attractionGradient) || 1)); // Invert normalized distance
+        1 - (DISTANCE_TO_POINTER / ((SETTINGS.attractRadius * SCALE.attractionGradient) || 1)); // Invert normalized distance
 
       // Clamp so it never goes negative outside radius.                   // Clamp
       ATTRACTION_GRADIENT = Math.max(0, ATTRACTION_GRADIENT);             // 0..1
@@ -233,19 +233,19 @@ S.updateStarPhysics = function updateStarPhysics() {                      // Ins
       // Shape attraction falloff curve.                                   // Curve shaping
       const ATTRACTION_SHAPE = Math.pow(                                 // Exponent curve
         ATTRACTION_GRADIENT,                                             // Base gradient
-        Math.max(0.1, ((SETTINGS.attractScale * 0.48) * SCALE.attractionShape)) // Exponent (never below 0.1)
+        Math.max(0.1, (SETTINGS.attractScale * SCALE.attractionShape)) // Exponent (never below 0.1)
       );
 
       // Compute attraction force (settings + screen scale + pointer energy + shape). // Force composition
       const ATTRACTION_FORCE =
-        ((SETTINGS.attractStrength * 0.0044) * SCALE.attractionForce) *  // Base strength scaled
+        (SETTINGS.attractStrength * SCALE.attractionForce) *  // Base strength scaled
         S.pointerSpeedUnits *                                            // Pointer energy multiplier
         ATTRACTION_SHAPE;                                                // Curve-shaped falloff
 
       /* GROUP: Repulsion */                                              // Group label
       // Convert distance into 0..1 gradient inside repulsion radius.      // Gradient mapping
       let REPULSION_GRADIENT =
-        1 - (DISTANCE_TO_POINTER / (((SETTINGS.repelRadius * 2.8) * SCALE.repulsionGradient) || 1)); // Invert normalized distance
+        1 - (DISTANCE_TO_POINTER / ((SETTINGS.repelRadius * SCALE.repulsionGradient) || 1)); // Invert normalized distance
 
       // Clamp so it never goes negative outside radius.                   // Clamp
       REPULSION_GRADIENT = Math.max(0, REPULSION_GRADIENT);               // 0..1
@@ -253,12 +253,12 @@ S.updateStarPhysics = function updateStarPhysics() {                      // Ins
       // Shape repulsion falloff curve.                                    // Curve shaping
       const REPULSION_SHAPE = Math.pow(                                   // Exponent curve
         REPULSION_GRADIENT,                                               // Base gradient
-        Math.max(0.1, (SETTINGS.repelScale * 0.64))                        // Exponent (never below 0.1)
+        Math.max(0.1, SETTINGS.repelScale)                        // Exponent (never below 0.1)
       );
 
       // Compute repulsion force (settings + screen scale + pointer energy + shape). // Force composition
       const REPULSION_FORCE =
-        ((SETTINGS.repelStrength * 0.0182) * SCALE.repulsionForce) *      // Base strength scaled
+        (SETTINGS.repelStrength * SCALE.repulsionForce) *      // Base strength scaled
         S.pointerSpeedUnits *                                             // Pointer energy multiplier
         REPULSION_SHAPE;                                                  // Curve-shaped falloff
 
