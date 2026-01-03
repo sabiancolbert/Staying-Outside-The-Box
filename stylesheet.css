@@ -233,7 +233,7 @@ footer p {
   padding: 2dvmin;
 }
 
-/* Divider art */
+/* Divider art */#
 hr {
   /* Step 5: divider sizing */
   width: 75dvw;
@@ -597,7 +597,7 @@ button:hover {
 .dave,
 .fireRider,
 .sidecharacter {
-  margin-top: 1dvmin;
+  margin-top: 1em;
   font-weight: bold;
 }
 
