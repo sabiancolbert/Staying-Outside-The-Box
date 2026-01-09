@@ -501,7 +501,7 @@ function injectGlobalFooter() {
     <p>
       <strong>Contact: </strong>
       <a href="mailto:admin@stayingoutsidethebox.com">
-        admin@stayingoutsidethebox.com
+        admin@&#8203;stayingoutsidethebox&#8203;.com
       </a>
     </p>
     <a href="/privacy and terms.html" class="footer-legal-link">
