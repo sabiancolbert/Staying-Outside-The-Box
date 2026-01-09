@@ -230,6 +230,8 @@ window.addEventListener("load", () => { // Fires after the page fully loads
   requestAnimationFrame(() => { // Next frame ensures class change triggers animation
     CONTAINER.classList.add("ready"); // Add class used by CSS to slide in
   });
+  
+  enableDocumentScroll();
 
   /* GROUP: Back button logic */
   const { REFERRER, IS_INTERNAL_REFERRER, CAME_FROM_MENU_PAGE } = getReferrerInfo(); // Compute back-link rules
@@ -472,6 +474,7 @@ document.addEventListener(
   () => {
     injectGlobalFooter(); // Add footer
     wirePointerNavigation(); // Wire pointer navigation on all links by default
+    disableDocumentScroll()
   }
 );
 
