@@ -116,7 +116,7 @@ html {
 
   /* Step 2: default scroll behavior (JS may swap this) */
   /*overflow-x:hidden;*/
-  overflow-y: auto;
+  overflow: auto;
 
   /* Step 3: edge color visible during transitions */
   background-color: black;
@@ -135,7 +135,7 @@ body {
   /* Step 3: default is “no body scroll” (JS may change this) */
   height: auto;
   /*overflow-x:hidden;*/
-  overflow-y: visible;
+  overflow: visible;
 
   /* Step 4: remove default spacing */
   margin: 0;
@@ -658,7 +658,7 @@ button:hover {
 
   /* DONT TOUCH: JS swaps scroll responsibility */
   /*overflow-x:hidden;*/
-  overflow-y: visible;
+  overflow: visible;
 }
 
 /* Homepage: slides DOWN into view, OUT up */
