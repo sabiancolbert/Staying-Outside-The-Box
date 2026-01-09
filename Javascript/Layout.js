@@ -307,14 +307,6 @@ function transitionTo(URL) { // Main navigation helper: animate out, then go
   IS_TRANSITION_ACTIVE = true; // Lock transitions until this navigation completes
 
   const CONTAINER = getTransitionContainer(); // Get wrapper used for slide-out animation
-alert("container? " + (CONTAINER ? "YES" : "NO"));
-
-  if (CONTAINER) {
-    alert("id=" + CONTAINER.id + " tag=" + CONTAINER.tagName);
-  } else {
-    alert("Available IDs include:\n" + [...document.querySelectorAll("[id]")].slice(0,40).map(n=>n.id).join("\n"));
-  }
-
   
   /* GROUP: "back" keyword support */
   if (URL === "back") { // If caller wants stored internal "back" behavior
