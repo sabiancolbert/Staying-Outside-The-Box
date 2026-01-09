@@ -210,9 +210,9 @@ body {
  *   5) .divider is a narrower hr variant.
  */
 
-main {
+main, header {
   /* Step 1: padding for readability */
-  padding: 2dvmin;
+  padding: 0 2dvmin;
 }
 
 h2 {
