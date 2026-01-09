@@ -181,6 +181,8 @@ function getReferrerInfo() { // Returns referrer string + internal/menu flags
 /* GROUP: Lock scroll during transitions */
 // We lock both html and body for maximum cross-browser reliability.
 function disableDocumentScroll() {
+  return;
+  //HERE
   const HTML = document.documentElement;
   const BODY = document.body;
   const CONTAINER = getTransitionContainer();
@@ -195,6 +197,7 @@ function disableDocumentScroll() {
 /* GROUP: Restore scroll after transitions/load */
 // Put scroll back on the document.
 function enableDocumentScroll() {
+  return;
   const HTML = document.documentElement;
   const BODY = document.body;
   const CONTAINER = getTransitionContainer();
