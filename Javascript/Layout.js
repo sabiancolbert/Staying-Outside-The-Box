@@ -504,7 +504,7 @@ function injectGlobalFooter() {
         admin@&#8203;stayingoutsidethebox&#8203;.com
       </a>
     </p>
-    <a href="/privacy and terms.html" class="footer-legal-link">
+    <a onclick="transitionTo(this.href); return false;" href="/privacy and terms.html">
       Privacy Policy &amp; Terms of Use
     </a>
   `;
