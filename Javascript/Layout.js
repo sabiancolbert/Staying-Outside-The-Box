@@ -279,6 +279,8 @@ window.addEventListener("pageshow", (EVENT) => { // Fires on normal show and bfc
   IS_TRANSITION_ACTIVE = false; // Reset transition guard so taps work again
 
   CONTAINER.scrollTop = 0; // Reset container scroll in case it was used as a scroller
+
+  injectGlobalFooter(); // Add footer
 });
 
 /* #endregion 4) BACK/FORWARD CACHE (PAGESHOW) */
@@ -467,7 +469,46 @@ function wirePointerNavigation(SELECTOR = "a") { // Intercepts touch taps on lin
 // Attach touch navigation overrides once elements exist in the DOM.
 document.addEventListener(
   "DOMContentLoaded", // Run after DOM is parsed
-  () => wirePointerNavigation() // Wire pointer navigation on all links by default
+  () => {
+    wirePointerNavigation(); // Wire pointer navigation on all links by default
+    injectGlobalFooter(); // Add footer
+  }
 );
 
 /* #endregion 6) TOUCH NAV FIXES (POINTER TAP VS SWIPE) */
+
+/*======================================================================
+ * FOOTER INJECTION (SHARED ACROSS ALL PAGES)
+ *====================================================================*/
+
+function injectGlobalFooter() {
+  const CONTAINER = document.getElementById("transitionContainer");
+  if (!CONTAINER) return;
+
+  // Prevent duplicate footers (important for bfcache/pageshow)
+  if (CONTAINER.querySelector("footer[data-global-footer]")) return;
+
+  const FOOTER = document.createElement("footer");
+  FOOTER.setAttribute("data-global-footer", "true");
+
+  FOOTER.innerHTML = `
+    <hr>
+    <p>I Can’t Stop Dying™ and The I Collection™ are trademarks of Staying Outside The Box™ LLC</p>
+    <p>
+      All trademarks, logos, and brands are property of their respective owners.<br>
+      This site uses these logos only to link to official profiles.<br>
+      No endorsement is implied.
+    </p>
+    <p>
+      <strong>Contact: </strong>
+      <a href="mailto:admin@stayingoutsidethebox.com">
+        admin@stayingoutsidethebox.com
+      </a>
+    </p>
+    <a href="/privacy and terms.html" class="footer-legal-link">
+      Privacy Policy &amp; Terms of Use
+    </a>
+  `;
+
+  CONTAINER.appendChild(FOOTER);
+}
