@@ -135,7 +135,7 @@ body {
   /* Step 3: default is “no body scroll” (JS may change this) */
   height: auto;
   /*overflow-x:hidden;*/
-  overflow: visible;
+  overflow: hidden;
 
   /* Step 4: remove default spacing */
   margin: 0;
@@ -151,6 +151,18 @@ body {
   color: var(--BASE_COLOR);
   user-select: none;
   -webkit-user-select: none;
+}
+
+/* Main content wrapper (JS toggles who scrolls) */
+#transitionContainer {
+  flex: 1;
+  min-height: 100dvh;
+  height: auto;
+  width: 100%;
+
+  /* DONT TOUCH: JS swaps scroll responsibility */
+  /*overflow-x:hidden;*/
+  overflow: visible;
 }
 
 /* #endregion 2) DOCUMENT BASE + BACKGROUND */
@@ -648,18 +660,6 @@ button:hover {
  *   3) html has either .homeJs or .otherJs depending on page type
  *   4) .noJs disables all transforms for graceful fallback
  */
-
-/* Main content wrapper (JS toggles who scrolls) */
-#transitionContainer {
-  flex: 1;
-  min-height: 100dvh;
-  height: auto;
-  width: 100%;
-
-  /* DONT TOUCH: JS swaps scroll responsibility */
-  /*overflow-x:hidden;*/
-  overflow: visible;
-}
 
 /* Homepage: slides DOWN into view, OUT up */
 .homeJs #transitionContainer {
