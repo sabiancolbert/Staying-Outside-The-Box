@@ -183,7 +183,7 @@ function getReferrerInfo() { // Returns referrer string + internal/menu flags
 function disableDocumentScroll() {
   const HTML = document.documentElement;
   const BODY = document.body;
-  const CONTAINER = getContainer();
+  const CONTAINER = getTransitionContainer()();
 
   HTML.style.overflowY = "hidden";
   BODY.style.overflow = "hidden";
@@ -197,7 +197,7 @@ function disableDocumentScroll() {
 function enableDocumentScroll() {
   const HTML = document.documentElement;
   const BODY = document.body;
-  const CONTAINER = getContainer();
+  const CONTAINER = getTransitionContainer()();
 
   HTML.style.overflowY = "auto";
   BODY.style.overflow = "visible";
