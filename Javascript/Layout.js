@@ -48,7 +48,7 @@ let IS_TRANSITION_ACTIVE = false; // True while slide-out is in progress
 /* GROUP */
 // Obtain the transition container
 // Used to make the animation in and out scroll properly
-const CONTAINER = document.getElementById("transitionContainer");
+const getContainer = () => document.getElementById("transitionContainer");
 
 /* GROUP: Starfield alias */
 // Create a short alias to the STARFIELD namespace.
@@ -184,8 +184,8 @@ function enableDocumentScroll() { // Restore scroll to document instead of conta
   const BODY = document.body; // Cache <body> element for overflow/height control
   BODY.style.overflow = "visible"; // Make body flow normally
 
-  if (CONTAINER) { // If the transition container exists
-    CONTAINER.style.overflow = "hidden"; // Ensure container does not trap scroll
+  if (getContainer()) { // If the transition container exists
+    getContainer().style.overflow = "hidden"; // Ensure container does not trap scroll
   }
 }
 
@@ -193,8 +193,8 @@ function disableDocumentScroll() { // Restore scroll to document instead of cont
   const BODY = document.body; // Cache <body> element for overflow/height control
   BODY.style.overflow = "hidden"; // Make body flow normally
 
-  if (CONTAINER) { // If the transition container exists
-    CONTAINER.style.overflow = "visible"; // Ensure container does not trap scroll
+  if (getContainer()) { // If the transition container exists
+    getContainer().style.overflow = "visible"; // Ensure container does not trap scroll
   }
 }
 
@@ -211,7 +211,7 @@ function disableDocumentScroll() { // Restore scroll to document instead of cont
 // Using "load" ensures fonts/images/layout are settled before slide-in begins.
 window.addEventListener("load", () => { // Fires after the page fully loads
 
-  if (!CONTAINER) return; // Bail if wrapper is missing on this page
+  if (!getContainer()) return; // Bail if wrapper is missing on this page
   disableDocumentScroll();
 
   document.documentElement.style.setProperty( // Publish slide duration to CSS variable
@@ -220,7 +220,7 @@ window.addEventListener("load", () => { // Fires after the page fully loads
   );
 
   requestAnimationFrame(() => { // Next frame ensures class change triggers animation
-    CONTAINER.classList.add("ready"); // Add class used by CSS to slide in
+    getContainer().classList.add("ready"); // Add class used by CSS to slide in
   });
 
   /* GROUP: Back button logic */
@@ -269,7 +269,7 @@ window.addEventListener("load", () => { // Fires after the page fully loads
 // pageshow fires when a page is shown, including bfcache restores.
 // We repair timers, transition flags, and CSS classes so the UI is stable.
 window.addEventListener("pageshow", (EVENT) => { // Fires on normal show and bfcache restore
-  if (!CONTAINER) return; // Bail if wrapper is missing
+  if (!getContainer()) return; // Bail if wrapper is missing
 
   clearPendingTransitionTimers(); // Cancel any timers resurrected by bfcache
 
@@ -278,12 +278,12 @@ window.addEventListener("pageshow", (EVENT) => { // Fires on normal show and bfc
 
   if (!isBackForwardNavigation(EVENT)) return; // Only repair classes/flags for actual back-forward restores
 
-  CONTAINER.classList.remove("slide-out"); // Remove any mid-transition class that might have been preserved
-  CONTAINER.classList.add("ready"); // Ensure we look like a fully loaded page
+  getContainer().classList.remove("slide-out"); // Remove any mid-transition class that might have been preserved
+  getContainer().classList.add("ready"); // Ensure we look like a fully loaded page
 
   IS_TRANSITION_ACTIVE = false; // Reset transition guard so taps work again
 
-  CONTAINER.scrollTop = 0; // Reset container scroll in case it was used as a scroller
+  getContainer().scrollTop = 0; // Reset container scroll in case it was used as a scroller
 });
 
 /* #endregion 4) BACK/FORWARD CACHE (PAGESHOW) */
@@ -321,7 +321,7 @@ function transitionTo(URL) { // Main navigation helper: animate out, then go
   }
 
   /* GROUP: No container fallback */
-  if (!CONTAINER) { // If wrapper doesn't exist, we can't animate
+  if (!getContainer()) { // If wrapper doesn't exist, we can't animate
     location.href = URL; // Navigate immediately
     return; // Done
   }
@@ -335,7 +335,7 @@ function transitionTo(URL) { // Main navigation helper: animate out, then go
   );
 
   /* GROUP: Start slide-out */
-  CONTAINER.classList.add("slide-out"); // Add class that triggers slide-out CSS animation
+  getContainer().classList.add("slide-out"); // Add class that triggers slide-out CSS animation
 
   /* GROUP: Timer scheduling */
   const DURATION_MS = getSlideDurationSeconds() * 1000; // Convert seconds into ms for setTimeout
@@ -484,10 +484,10 @@ document.addEventListener(
 
 function injectGlobalFooter() {
   if (isHomepage()) return;
-  if (!CONTAINER) return;
+  if (!getContainer()) return;
 
   // Prevent duplicate footers (important for bfcache/pageshow)
-  if (CONTAINER.querySelector("footer[data-global-footer]")) return;
+  if (getContainer().querySelector("footer[data-global-footer]")) return;
 
   const FOOTER = document.createElement("footer");
   FOOTER.setAttribute("data-global-footer", "true");
@@ -511,5 +511,5 @@ function injectGlobalFooter() {
     </a>
   `;
 
-  CONTAINER.appendChild(FOOTER);
+  getContainer().appendChild(FOOTER);
 }
