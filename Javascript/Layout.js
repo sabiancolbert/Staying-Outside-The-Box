@@ -279,8 +279,6 @@ window.addEventListener("pageshow", (EVENT) => { // Fires on normal show and bfc
   IS_TRANSITION_ACTIVE = false; // Reset transition guard so taps work again
 
   CONTAINER.scrollTop = 0; // Reset container scroll in case it was used as a scroller
-
-  injectGlobalFooter(); // Add footer
 });
 
 /* #endregion 4) BACK/FORWARD CACHE (PAGESHOW) */
@@ -470,8 +468,8 @@ function wirePointerNavigation(SELECTOR = "a") { // Intercepts touch taps on lin
 document.addEventListener(
   "DOMContentLoaded", // Run after DOM is parsed
   () => {
-    wirePointerNavigation(); // Wire pointer navigation on all links by default
     injectGlobalFooter(); // Add footer
+    wirePointerNavigation(); // Wire pointer navigation on all links by default
   }
 );
 
