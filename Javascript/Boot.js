@@ -23,7 +23,7 @@
   html.classList.remove("noJs");
 
   // Decide page type by presence of the menu button (your existing heuristic)
-  const isHome = !!document.getElementById("menuButton");
+  const isHome = true;
 
   // Apply correct class
   html.classList.toggle("homeJs", isHome);
