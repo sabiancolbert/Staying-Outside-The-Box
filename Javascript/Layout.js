@@ -300,7 +300,7 @@ function transitionTo(URL) { // Main navigation helper: animate out, then go
 
   if (IS_TRANSITION_ACTIVE) return; // Guard: ignore if a transition is already running
   if (!URL) return; // Guard: ignore empty URLs
-return;
+alert("transitioning");
   //CRUNCH_SOUND.pause(), CRUNCH_SOUND.play().catch(() => {}); // Optional click sound (disabled)
 
   clearPendingTransitionTimers(); // Cancel any older transition timers
