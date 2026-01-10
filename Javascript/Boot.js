@@ -1,7 +1,4 @@
-window.preventJava = localStorage.getItem("preventJava") === "true";
-  
 (function boot(){
-  if (!window.preventJava) {
     // CSP-safe GA init (no inline)
     window.dataLayer = window.dataLayer || [];
     window.gtag = window.gtag || function(){ window.dataLayer.push(arguments); };
@@ -19,5 +16,4 @@ window.preventJava = localStorage.getItem("preventJava") === "true";
     const html = document.documentElement;
     html.classList.remove("noJs");
     html.classList.add("otherJs");
-  }
 })();
