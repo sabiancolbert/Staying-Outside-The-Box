@@ -1,7 +1,7 @@
 window.preventJava = localStorage.getItem("preventJava") === "true";
   
 (function boot(){
-  if (!preventJava) {
+  if (!window.preventJava) {
     // CSP-safe GA init (no inline)
     window.dataLayer = window.dataLayer || [];
     window.gtag = window.gtag || function(){ window.dataLayer.push(arguments); };
