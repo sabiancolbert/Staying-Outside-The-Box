@@ -319,7 +319,7 @@ function transitionTo(URL) { // Main navigation helper: animate out, then go
 
     URL = STORED_BACK_URL; // Replace keyword with real URL
   }
-alert(CONTAINER);
+  
   /* GROUP: No container fallback */
   if (!CONTAINER) { // If wrapper doesn't exist, we can't animate
     location.href = URL; // Navigate immediately
@@ -334,7 +334,7 @@ alert(CONTAINER);
     `${SLIDE_DISTANCE_PX}px` // Value: pixels string
   );
   /* GROUP: Start slide-out */
-
+alert(CONTAINER.classList[0]);
   CONTAINER.classList.add("slide-out"); // Add class that triggers slide-out CSS animation
 
   /* GROUP: Timer scheduling */
