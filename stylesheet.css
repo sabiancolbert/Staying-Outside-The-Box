@@ -690,23 +690,10 @@ button:hover {
   transform: translateY(var(--SLIDE_DISTANCE));
 }
 
-/* No javascript fallbacks */
-.noJs {
-  overflow-y: auto;
-}
-
-.noJs body {
-  overflow: visible;
-  height: auto;
-}
-
+/* No javascript fallback */
 .noJs #transitionContainer {
   transform: translateY(0) !important;
   transition: none !important;
-
-  overflow: visible;
-  height: auto;
-  min-height: 100dvh;
 }
 
 /* #endregion 11) SLIDE-IN PAGE TRANSITION SYSTEM */
