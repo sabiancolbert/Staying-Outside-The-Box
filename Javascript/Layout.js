@@ -503,11 +503,6 @@ function injectGlobalFooter() {
     <hr>
     <p>I Can’t Stop Dying™ and The I Collection™ are trademarks of Staying Outside The Box™ LLC</p>
     <p>
-      All trademarks, logos, and brands are property of their respective owners.<br>
-      This site uses these logos only to link to official profiles.<br>
-      No endorsement is implied.
-    </p>
-    <p>
       <strong>Contact: </strong>
       <a href="mailto:admin@stayingoutsidethebox.com">
         admin@&#8203;stayingoutsidethebox&#8203;.com
