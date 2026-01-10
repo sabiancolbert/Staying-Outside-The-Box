@@ -472,7 +472,7 @@ document.addEventListener(
   () => {
     injectGlobalFooter(); // Add footer
     wirePointerNavigation(); // Wire pointer navigation on all links by default
-    disableDocumentScroll()
+    disableDocumentScroll();
   }
 );
 
