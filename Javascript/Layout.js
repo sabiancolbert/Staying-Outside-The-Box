@@ -300,7 +300,6 @@ function transitionTo(URL) { // Main navigation helper: animate out, then go
 
   if (IS_TRANSITION_ACTIVE) return; // Guard: ignore if a transition is already running
   if (!URL) return; // Guard: ignore empty URLs
-alert("transitioning");
   //CRUNCH_SOUND.pause(), CRUNCH_SOUND.play().catch(() => {}); // Optional click sound (disabled)
 
   clearPendingTransitionTimers(); // Cancel any older transition timers
@@ -320,7 +319,7 @@ alert("transitioning");
 
     URL = STORED_BACK_URL; // Replace keyword with real URL
   }
-
+alert(CONTAINER);
   /* GROUP: No container fallback */
   if (!CONTAINER) { // If wrapper doesn't exist, we can't animate
     location.href = URL; // Navigate immediately
@@ -335,9 +334,9 @@ alert("transitioning");
     `${SLIDE_DISTANCE_PX}px` // Value: pixels string
   );
   /* GROUP: Start slide-out */
-alert("slide out");
+
   CONTAINER.classList.add("slide-out"); // Add class that triggers slide-out CSS animation
-alert(test);
+
   /* GROUP: Timer scheduling */
   const DURATION_MS = getSlideDurationSeconds() * 1000; // Convert seconds into ms for setTimeout
 
