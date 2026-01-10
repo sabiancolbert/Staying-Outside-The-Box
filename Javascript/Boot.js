@@ -21,11 +21,5 @@
 
   // Remove JS-disabled fallback
   html.classList.remove("noJs");
-
-  // Decide page type by presence of the menu button (your existing heuristic)
-  const isHome = true;
-
-  // Apply correct class
-  html.classList.toggle("homeJs", isHome);
-  html.classList.toggle("otherJs", !isHome);
+  html.classList.add("otherJs");
 })();
