@@ -447,10 +447,7 @@ function wirePointerNavigation(SELECTOR = "a") {
         return;
       }
 
-      if (ELEMENT.id === "homepageBack") {
-        transitionTo("back");
-        return;
-      }
+if (ELEMENT.id === "homepageBack" || ELEMENT.id === "policyBack") { transitionTo("back"); return; }
 
       transitionTo(HREF);
     }, { passive: false });
