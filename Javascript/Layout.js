@@ -237,7 +237,7 @@ window.addEventListener("load", () => {
   if (!BACK_LINK) return;
 
   // If we came from Menu or directly from Homepage, hide "back" (avoid weird loops).
-  if (CAME_FROM_MENU_PAGE || CAME_FROM_HOME_PAGE) {
+  if (CAME_FROM_MENU_PAGE && HOME_BACK || CAME_FROM_HOME_PAGE && POLICY_BACK) {
     BACK_LINK.style.display = "none";
     return;
   }
