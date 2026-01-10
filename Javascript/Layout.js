@@ -425,32 +425,42 @@ function wirePointerNavigation(SELECTOR = "a") {
 
     /* GROUP: Click (all inputs) */
     // This is the true "href kill switch" + transition entry point.
-    ELEMENT.addEventListener("click", (EVENT) => {
-      const HREF = ELEMENT.getAttribute("href");
-      if (!HREF) return;
+ELEMENT.addEventListener("click", (EVENT) => {
+  const HREF = ELEMENT.getAttribute("href");
+  if (!HREF) return;
 
-      // For touch: if user swiped, do not navigate.
-      // (DID_MOVE remains true after the swipe, and click may still fire.)
-      if (DID_MOVE) return;
+  // Touch swipe? don't navigate.
+  if (DID_MOVE) return;
 
-      // Always stop default <a href> navigation so JS controls timing.
-      EVENT.preventDefault();
+  // Special keyword support
+  if (HREF === "back") {
+    EVENT.preventDefault();
+    transitionTo("back");
+    return;
+  }
 
-      // Let special links behave normally (system handlers)
-      if (
-        HREF.startsWith("mailto:") ||
-        HREF.startsWith("tel:") ||
-        HREF.startsWith("sms:") ||
-        HREF.startsWith("javascript:")
-      ) {
-        location.href = HREF;
-        return;
-      }
+  // System handlers (don't animate these)
+  if (
+    HREF.startsWith("mailto:") ||
+    HREF.startsWith("tel:") ||
+    HREF.startsWith("sms:")
+  ) {
+    // Let browser handle it normally
+    return;
+  }
 
-if (ELEMENT.id === "homepageBack" || ELEMENT.id === "policyBack") { transitionTo("back"); return; }
+  // Let new-tab / downloads behave normally
+  if (ELEMENT.target === "_blank" || ELEMENT.hasAttribute("download")) return;
 
-      transitionTo(HREF);
-    }, { passive: false });
+  // Let true external http(s) links behave normally
+  const IS_HTTP = /^https?:\/\//i.test(HREF);
+  const IS_EXTERNAL = IS_HTTP && !HREF.startsWith(location.origin);
+  if (IS_EXTERNAL) return;
+
+  // Everything else: we own navigation timing
+  EVENT.preventDefault();
+  transitionTo(HREF);
+}, { passive: false });
 
     /* GROUP: Pointer cancel */
     ELEMENT.addEventListener("pointercancel", () => {
