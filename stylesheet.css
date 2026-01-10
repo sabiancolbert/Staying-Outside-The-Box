@@ -692,6 +692,9 @@ button:hover {
 
 /* No javascript fallback */
 .noJs #transitionContainer {
+  transform: translateY(-100%);
+  transition: transform 1s ease-in-out;
+  }/*
   transform: translateY(0) !important;
   transition: none !important;
 }
